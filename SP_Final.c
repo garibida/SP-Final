@@ -35,24 +35,25 @@ int validateInput(); /* !? */
 /* Algorith's operations section */
 Matrix* computeMatrixW(Point** pointsArr, int n);
 Matrix* computeMatrixD(Matrix *W);
-Matrix* computeMatrixDMinusHalf(Matrix *D); /* !? */ 
-Matrix* computeMatrixL(Matrix *W, Matrix *D); /* !? */ 
-Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* !? */ 
+Matrix* computeMatrixDMinusHalf(Matrix *D);
+Matrix* computeMatrixL(Matrix *W, Matrix *D); 
+Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* write tester */ 
 
 /* Point's operations section */
 Point* createPoint(int d);
 void printPoint(Point* point);
 void printPointsArr(Point **pointArr, int n);
-int isPointsEquel(Point* point1, Point* point2);
-double computeDist(Point* point1, Point* point2);
-double computeDistW(Point* point1, Point* point2); 
-void freeMemPoint(Point* point);
+int isPointsEquel(Point *point1, Point* point2);
+double computeDist(Point *point1, Point* point2);
+double computeDistW(Point *point1, Point* point2); 
+void freeMemPoint(Point *point);
 void freeMemPointsArr(Point **pointsArr, int n);
-/* double* copy_point(double* point, int d); */ 
+Point* copy_point(Point *point);
 
 /* Matrix's operations section */
 void freeMatrix(Matrix* A);
 Matrix* createMatrix(int rows, int cols, bool isSymmetric);
+Matrix* createUnitMatrix(int n);
 Matrix_data createMatrixData(int rows, int cols);
 Matrix_data createSymmetricMatrixData(int rows);
 void updateMatrixSymmertircStatus(Matrix* A);
@@ -71,6 +72,7 @@ Point** createPointsArr();
 void testCalcMatrixW(bool isDebug);
 void testCalcMatrixDAndDMinusHalf(bool isDebug);
 void testMultiplyMatrixs(bool isDebug);
+/*testMatrixLnorm(isDebug);*/
 
 /* ######################### */
 /* Matrix operations section */
@@ -84,6 +86,16 @@ Matrix* createMatrix(int rows, int cols, bool isSymmetric) {
     A -> isSymmetric = isSymmetric;
     A -> data = isSymmetric ? createSymmetricMatrixData(rows) : createMatrixData(rows, cols);
     return A;
+}
+
+Matrix* createUnitMatrix(int dim) {
+    Matrix* I; 
+    int i;
+    I = createMatrix(dim, dim, true);
+    MatrixIterRows(I, i) {
+        setMatrixValue(I, i, i, 1.0);
+    }
+    return I;
 }
 
 Matrix_data createMatrixData(int rows, int cols) {
@@ -346,6 +358,15 @@ void freeMemPointsArr(Point **pointsArr, int n) {
     free(pointsArr);
 }
 
+Point* copy_point(Point *point) {
+    int i;
+    Point *newpoint = createPoint(point -> d); 
+    for (i = 0; i < point -> d; i++) {
+        newpoint -> data[i] = point -> data[i];
+    }
+    return newpoint;
+}
+
 /* ######### */
 /* Algorithm */
 /* ######### */
@@ -419,121 +440,27 @@ Matrix* computeMatrixDMinusHalf(Matrix *D) {
     return D2;
 }
 
+Matrix* computeMatrixL(Matrix *W, Matrix *D) {
+    return sub(D, W);
+}
+
+Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
+    Matrix *D2, *I, *tmp;
+    D2 = computeMatrixDMinusHalf(D);
+    I = createUnitMatrix(W -> rows);
+    tmp = multiply(multiply(D2, W), D2);
+    return sub(I, tmp);
+}
+
 /* ############# */
 /* Tests section */
 /* ############# */
 
 void testMain(bool isDebug) {
+    testMultiplyMatrixs(isDebug);
     testCalcMatrixW(isDebug);
     testCalcMatrixDAndDMinusHalf(isDebug);
-    testMultiplyMatrixs(isDebug);
-}
-
-Point** createPointsArr() {
-    Point **pointsArr;
-    int i;
-    pointsArr = calloc(3, sizeof(Point));
-    assert(pointsArr != NULL); 
-    pointsArr[0] = createPoint(3); /* p0 = (0,0,0) */
-    pointsArr[1] = createPoint(3); /* p1 = (1,1,1) */
-    for (i = 0; i < 3; i++) {
-        pointsArr[1] -> data[i] = 1.0;
-    }
-    
-    pointsArr[2] = createPoint(3); /* p2 = (2,2,2) */
-    for (i = 0; i < 3; i++) {
-        pointsArr[2] -> data[i] = 2.0;
-    }
-    return pointsArr;
-}
-
-void testCalcMatrixW(bool isDebug) {
-    Matrix *W, *A;
-    Point **pointsArr = createPointsArr();
-    W = computeMatrixW(pointsArr, 3);
-    
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A, 0 ,0, 0.0);
-    setMatrixValue(A, 0 ,1, exp(-1.5));
-    setMatrixValue(A, 0 ,2, exp(-6));
-    setMatrixValue(A, 1 ,1, 0.0);
-    setMatrixValue(A, 1 ,2, exp(-1.5));
-    setMatrixValue(A, 2 ,2, 0.0);
-
-    if (isDebug == 1) {
-        printf("points array: \n");
-        printPointsArr(pointsArr, 3);
-        printf("Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Matrix A correct Matrix\n");
-        printMatrix(A);
-    }
-    
-    
-
-    (isMatrixEqual(W,A)) ?
-        printf("'test Calc Matrix W'\t\tresult: Great!\n") : 
-        printf("'test Calc Matrix W'\t\tresult: Problem!\n");
-    
-    freeMatrix(W);
-    freeMatrix(A);
-    freeMemPointsArr(pointsArr, 3);
-}
-
-void testCalcMatrixDAndDMinusHalf(bool isDebug) {
-    Matrix *W, *D1, *D2, *A1, *A2;
-    Point **pointsArr = createPointsArr();
-    W = computeMatrixW(pointsArr, 3);
-    D1 = computeMatrixD(W);
-    
-    if (isDebug) {
-        printf("Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Matrix D calc:\n");
-        printMatrix(D1);
-    }
-    
-    A1 = createMatrix(3, 3, true);
-    setMatrixValue(A1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
-    setMatrixValue(A1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
-    setMatrixValue(A1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
-
-    if (isDebug == 1) {
-        printf("Matrix A correct Matrix\n");
-        printMatrix(A1);
-    }
-    
-    (isMatrixEqual(D1,A1)) ?
-        printf("'test Calc Matrix D'\t\tresult: Great!\n") : 
-        printf("'test Calc Matrix D'\t\tresult: Problem!\n");
-    
-    if (isMatrixEqual(D1,A1)) { /* calc D Matrix is good, continue to check D-0.5*/
-        D2 = computeMatrixDMinusHalf(D1);
-
-        A2 = createMatrix(3, 3, true);
-        setMatrixValue(A2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
-        setMatrixValue(A2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
-        setMatrixValue(A2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
-
-        if (isDebug) {
-            printf("Matrix D^-0.5 calculated: \n");
-            printMatrix(D2);
-            printf("Matrix A2 correct Matrix:\n");
-            printMatrix(A2);
-        }
-        
-        (isMatrixEqual(D2,A2)) ?
-        printf("'test Calc Matrix D^-0.5'\tresult: Great!\n") : 
-        printf("'test Calc Matrix D^-0.5'\tresult: Problem!\n");
-        
-    }
-
-    freeMatrix(W);
-    freeMatrix(D1);
-    freeMatrix(D2);
-    freeMatrix(A1);
-    freeMatrix(A2);
-    freeMemPointsArr(pointsArr, 3);
+    /*testMatrixLnorm(isDebug);*/
 }
 
 void testMultiplyMatrixs(bool isDebug) {
@@ -589,6 +516,117 @@ void testMultiplyMatrixs(bool isDebug) {
     freeMatrix(C);
     freeMatrix(D);
 }
+
+Point** createPointsArr() {
+    Point **pointsArr;
+    int i;
+    pointsArr = calloc(3, sizeof(Point));
+    assert(pointsArr != NULL); 
+    pointsArr[0] = createPoint(3); /* p0 = (0,0,0) */
+    pointsArr[1] = createPoint(3); /* p1 = (1,1,1) */
+    for (i = 0; i < 3; i++) {
+        pointsArr[1] -> data[i] = 1.0;
+    }
+    
+    pointsArr[2] = createPoint(3); /* p2 = (2,2,2) */
+    for (i = 0; i < 3; i++) {
+        pointsArr[2] -> data[i] = 2.0;
+    }
+    return pointsArr;
+}
+
+void testCalcMatrixW(bool isDebug) {
+    Matrix *W, *A;
+    Point **pointsArr = createPointsArr();
+    W = computeMatrixW(pointsArr, 3);
+    
+    A = createMatrix(3, 3, true);
+    setMatrixValue(A, 0 ,0, 0.0);
+    setMatrixValue(A, 0 ,1, exp(-1.5));
+    setMatrixValue(A, 0 ,2, exp(-6));
+    setMatrixValue(A, 1 ,1, 0.0);
+    setMatrixValue(A, 1 ,2, exp(-1.5));
+    setMatrixValue(A, 2 ,2, 0.0);
+
+    if (isDebug == 1) {
+        printf("points array: \n");
+        printPointsArr(pointsArr, 3);
+        printf("Matrix W calculated: \n");
+        printMatrix(W);
+        printf("Matrix A correct Matrix\n");
+        printMatrix(A);
+    }
+    
+    (isMatrixEqual(W,A)) ?
+        printf("'test Calc Matrix W'\t\tresult: Great!\n") : 
+        printf("'test Calc Matrix W'\t\tresult: Problem!\n");
+    
+    freeMatrix(W);
+    freeMatrix(A);
+    freeMemPointsArr(pointsArr, 3);
+}
+
+void testCalcMatrixDAndDMinusHalf(bool isDebug) {
+    Matrix *W, *D1, *D2, *A1, *A2;
+    Point **pointsArr = createPointsArr();
+    W = computeMatrixW(pointsArr, 3);
+    D1 = computeMatrixD(W);
+    
+    if (isDebug) {
+        printf("Matrix W calculated: \n");
+        printMatrix(W);
+        printf("Matrix D calc:\n");
+        printMatrix(D1);
+    }
+    
+    A1 = createMatrix(3, 3, true);
+    setMatrixValue(A1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
+    setMatrixValue(A1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
+    setMatrixValue(A1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
+
+    if (isDebug == 1) {
+        printf("Matrix A correct Matrix\n");
+        printMatrix(A1);
+    }
+    
+    (isMatrixEqual(D1,A1)) ?
+        printf("'test Calc Matrix D'\t\tresult: Great!\n") : 
+        printf("'test Calc Matrix D'\t\tresult: Problem!\n");
+    
+    if (isMatrixEqual(D1,A1)) { /* calc D Matrix is good, continue to check D-0.5*/
+        D2 = computeMatrixDMinusHalf(D1);
+
+        A2 = createMatrix(3, 3, true);
+        setMatrixValue(A2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
+        setMatrixValue(A2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
+        setMatrixValue(A2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
+
+        if (isDebug) {
+            printf("Matrix D^-0.5 calculated: \n");
+            printMatrix(D2);
+            printf("Matrix A2 correct Matrix:\n");
+            printMatrix(A2);
+        }
+        
+        (isMatrixEqual(D2,A2)) ?
+        printf("'test Calc Matrix D^-0.5'\tresult: Great!\n") : 
+        printf("'test Calc Matrix D^-0.5'\tresult: Problem!\n");
+    }
+
+    freeMatrix(W);
+    freeMatrix(D1);
+    freeMatrix(D2);
+    freeMatrix(A1);
+    freeMatrix(A2);
+    freeMemPointsArr(pointsArr, 3);
+}
+
+/*
+void testCalcMatrixLnorm(bool isDebug) {
+    check
+
+}
+*/
 
 int main() {
     if (TestMode) {
