@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 
-#define True 1
-#define False 0
+#define true 1
+#define false 0
 
 #define MatrixIterRows(A, i) for ((i) = 0; (i) < ((A) -> rows); (i)++)
 #define MatrixIterCols(A, j) for ((j) = 0; (j) < ((A) -> cols); (j)++)
@@ -31,7 +32,12 @@ void multiply_scalar(Matrix *A, double scalar);
 Matrix* add(Matrix *A, Matrix *B);
 Matrix* sub(Matrix *A, Matrix *B);
 Matrix* multiply(Matrix* A, Matrix* B);
+bool isMatrixEqual(Matrix *A, Matrix *B);
 void printMatrix(Matrix* A);
+
+/*
+    Matrix Operations:
+*/
 
 void freeMatrix(Matrix* A) {
     int i;
@@ -83,15 +89,15 @@ Matrix_data createSymmetricMatrixData(int rows) {
 void updateMatrixSymmertircStatus(Matrix* A) {
     Matrix_data data = A -> data;
     int i, j;
-    bool isSym = True;
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
             if(data[i][j] != data[j][i]) {
-                isSym = False;
+                A -> isSymmetric = false;
+                return;
             }
         }
     }
-    A -> isSymmetric = isSym;
+    A -> isSymmetric = true;
 }
 
 double getMatrixValue(Matrix* A, int row, int col) {
@@ -187,7 +193,7 @@ Matrix* multiply(Matrix* A, Matrix* B) {
     double value;
     assert(A -> cols == B -> rows);
 
-    C = createMatrix(A -> rows, B -> cols, False);
+    C = createMatrix(A -> rows, B -> cols, false);
     MatrixIterRows(C, i) {
         MatrixIterCols(C, j) {
             value = 0;
@@ -199,6 +205,35 @@ Matrix* multiply(Matrix* A, Matrix* B) {
     }
 
     return C;
+}
+
+bool isMatrixEqual(Matrix *A, Matrix *B) {
+    int i, j;
+    double epsilon = 0.00000001;
+    bool isSymmetric;
+    assert(A -> rows == B -> rows);
+    assert(A -> cols == B -> cols);
+
+    isSymmetric = A -> isSymmetric && B -> isSymmetric;
+
+    MatrixIterRows(A, i) {
+        if (isSymmetric){
+            MatrixIterColsSym(A, i, j) {
+                if(fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon){
+                    return false;
+                }
+            }
+        }
+        else {
+            MatrixIterCols(A, j) {
+                if(fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon){
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 void printMatrix(Matrix* A) {
@@ -214,9 +249,48 @@ void printMatrix(Matrix* A) {
     }
 }
 
+/*
+    Jacobi Algorithm
+*/
+
+typedef struct 
+{
+    int i;
+    int j;
+    double value;
+} MaxAbsulteValue;
+
+MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
+    int i, j;
+    MaxAbsulteValue m;
+    assert(A -> isSymmetric == true);
+
+    m.value = 0;
+    MatrixIterRows(A, i) {
+        MatrixIterColsSym(A, i, j) {
+            if (fabs(getMatrixValue(A, i, j)) > m.value) {
+                m.i = i;
+                m.j = j;
+                m.value = fabs(getMatrixValue(A, i, j));
+            }
+        }
+    }
+
+    return m;
+}
+/*
+void jacobiAlgo(Matrix* A) {
+    
+    do {
+
+    } while
+
+} 
+*/
+
 int main() {
     Matrix* B, *C, *A;
-    A = createMatrix(3, 3, True);
+    A = createMatrix(3, 3, true);
     setMatrixValue(A, 0 ,0, 1.0);
     setMatrixValue(A, 1 ,0, 2.0);
     setMatrixValue(A, 1 ,1, 3.0);
@@ -224,7 +298,7 @@ int main() {
     setMatrixValue(A, 2 , 1, 5.0);
     setMatrixValue(A, 2 , 2, 6.0);
     
-    B = createMatrix(3, 2, False);
+    B = createMatrix(3, 2, false);
     (B -> data) [0][0] = 1.0;
     (B -> data) [1][0] = 8.0;
     (B -> data) [2][0] = 7.0;
