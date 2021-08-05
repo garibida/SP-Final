@@ -79,7 +79,7 @@ Matrix_data createSymmetricMatrixData(int rows) {
     data = (Matrix_data) calloc(rows, sizeof(double*));
     assert(data != NULL);
     for (i = 0; i < rows; i++) {
-        data[i] = (double*) calloc(rows, sizeof(double));
+        data[i] = (double*) calloc(i + 1, sizeof(double));
         assert(data[i] != NULL);
     }
 
@@ -260,6 +260,11 @@ typedef struct
     double value;
 } MaxAbsulteValue;
 
+MaxAbsulteValue getmaxAbsulteValue(Matrix* A);
+double getTheta(Matrix* A, MaxAbsulteValue mav);
+double getT(double theta);
+double getC(double t);
+
 MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
     int i, j;
     MaxAbsulteValue m;
@@ -268,25 +273,53 @@ MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
     m.value = 0;
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
-            if (fabs(getMatrixValue(A, i, j)) > m.value) {
+            if (fabs(getMatrixValue(A, i, j)) > fabs(m.value)) {
                 m.i = i;
                 m.j = j;
-                m.value = fabs(getMatrixValue(A, i, j));
+                m.value = getMatrixValue(A, i, j);
             }
         }
     }
 
     return m;
 }
-/*
-void jacobiAlgo(Matrix* A) {
-    
-    do {
 
-    } while
+double getTheta(Matrix* A, MaxAbsulteValue mav) {
+    double Aii, Aij, Ajj;
+
+    Aij = mav.value;
+    Aii = getMatrixValue(A, mav.i, mav.i);
+    Ajj = getMatrixValue(A, mav.j, mav.j);
+
+    return (Ajj - Aii) / (2 * Aij);
+}
+
+double getT(double theta) {
+    int signTheta = theta >= 0 ? 1 : -1;
+    return signTheta / (fabs(theta) + sqrt(theta * theta + 1));
+}
+
+double getC(double t) {
+    return 1 / (sqrt(t * t + 1));
+}
+
+void jacobiAlgo(Matrix* A) {
+    MaxAbsulteValue mav;
+    double theta, c, s, t;
+
+    while (true) {
+        mav = getmaxAbsulteValue(A);
+        if (mav.value == 0) {
+            break;
+        }
+        theta = getTheta(A, mav);
+        t = getT(theta);
+        c = getC(t);
+        s = t * c;
+    } 
 
 } 
-*/
+
 
 int main() {
     Matrix* B, *C, *A;
