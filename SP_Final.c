@@ -386,12 +386,12 @@ double computeDistW(Point *point1, Point *point2) {
     return exp(-0.5 * dist * dist);
 }
 
-Matrix* computeMatrixW(Point **pointsArr, int n) {
+Matrix* computeMatrixW(Point **pointsArr, int dim) {
     Matrix *W; 
     Point *pointI, *pointJ;
     int i, j;
     double wVal;
-    W = createMatrix(n,n, true); 
+    W = createMatrix(dim, dim, true); 
     
     MatrixIterRows(W, i) {
         pointI = pointsArr[i]; 
@@ -411,10 +411,10 @@ Matrix* computeMatrixW(Point **pointsArr, int n) {
 
 Matrix* computeMatrixD(Matrix *W) {
     Matrix *D; 
-    int i, j, n;
+    int i, j, dim;
     double dVal = 0;
-    n = W -> cols;
-    D = createMatrix(n, n, true); 
+    dim = W -> cols;
+    D = createMatrix(dim, dim, true); 
     
     MatrixIterRows(W, i) {
         MatrixIterCols(W, j) {
@@ -428,10 +428,10 @@ Matrix* computeMatrixD(Matrix *W) {
 
 Matrix* computeMatrixDMinusHalf(Matrix *D) {
     Matrix *D2; 
-    int i, n;
+    int i, dim;
     double dVal;
-    n = D -> cols;
-    D2 = createMatrix(n, n, true); 
+    dim = D -> cols;
+    D2 = createMatrix(dim, dim, true); 
     
     MatrixIterRows(D, i) {
         dVal = 1 / (sqrt(getMatrixValue(D,i,i)));
@@ -632,6 +632,5 @@ int main() {
     if (TestMode) {
         testMain(false);
     }
-
     return 0;
 }
