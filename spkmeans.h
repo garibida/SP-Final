@@ -22,6 +22,11 @@ typedef struct {
     int d;
 } Point;
 
+typedef struct {
+    int value;
+    Point* vector;
+} Eigen;
+
 
 /* ! validated, ? coded */ 
 int validateInput(); /* !? */ 
@@ -62,6 +67,9 @@ Matrix* sub(Matrix *A, Matrix *B);
 Matrix* multiply(Matrix* A, Matrix* B);
 bool isMatrixEqual(Matrix *A, Matrix *B);
 void printMatrix(Matrix* A);
+Point* createPointFromMatrixCol(Matrix* A, int col);
+int compareEigens(const void *a, const void *b);
+Eigen* getSortedEigen(Matrix* A);
 
 /* Jacobi algorithm */
 typedef struct
@@ -86,9 +94,9 @@ void testMain(bool isDebug);
 void testMultiplyMatrixs(bool isDebug);
 Point** pointsForTest1();
 void Test1(bool isDebug);
-/*testMatrixLnorm(isDebug);*/
+Point** pointsForTestE0();
+void TestE0(bool isDebug);
+Point** pointsForTestE1();
+void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
-
-/* ######################### */
-/* Matrix operations section */
-/* ######################### */
+void testEigen(bool isDebug);
