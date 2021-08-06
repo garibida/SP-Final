@@ -743,7 +743,6 @@ void testJacobi(bool isDebug) {
     setMatrixValue(expectedA, 1, 1, -1);
     setMatrixValue(expectedA, 2, 2, 8);
 
-
     V = jacobiAlgo(&A);
     testResult = isMatrixEqual(A, expectedA) && isMatrixEqual(V, expectedV);
     (testResult) ?
