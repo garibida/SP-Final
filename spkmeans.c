@@ -217,14 +217,14 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
     MatrixIterRows(A, i) {
         if (isSymmetric){
             MatrixIterColsSym(A, i, j) {
-                if(fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon){
+                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
                     return false;
                 }
             }
         }
         else {
             MatrixIterCols(A, j) {
-                if(fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon){
+                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
                     return false;
                 }
             }
@@ -243,6 +243,41 @@ void printMatrix(Matrix* A) {
         }
         printf("\n");
     }
+}
+
+Point* createPointFromMatrixCol(Matrix* A, int col) {
+    Point *p;
+    int i;
+    p = createPoint(A -> rows);
+    MatrixIterRows(A, i) {
+        setDataPointVal(p, i, getMatrixValue(A, i, col));
+    }
+    return p;
+}
+
+int compareEigens(const void * a, const void * b) {
+    Eigen *A, *B;
+    A = (Eigen *) a;
+    B = (Eigen *) b;
+    return (A -> value < B -> value) ? -1 : (A -> value > B -> value);
+}
+
+Eigen* getSortedEigen(Matrix* A) {
+    Matrix *V;
+    Eigen* eigens;
+    int i;
+
+    V = jacobiAlgo(&A);
+    eigens = (Eigen*) calloc(V -> rows, sizeof(Eigen));
+    assert(eigens != NULL);
+
+    MatrixIterCols(V, i) {
+        eigens[i].value = getMatrixValue(A, i, i);
+        eigens[i].vector = createPointFromMatrixCol(V, i);
+    }
+
+    qsort(eigens, V -> rows, sizeof(Eigen), compareEigens);
+    return eigens;
 }
 
 /* ######################## */
@@ -306,8 +341,9 @@ void printPointsArr(Point **pointArr, int n) {
 
 int isPointsEquel(Point *point1, Point *point2){
     int i;
+    double epsilon = 0.00000001;
     for (i = 0; i < point1 -> d; i++) {
-        if (getDataPointVal(point1, i) != getDataPointVal(point2, i)) {
+        if (fabs(getDataPointVal(point1, i) - getDataPointVal(point2, i)) > epsilon) {
             return false;
         }
     }
@@ -564,6 +600,7 @@ void testMain(bool isDebug) {
     Test1(isDebug);
     /*testMatrixLnorm(isDebug);*/
     testJacobi(isDebug);
+    testEigen(isDebug);
 }
 
 void testMultiplyMatrixs(bool isDebug) {
@@ -758,6 +795,58 @@ void testJacobi(bool isDebug) {
         printMatrix(V);
         printf("Expected Matrix V\n");
         printMatrix(expectedV);
+    }
+}
+
+void testEigen(bool isDebug) {
+    Matrix *A;
+    bool testResult;
+    Eigen *eigens, *expectedEigens;
+    int i;
+
+    A = createMatrix(3, 3, true);
+    setMatrixValue(A, 0, 0, 3.0);
+    setMatrixValue(A, 1, 0, 2.0);
+    setMatrixValue(A, 1, 1, 0.0);
+    setMatrixValue(A, 2, 0, 4.0);
+    setMatrixValue(A, 2, 1, 2.0);
+    setMatrixValue(A, 2, 2, 3.0);
+
+    expectedEigens = (Eigen *) calloc(3, sizeof(Eigen));
+    assert(expectedEigens != NULL);
+    expectedEigens[0].value = -1;
+    expectedEigens[0].vector = createPoint(3);
+    expectedEigens[1].value = -1;
+    expectedEigens[1].vector = createPoint(3);
+    expectedEigens[2].value = 8;
+    expectedEigens[2].vector = createPoint(3);
+    setDataPointVal(expectedEigens[0].vector, 0, 1 / sqrt(2));
+    setDataPointVal(expectedEigens[0].vector, 1, 0);
+    setDataPointVal(expectedEigens[0].vector, 2, - 1 / sqrt(2));
+    setDataPointVal(expectedEigens[1].vector, 0, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens[1].vector, 1, 4 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens[1].vector, 2, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens[2].vector, 0, 2.0 / 3.0);
+    setDataPointVal(expectedEigens[2].vector, 1, 1.0 / 3.0);
+    setDataPointVal(expectedEigens[2].vector, 3, 2.0 / 3.0);
+
+    eigens = getSortedEigen(A);
+    testResult = true;
+    for(i = 0; i < 3; i++) {
+        if (eigens[i].value != expectedEigens[i].value) {
+            testResult = false;
+            break;
+        }
+        if(!isPointsEquel(eigens[i].vector, expectedEigens[i].vector)) {
+            testResult = false;
+            break;
+        }
+    }
+    (testResult) ?
+        printf("'test Eigens'\t\t\tresult: Great!\n") :
+        printf("'test Eigens'\t\t\tresult: Problem!\n");
+    if (isDebug == 1) {
+        printf("Eigens\n");
     }
 }
 
