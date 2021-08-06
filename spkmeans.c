@@ -264,6 +264,27 @@ Point* createPoint(int d) {
     return point;
 }
 
+Point* createPointWithVals(int d, double *values) {
+    /* add assertion for length comp to len(values) */
+    Point *point;
+    int i;
+    
+    point = createPoint(d);
+    for (i = 0; i < d; i++) {
+        setDataPointVal(point, i, values[i]);
+    }
+    return point;
+}
+
+Point* setDataPointVal(Point *point, int index, double value) {
+    point->data[index] = value;
+    return point;
+}
+
+double getDataPointVal(Point *point, int index) {
+    return point->data[index];
+}
+
 void printPoint(Point *point) {
     int i, dim;
     dim = point -> d;
@@ -286,7 +307,7 @@ void printPointsArr(Point **pointArr, int n) {
 int isPointsEquel(Point *point1, Point *point2){
     int i;
     for (i = 0; i < point1 -> d; i++) {
-        if (point1 -> data[i] != point2 -> data[i]) {
+        if (getDataPointVal(point1, i) != getDataPointVal(point2, i)) {
             return false;
         }
     }
@@ -310,11 +331,13 @@ void freeMemPointsArr(Point **pointsArr, int n) {
 
 Point* copy_point(Point *point) {
     int i;
-    Point *newpoint = createPoint(point -> d); 
+    double val;
+    Point *newPoint = createPoint(point -> d); 
     for (i = 0; i < point -> d; i++) {
-        newpoint -> data[i] = point -> data[i];
+        val = getDataPointVal(point,i);
+        setDataPointVal(newPoint, i, val);
     }
-    return newpoint;
+    return newPoint;
 }
 
 /* ######### */
@@ -325,7 +348,7 @@ double computeDist(Point *point1, Point *point2) {
     double dist = 0, tmp = 0; 
     int i;
     for (i = 0; i < point1 -> d; i++) {
-        tmp = (point1 -> data[i] - point2 -> data[i]);
+        tmp = getDataPointVal(point1, i) - getDataPointVal(point2,i);
         dist += tmp * tmp;
     }
     return sqrt(dist);
@@ -355,7 +378,6 @@ Matrix* computeMatrixW(Point **pointsArr, int dim) {
             }
         }
     }
-
     return W;
 }
 
@@ -539,8 +561,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
 
 void testMain(bool isDebug) {
     testMultiplyMatrixs(isDebug);
-    testCalcMatrixW(isDebug);
-    testCalcMatrixDAndDMinusHalf(isDebug);
+    Test1(isDebug);
     /*testMatrixLnorm(isDebug);*/
     testJacobi(isDebug);
 }
@@ -599,36 +620,38 @@ void testMultiplyMatrixs(bool isDebug) {
     freeMatrix(D);
 }
 
-Point** createPointsArr() {
+Point** pointsForTest1() {
     Point **pointsArr;
-    int i;
-    pointsArr = calloc(3, sizeof(Point));
+    int numOfPoints = 3;
+    double pointVal1[3] = {0,0,0};
+    double pointVal2[3] = {1,1,1}; 
+    double pointVal3[3] = {2,2,2};
+
+    pointsArr = calloc(numOfPoints, sizeof(Point));
     assert(pointsArr != NULL); 
-    pointsArr[0] = createPoint(3); /* p0 = (0,0,0) */
-    pointsArr[1] = createPoint(3); /* p1 = (1,1,1) */
-    for (i = 0; i < 3; i++) {
-        pointsArr[1] -> data[i] = 1.0;
-    }
     
-    pointsArr[2] = createPoint(3); /* p2 = (2,2,2) */
-    for (i = 0; i < 3; i++) {
-        pointsArr[2] -> data[i] = 2.0;
-    }
+    pointsArr[0] = createPointWithVals(3, pointVal1);
+    pointsArr[1] = createPointWithVals(3, pointVal2);
+    pointsArr[2] = createPointWithVals(3, pointVal3);
     return pointsArr;
 }
 
-void testCalcMatrixW(bool isDebug) {
-    Matrix *W, *A;
-    Point **pointsArr = createPointsArr();
+void Test1(bool isDebug) {
+    Point **pointsArr;
+    Matrix *W, *WA, *D1, *DA1, *D2, *DA2;
+
+    /* Genarate points arr as input */
+    pointsArr = pointsForTest1();
     W = computeMatrixW(pointsArr, 3);
-    
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A, 0 ,0, 0.0);
-    setMatrixValue(A, 0 ,1, exp(-1.5));
-    setMatrixValue(A, 0 ,2, exp(-6));
-    setMatrixValue(A, 1 ,1, 0.0);
-    setMatrixValue(A, 1 ,2, exp(-1.5));
-    setMatrixValue(A, 2 ,2, 0.0);
+
+    /* Calculate Matrix W */
+    WA = createMatrix(3, 3, true);
+    setMatrixValue(WA, 0 ,0, 0.0);
+    setMatrixValue(WA, 0 ,1, exp(-1.5));
+    setMatrixValue(WA, 0 ,2, exp(-6));
+    setMatrixValue(WA, 1 ,1, 0.0);
+    setMatrixValue(WA, 1 ,2, exp(-1.5));
+    setMatrixValue(WA, 2 ,2, 0.0);
 
     if (isDebug == 1) {
         printf("points array: \n");
@@ -636,70 +659,60 @@ void testCalcMatrixW(bool isDebug) {
         printf("Matrix W calculated: \n");
         printMatrix(W);
         printf("Matrix A correct Matrix\n");
-        printMatrix(A);
+        printMatrix(WA);
     }
     
-    (isMatrixEqual(W,A)) ?
+    (isMatrixEqual(W,WA)) ?
         printf("'test Calc Matrix W'\t\tresult: Great!\n") : 
         printf("'test Calc Matrix W'\t\tresult: Problem!\n");
     
-    freeMatrix(W);
-    freeMatrix(A);
-    freeMemPointsArr(pointsArr, 3);
-}
+    /* Calculate Matrix D */
+    D1 = computeMatrixD(W);    
+    DA1 = createMatrix(3, 3, true);
+    setMatrixValue(DA1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
+    setMatrixValue(DA1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
+    setMatrixValue(DA1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
 
-void testCalcMatrixDAndDMinusHalf(bool isDebug) {
-    Matrix *W, *D1, *D2, *A1, *A2;
-    Point **pointsArr = createPointsArr();
-    W = computeMatrixW(pointsArr, 3);
-    D1 = computeMatrixD(W);
-    
-    if (isDebug) {
+    if (isDebug == 1) {
         printf("Matrix W calculated: \n");
         printMatrix(W);
         printf("Matrix D calc:\n");
         printMatrix(D1);
-    }
-    
-    A1 = createMatrix(3, 3, true);
-    setMatrixValue(A1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
-    setMatrixValue(A1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
-    setMatrixValue(A1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
-
-    if (isDebug == 1) {
         printf("Matrix A correct Matrix\n");
-        printMatrix(A1);
+        printMatrix(DA1);
     }
     
-    (isMatrixEqual(D1,A1)) ?
+    (isMatrixEqual(D1,DA1)) ?
         printf("'test Calc Matrix D'\t\tresult: Great!\n") : 
         printf("'test Calc Matrix D'\t\tresult: Problem!\n");
-    
-    if (isMatrixEqual(D1,A1)) { /* calc D Matrix is good, continue to check D-0.5*/
+
+    /* Calculate Matrix D^-0.5 if Matrix D is good */
+    if (isMatrixEqual(D1,DA1)) {
         D2 = computeMatrixDMinusHalf(D1);
 
-        A2 = createMatrix(3, 3, true);
-        setMatrixValue(A2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
-        setMatrixValue(A2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
-        setMatrixValue(A2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
+        DA2 = createMatrix(3, 3, true);
+        setMatrixValue(DA2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
+        setMatrixValue(DA2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
+        setMatrixValue(DA2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
 
         if (isDebug) {
             printf("Matrix D^-0.5 calculated: \n");
             printMatrix(D2);
             printf("Matrix A2 correct Matrix:\n");
-            printMatrix(A2);
+            printMatrix(DA2);
         }
         
-        (isMatrixEqual(D2,A2)) ?
+        (isMatrixEqual(D2,DA2)) ?
         printf("'test Calc Matrix D^-0.5'\tresult: Great!\n") : 
         printf("'test Calc Matrix D^-0.5'\tresult: Problem!\n");
     }
 
     freeMatrix(W);
+    freeMatrix(WA);
     freeMatrix(D1);
     freeMatrix(D2);
-    freeMatrix(A1);
-    freeMatrix(A2);
+    freeMatrix(DA1);
+    freeMatrix(DA2);
     freeMemPointsArr(pointsArr, 3);
 }
 
@@ -751,7 +764,6 @@ void testJacobi(bool isDebug) {
 /*
 void testCalcMatrixLnorm(bool isDebug) {
     check
-
 }
 */
 
