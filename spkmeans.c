@@ -392,7 +392,7 @@ double computeDist(Point *point1, Point *point2) {
 
 double computeDistW(Point *point1, Point *point2) {
     double dist = computeDist(point1, point2);
-    return exp(-0.5 * dist * dist);
+    return exp(-0.5 * dist);
 }
 
 Matrix* computeMatrixW(Point **pointsArr, int dim) {
@@ -595,16 +595,6 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
 /* Tests section */
 /* ############# */
 
-void testMain(bool isDebug) {
-    testMultiplyMatrixs(isDebug);
-    Test1(isDebug);
-    /*testMatrixLnorm(isDebug);*/
-    testJacobi(isDebug);
-    testEigen(isDebug);
-    TestE0(isDebug);
-    TestE1(isDebug);
-}
-
 void testMultiplyMatrixs(bool isDebug) {
     Matrix *A, *B, *C, *D;
     A = createMatrix(3, 3, true);
@@ -805,11 +795,11 @@ void TestE0(bool isDebug) {
     setMatrixValue(WA, 4 ,4, 0.0);
 
     if (isDebug == 1) {
-        printf("TestE0 - points array: \n");
+        printf("\nTestE0 - points array: \n");
         printPointsArr(pointsArr, numOfPoints);
-        printf("TestE0 - Matrix W calculated: \n");
+        printf("\nTestE0 - Matrix W calculated: \n");
         printMatrix(W);
-        printf("TestE0 - Matrix A correct Matrix\n");
+        printf("\nTestE0 - Matrix WA correct Matrix\n");
         printMatrix(WA);
     }
     
@@ -828,11 +818,11 @@ void TestE0(bool isDebug) {
     setMatrixValue(DA, 4 ,4, 2.7733);
 
     if (isDebug == 1) {
-        printf("TestE0 - Matrix W calculated: \n");
+        printf("\nTestE0 - Matrix W calculated: \n");
         printMatrix(W);
-        printf("TestE0 - Matrix D calc:\n");
+        printf("\nTestE0 - Matrix D calc:\n");
         printMatrix(D);
-        printf("TestE0 - Matrix A correct Matrix\n");
+        printf("\nTestE0 - Matrix A correct Matrix\n");
         printMatrix(DA);
     }
     
@@ -864,9 +854,9 @@ void TestE0(bool isDebug) {
     setMatrixValue(LA, 4 ,4, 1.0);
 
     if (isDebug == 1) {
-        printf("TestE0 - Matrix L calculated: \n");
+        printf("\nTestE0 - Matrix L calculated: \n");
         printMatrix(L);
-        printf("TestE0 - Matrix LA correct Matrix\n");
+        printf("\nTestE0 - Matrix LA correct Matrix\n");
         printMatrix(LA);
     }
     
@@ -966,11 +956,11 @@ void TestE1(bool isDebug) {
     setMatrixValue(WA, 7 ,7, 0.0);
 
     if (isDebug == 1) {
-        printf("TestE1 - points array: \n");
+        printf("\nTestE1 - points array: \n");
         printPointsArr(pointsArr, numOfPoints);
-        printf("TestE1 - Matrix W calculated: \n");
+        printf("\nTestE1 - Matrix W calculated: \n");
         printMatrix(W);
-        printf("TestE1 - Matrix A correct Matrix\n");
+        printf("\nTestE1 - Matrix A correct Matrix\n");
         printMatrix(WA);
     }
     
@@ -992,11 +982,11 @@ void TestE1(bool isDebug) {
     setMatrixValue(DA, 7 ,7, 4.4974);
 
     if (isDebug == 1) {
-        printf("TestE1 - Matrix W calculated: \n");
+        printf("\nTestE1 - Matrix W calculated: \n");
         printMatrix(W);
-        printf("TestE1 - Matrix D calc:\n");
+        printf("\nTestE1 - Matrix D calc:\n");
         printMatrix(D);
-        printf("TestE1 - Matrix A correct Matrix\n");
+        printf("\nTestE1 - Matrix A correct Matrix\n");
         printMatrix(DA);
     }
     
@@ -1052,9 +1042,9 @@ void TestE1(bool isDebug) {
     setMatrixValue(LA, 7 ,7, 1.0);
 
     if (isDebug == 1) {
-        printf("TestE1 - Matrix L calculated: \n");
+        printf("\nTestE1 - Matrix L calculated: \n");
         printMatrix(L);
-        printf("TestE1 - Matrix LA correct Matrix\n");
+        printf("\nTestE1 - Matrix LA correct Matrix\n");
         printMatrix(LA);
     }
     
@@ -1167,9 +1157,32 @@ void testEigen(bool isDebug) {
     }
 }
 
+void testMain(bool isDebug) {
+    testMultiplyMatrixs(isDebug);
+    /*Test1(isDebug);*/
+    testJacobi(isDebug);
+    testEigen(isDebug);
+    TestE0(1);
+    TestE1(isDebug);
+}
+
 int main() {
+    int i;
+    double arr1[4] = {0.1255,-0.4507,-0.2320,-0.0987}; 
+    double arr2[4] = {0.3440,0.3440,0.4419,-0.3662};
+    double tmp, res = 0;
+    for (i = 0; i < 4; i++) {
+        tmp = arr1[i] - arr2[i]; 
+        res += tmp * tmp;
+    }
+    res = sqrt(res); 
+    res = res*-0.5; 
+    res = exp(res);
+    printf("res = %f", res);
+
     if (TestMode) {
         testMain(false);
     }
+
     return 0;
 }
