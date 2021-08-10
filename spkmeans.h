@@ -94,15 +94,3 @@ Matrix* createAtag(Matrix* A, double c, double s, MaxAbsulteValue mav);
 double getOffDiagMatrixSquareSum(Matrix* A);
 bool isNeedToStopJabobi(Matrix* A, Matrix* Atag);
 Matrix* jacobiAlgo(Matrix** A_origin);
-
-/* test section */
-void testMain(bool isDebug);
-void testMultiplyMatrixs(bool isDebug);
-Point** pointsForTest1();
-void Test1(bool isDebug);
-Point** pointsForTestE0();
-void TestE0(bool isDebug);
-Point** pointsForTestE1();
-void TestE1(bool isDebug);
-void testJacobi(bool isDebug);
-void testEigen(bool isDebug);
