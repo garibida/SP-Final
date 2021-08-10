@@ -498,7 +498,7 @@ double* getRowsSqureRootSum(Matrix* U) {
     int i, j;
     double *squreSumPerCol;
 
-    squreSumPerCol = (double*) calloc(U->row, sizeof(double));
+    squreSumPerCol = (double*) calloc(U->rows, sizeof(double));
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
@@ -525,7 +525,7 @@ Matrix* computeMatrixT(Matrix* U) {
         }
     }
 
-    free(squreSumPerCol);
+    free(squreSumPerRow);
     return T;
 }
 
