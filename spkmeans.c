@@ -465,10 +465,10 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
 }
 
 int eigengapGetK(Eigens_Arr* eigens) {
-    int delta, max_delta = 0, max_index, i;
+    int delta, max_delta = 0, max_index = 0, i;
     Eigen *arr = eigens -> arr;
 
-    for (i = 0; i < eigens->length - 1; i++) {
+    for (i = 0; i < (eigens->length) / 2; i++) {
         assert(arr[i].value <= arr[i + 1].value); /* ///////////////////////////////////////////////////////////////FOR DEBUG//////////////////////////////////////////////*/
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
@@ -478,6 +478,55 @@ int eigengapGetK(Eigens_Arr* eigens) {
     }
 
     return max_index + 1;
+}
+
+Matrix* computeMatrixU(Eigens_Arr* eigens, int k) {
+    Matrix* U;
+    int i, j;
+
+    U = createMatrix((eigens->arr)[0].vector->d, k, false);
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            setMatrixValue(U, i, j, ((eigens->arr)[j].vector->data)[i]);
+        }
+    }
+
+    return U;
+}
+
+double* getRowsSqureRootSum(Matrix* U) {
+    int i, j;
+    double *squreSumPerCol;
+
+    squreSumPerCol = (double*) calloc(U->row, sizeof(double));
+
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            squreSumPerCol[i] += pow(getMatrixValue(U, i, j), 2);
+        }
+    }
+
+    MatrixIterRows(U, i) {
+        squreSumPerCol[i] = sqrt(squreSumPerCol[i]);
+    }
+
+    return squreSumPerCol;
+}
+
+Matrix* computeMatrixT(Matrix* U) {
+    Matrix *T;
+    int i, j;
+    double *squreSumPerRow = getRowsSqureRootSum(U);
+    T = createMatrix(U->rows, U->cols, false);
+
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            setMatrixValue(T, i, j, getMatrixValue(U, i, j) / squreSumPerRow[i]);
+        }
+    }
+
+    free(squreSumPerCol);
+    return T;
 }
 
 /* ################ */
