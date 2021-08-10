@@ -494,6 +494,41 @@ Matrix* computeMatrixU(Eigens_Arr* eigens, int k) {
     return U;
 }
 
+double* getRowsSqureRootSum(Matrix* U) {
+    int i, j;
+    double *squreSumPerCol;
+
+    squreSumPerCol = (double*) calloc(U->row, sizeof(double));
+
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            squreSumPerCol[i] += pow(getMatrixValue(U, i, j), 2);
+        }
+    }
+
+    MatrixIterRows(U, i) {
+        squreSumPerCol[i] = sqrt(squreSumPerCol[i]);
+    }
+
+    return squreSumPerCol;
+}
+
+Matrix* computeMatrixT(Matrix* U) {
+    Matrix *T;
+    int i, j;
+    double *squreSumPerRow = getRowsSqureRootSum(U);
+    T = createMatrix(U->rows, U->cols, false);
+
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            setMatrixValue(T, i, j, getMatrixValue(U, i, j) / squreSumPerRow[i]);
+        }
+    }
+
+    free(squreSumPerCol);
+    return T;
+}
+
 /* ################ */
 /* Jacobi algorithm */
 /* ################ */
