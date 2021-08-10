@@ -613,12 +613,14 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     Matrix *Pi, *V, *PTemp, *Atag, *A;
     MaxAbsulteValue mav;
     bool isNeedToStop;
+    int i;
+    const int MAX_ITER = 100;
     double theta, c, s, t;
     A = *A_origin;
     assert(A -> rows == A -> cols);
     V = createUnitMatrix(A -> rows, false);
 
-    while (true) {
+    for (i = 0; i < MAX_ITER; i++) {
         mav = getMaxAbsulteValue(A);
         if (mav.value == 0) { /* the Matrix is diagonal */ 
             break;
