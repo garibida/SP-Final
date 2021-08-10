@@ -49,7 +49,10 @@ Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
 Matrix* computeMatrixL(Matrix *W, Matrix *D); 
 Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* write tester */ 
-int eigengapGetK(Eigens_Arr* eigens); /* write tester */ 
+int eigengapGetK(Eigens_Arr* eigens); /* write tester */
+Matrix* computeMatrixU(Eigens_Arr* eigens, int k);
+double* getRowsSqureRootSum(Matrix* U);
+Matrix* computeMatrixT(Matrix* U);
 
 /* Point's operations section */
 Point* createPoint(int d);

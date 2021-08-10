@@ -15,6 +15,8 @@ void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
 void testEigen(bool isDebug);
 
+# define isDoubleEqual(_a, _b) (fabs((_a) - (_b)) < 0.0001)
+
 
 /* ############# */
 /* Tests section */
@@ -434,12 +436,12 @@ void testJacobi(bool isDebug) {
 }
 
 void testEigen(bool isDebug) {
-    Matrix *A;
+    Matrix *A , *U;
     bool testResult;
     double epsilon = 0.0000001;
     Eigens_Arr *eigensArr;
     Eigen *eigens, *expectedEigens1, *expectedEigens2;
-    int i;
+    int i, j, k;
     A = createMatrix(3, 3, true);
     setMatrixValue(A, 0, 0, 3.0);
     setMatrixValue(A, 1, 0, 2.0);
@@ -505,9 +507,28 @@ void testEigen(bool isDebug) {
         printf("Eigens\n");
     }
 
-    (eigengapGetK(eigensArr) == 2) ?
+    (eigengapGetK(eigensArr) == 1) ?
         printf("'test Eigengap Heuristic'\tresult: Great!\n") :
         printf("'test Eigengap Heuristic'\tresult: Problem!\n");
+
+    k = 1;
+    U = computeMatrixU(eigensArr, k);
+
+    assert(U->cols = k);
+    assert(U->rows = 3);
+    testResult = true;
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            if (!isDoubleEqual(getMatrixValue(U, i, j), getDataPointVal((eigensArr->arr)[j].vector, i))) {
+                printf("im\n");
+                testResult = false;
+                break;
+            }
+        }
+    }
+    (testResult) ?
+        printf("'test Matrix U'\t\t\tresult: Great!\n") :
+        printf("'test Matrix U'\t\t\tresult: Problem!\n");
 }
 
 void testMain(bool isDebug) {
