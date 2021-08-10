@@ -40,6 +40,8 @@ Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* write tester */
 
 /* Point's operations section */
 Point* createPoint(int d);
+Point* setDataPointVal(Point *point, int index, double value);
+double getDataPointVal(Point *point, int index);
 void printPoint(Point* point);
 void printPointsArr(Point **pointArr, int n);
 int isPointsEquel(Point *point1, Point* point2);
@@ -48,8 +50,6 @@ double computeDistW(Point *point1, Point* point2);
 void freeMemPoint(Point *point);
 void freeMemPointsArr(Point **pointsArr, int n);
 Point* copy_point(Point *point);
-Point* setDataPointVal(Point *point, double value, int index);
-double getDataPointVal(Point *point, int index);
 
 /* Matrix's operations section */
 void freeMatrix(Matrix* A);
@@ -91,10 +91,12 @@ Matrix* jacobiAlgo(Matrix** A_origin);
 
 /* test section */
 void testMain(bool isDebug);
-Point** createPointsArr();
-void testCalcMatrixW(bool isDebug);
-void testCalcMatrixDAndDMinusHalf(bool isDebug);
 void testMultiplyMatrixs(bool isDebug);
-/*testMatrixLnorm(isDebug);*/
+Point** pointsForTest1();
+void Test1(bool isDebug);
+Point** pointsForTestE0();
+void TestE0(bool isDebug);
+Point** pointsForTestE1();
+void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
 void testEigen(bool isDebug);
