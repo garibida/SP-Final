@@ -262,21 +262,25 @@ int compareEigens(const void * a, const void * b) {
     return (A -> value < B -> value) ? -1 : (A -> value > B -> value);
 }
 
-Eigen* getSortedEigen(Matrix* A) {
+Eigens_Arr* getSortedEigen(Matrix* A) {
     Matrix *V;
-    Eigen* eigens;
+    Eigens_Arr *eigens;
     int i;
 
-    V = jacobiAlgo(&A);
-    eigens = (Eigen*) calloc(V -> rows, sizeof(Eigen));
+    eigens = (Eigens_Arr*) malloc(sizeof(Eigens_Arr));
     assert(eigens != NULL);
 
+    V = jacobiAlgo(&A);
+    eigens->length = V->rows;
+    eigens->arr = (Eigen*) calloc(eigens->length, sizeof(Eigen));
+    assert(eigens->arr != NULL);
+
     MatrixIterCols(V, i) {
-        eigens[i].value = getMatrixValue(A, i, i);
-        eigens[i].vector = createPointFromMatrixCol(V, i);
+        (eigens->arr)[i].value = getMatrixValue(A, i, i);
+        (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
-    qsort(eigens, V -> rows, sizeof(Eigen), compareEigens);
+    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens);
     return eigens;
 }
 
@@ -392,7 +396,7 @@ double computeDist(Point *point1, Point *point2) {
 
 double computeDistW(Point *point1, Point *point2) {
     double dist = computeDist(point1, point2);
-    return exp(-0.5 * dist * dist);
+    return exp(-0.5 * dist);
 }
 
 Matrix* computeMatrixW(Point **pointsArr, int dim) {
@@ -458,6 +462,22 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     I = createUnitMatrix(W -> rows, true);
     tmp = multiply(multiply(D2, W), D2);
     return sub(I, tmp);
+}
+
+int eigengapGetK(Eigens_Arr* eigens) {
+    int delta, max_delta = 0, max_index, i;
+    Eigen *arr = eigens -> arr;
+
+    for (i = 0; i < eigens->length - 1; i++) {
+        assert(arr[i].value <= arr[i + 1].value); /* ///////////////////////////////////////////////////////////////FOR DEBUG//////////////////////////////////////////////*/
+        delta = fabs(arr[i].value - arr[i + 1].value);
+        if (delta > max_delta) {
+            max_delta = delta;
+            max_index = i;
+        }
+    }
+
+    return max_index + 1;
 }
 
 /* ################ */
@@ -589,276 +609,4 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     }
     *A_origin = A;
     return V;
-}
-
-/* ############# */
-/* Tests section */
-/* ############# */
-
-void testMain(bool isDebug) {
-    testMultiplyMatrixs(isDebug);
-    Test1(isDebug);
-    /*testMatrixLnorm(isDebug);*/
-    testJacobi(isDebug);
-    testEigen(isDebug);
-}
-
-void testMultiplyMatrixs(bool isDebug) {
-    Matrix *A, *B, *C, *D;
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A , 0 , 0 , 1.0);
-    setMatrixValue(A , 1 , 0 , 2.0);
-    setMatrixValue(A , 1 , 1 , 3.0);
-    setMatrixValue(A , 2 , 0 , 4.0);
-    setMatrixValue(A , 2 , 1 , 5.0);
-    setMatrixValue(A , 2 , 2 , 6.0);
-    
-    B = createMatrix(3, 2, false);
-    setMatrixValue(B , 0 , 0 , 1.0);
-    setMatrixValue(B , 1 , 0 , 8.0);
-    setMatrixValue(B , 2 , 0 , 7.0);
-    setMatrixValue(B , 0 , 1 , 11.0);
-    setMatrixValue(B , 1 , 1 , 6.0);
-    setMatrixValue(B , 2 , 1 , 1.0);
-
-    if (isDebug) {
-        printf("Matrix A: \n");
-        printMatrix(A);
-        printf("Matrix B: \n");
-        printMatrix(B);
-    }
-    
-    C = multiply(A, B);
-    if (isDebug) {
-        printf("Matrix C calculted: \n");
-        printMatrix(C);
-    }
-
-    D = createMatrix(3, 2, false);
-    setMatrixValue(D , 0 , 0 , 45.0);
-    setMatrixValue(D , 1 , 0 , 61.0);
-    setMatrixValue(D , 2 , 0 , 86.0);
-    setMatrixValue(D , 0 , 1 , 27.0);
-    setMatrixValue(D , 1 , 1 , 45.0);
-    setMatrixValue(D , 2 , 1 , 80.0);
-
-    if (isDebug) {
-        printf("Matrix D result: \n");
-        printMatrix(D);
-    }
-
-    (isMatrixEqual(C,D)) ?
-        printf("'test Multiply Matrixs'\t\tresult: Great!\n") : 
-        printf("'test Multiply Matrixs'\t\tresult: Problem!\n");
-
-    freeMatrix(A);
-    freeMatrix(B);
-    freeMatrix(C);
-    freeMatrix(D);
-}
-
-Point** pointsForTest1() {
-    Point **pointsArr;
-    int numOfPoints = 3;
-    double pointVal1[3] = {0,0,0};
-    double pointVal2[3] = {1,1,1}; 
-    double pointVal3[3] = {2,2,2};
-
-    pointsArr = calloc(numOfPoints, sizeof(Point));
-    assert(pointsArr != NULL); 
-    
-    pointsArr[0] = createPointWithVals(3, pointVal1);
-    pointsArr[1] = createPointWithVals(3, pointVal2);
-    pointsArr[2] = createPointWithVals(3, pointVal3);
-    return pointsArr;
-}
-
-void Test1(bool isDebug) {
-    Point **pointsArr;
-    Matrix *W, *WA, *D1, *DA1, *D2, *DA2;
-
-    /* Genarate points arr as input */
-    pointsArr = pointsForTest1();
-    W = computeMatrixW(pointsArr, 3);
-
-    /* Calculate Matrix W */
-    WA = createMatrix(3, 3, true);
-    setMatrixValue(WA, 0 ,0, 0.0);
-    setMatrixValue(WA, 0 ,1, exp(-1.5));
-    setMatrixValue(WA, 0 ,2, exp(-6));
-    setMatrixValue(WA, 1 ,1, 0.0);
-    setMatrixValue(WA, 1 ,2, exp(-1.5));
-    setMatrixValue(WA, 2 ,2, 0.0);
-
-    if (isDebug == 1) {
-        printf("points array: \n");
-        printPointsArr(pointsArr, 3);
-        printf("Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Matrix A correct Matrix\n");
-        printMatrix(WA);
-    }
-    
-    (isMatrixEqual(W,WA)) ?
-        printf("'test Calc Matrix W'\t\tresult: Great!\n") : 
-        printf("'test Calc Matrix W'\t\tresult: Problem!\n");
-    
-    /* Calculate Matrix D */
-    D1 = computeMatrixD(W);    
-    DA1 = createMatrix(3, 3, true);
-    setMatrixValue(DA1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
-    setMatrixValue(DA1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
-    setMatrixValue(DA1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
-
-    if (isDebug == 1) {
-        printf("Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Matrix D calc:\n");
-        printMatrix(D1);
-        printf("Matrix A correct Matrix\n");
-        printMatrix(DA1);
-    }
-    
-    (isMatrixEqual(D1,DA1)) ?
-        printf("'test Calc Matrix D'\t\tresult: Great!\n") : 
-        printf("'test Calc Matrix D'\t\tresult: Problem!\n");
-
-    /* Calculate Matrix D^-0.5 if Matrix D is good */
-    if (isMatrixEqual(D1,DA1)) {
-        D2 = computeMatrixDMinusHalf(D1);
-
-        DA2 = createMatrix(3, 3, true);
-        setMatrixValue(DA2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
-        setMatrixValue(DA2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
-        setMatrixValue(DA2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
-
-        if (isDebug) {
-            printf("Matrix D^-0.5 calculated: \n");
-            printMatrix(D2);
-            printf("Matrix A2 correct Matrix:\n");
-            printMatrix(DA2);
-        }
-        
-        (isMatrixEqual(D2,DA2)) ?
-        printf("'test Calc Matrix D^-0.5'\tresult: Great!\n") : 
-        printf("'test Calc Matrix D^-0.5'\tresult: Problem!\n");
-    }
-
-    freeMatrix(W);
-    freeMatrix(WA);
-    freeMatrix(D1);
-    freeMatrix(D2);
-    freeMatrix(DA1);
-    freeMatrix(DA2);
-    freeMemPointsArr(pointsArr, 3);
-}
-
-void testJacobi(bool isDebug) {
-    Matrix *V, *expectedV, *A, *expectedA;
-    bool testResult;
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A, 0, 0, 3.0);
-    setMatrixValue(A, 1, 0, 2.0);
-    setMatrixValue(A, 1, 1, 0.0);
-    setMatrixValue(A, 2, 0, 4.0);
-    setMatrixValue(A, 2, 1, 2.0);
-    setMatrixValue(A, 2, 2, 3.0);
-
-    expectedV = createMatrix(3, 3, false);
-    setMatrixValue(expectedV, 0, 0, 1 / sqrt(2));
-    setMatrixValue(expectedV, 0, 1, - 1 / (3 * sqrt(2)));
-    setMatrixValue(expectedV, 0, 2, 2.0 / 3.0);
-    setMatrixValue(expectedV, 1, 0, 0);
-    setMatrixValue(expectedV, 1, 1, 4 / (3 * sqrt(2)));
-    setMatrixValue(expectedV, 1, 2, 1.0 / 3.0);
-    setMatrixValue(expectedV, 2, 0, - 1 / sqrt(2));
-    setMatrixValue(expectedV, 2, 1, - 1 / (3 * sqrt(2)));
-    setMatrixValue(expectedV, 2, 2, 2.0 / 3.0);
-
-    expectedA = createMatrix(3, 3, true);
-    setMatrixValue(expectedA, 0, 0, -1);
-    setMatrixValue(expectedA, 1, 1, -1);
-    setMatrixValue(expectedA, 2, 2, 8);
-
-
-    V = jacobiAlgo(&A);
-    testResult = isMatrixEqual(A, expectedA) && isMatrixEqual(V, expectedV);
-    (testResult) ?
-        printf("'test Jacobi'\t\t\tresult: Great!\n") :
-        printf("'test Jacobi'\t\t\tresult: Problem!\n");
-    if (isDebug == 1) {
-        printf("Matrix A\n");
-        printMatrix(A);
-        printf("Expected Matrix A\n");
-        printMatrix(expectedA);
-        printf("Matrix V\n");
-        printMatrix(V);
-        printf("Expected Matrix V\n");
-        printMatrix(expectedV);
-    }
-}
-
-void testEigen(bool isDebug) {
-    Matrix *A;
-    bool testResult;
-    Eigen *eigens, *expectedEigens;
-    int i;
-
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A, 0, 0, 3.0);
-    setMatrixValue(A, 1, 0, 2.0);
-    setMatrixValue(A, 1, 1, 0.0);
-    setMatrixValue(A, 2, 0, 4.0);
-    setMatrixValue(A, 2, 1, 2.0);
-    setMatrixValue(A, 2, 2, 3.0);
-
-    expectedEigens = (Eigen *) calloc(3, sizeof(Eigen));
-    assert(expectedEigens != NULL);
-    expectedEigens[0].value = -1;
-    expectedEigens[0].vector = createPoint(3);
-    expectedEigens[1].value = -1;
-    expectedEigens[1].vector = createPoint(3);
-    expectedEigens[2].value = 8;
-    expectedEigens[2].vector = createPoint(3);
-    setDataPointVal(expectedEigens[0].vector, 0, 1 / sqrt(2));
-    setDataPointVal(expectedEigens[0].vector, 1, 0);
-    setDataPointVal(expectedEigens[0].vector, 2, - 1 / sqrt(2));
-    setDataPointVal(expectedEigens[1].vector, 0, - 1 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[1].vector, 1, 4 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[1].vector, 2, - 1 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[2].vector, 0, 2.0 / 3.0);
-    setDataPointVal(expectedEigens[2].vector, 1, 1.0 / 3.0);
-    setDataPointVal(expectedEigens[2].vector, 3, 2.0 / 3.0);
-
-    eigens = getSortedEigen(A);
-    testResult = true;
-    for(i = 0; i < 3; i++) {
-        if (eigens[i].value != expectedEigens[i].value) {
-            testResult = false;
-            break;
-        }
-        if(!isPointsEquel(eigens[i].vector, expectedEigens[i].vector)) {
-            testResult = false;
-            break;
-        }
-    }
-    (testResult) ?
-        printf("'test Eigens'\t\t\tresult: Great!\n") :
-        printf("'test Eigens'\t\t\tresult: Problem!\n");
-    if (isDebug == 1) {
-        printf("Eigens\n");
-    }
-}
-
-/*
-void testCalcMatrixLnorm(bool isDebug) {
-    check
-}
-*/
-
-int main() {
-    if (TestMode) {
-        testMain(false);
-    }
-    return 0;
 }
