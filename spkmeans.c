@@ -262,21 +262,25 @@ int compareEigens(const void * a, const void * b) {
     return (A -> value < B -> value) ? -1 : (A -> value > B -> value);
 }
 
-Eigen* getSortedEigen(Matrix* A) {
+Eigens_Arr* getSortedEigen(Matrix* A) {
     Matrix *V;
-    Eigen* eigens;
+    Eigens_Arr *eigens;
     int i;
 
-    V = jacobiAlgo(&A);
-    eigens = (Eigen*) calloc(V -> rows, sizeof(Eigen));
+    eigens = (Eigens_Arr*) malloc(sizeof(Eigens_Arr));
     assert(eigens != NULL);
 
+    V = jacobiAlgo(&A);
+    eigens->length = V->rows;
+    eigens->arr = (Eigen*) calloc(eigens->length, sizeof(Eigen));
+    assert(eigens->arr != NULL);
+
     MatrixIterCols(V, i) {
-        eigens[i].value = getMatrixValue(A, i, i);
-        eigens[i].vector = createPointFromMatrixCol(V, i);
+        (eigens->arr)[i].value = getMatrixValue(A, i, i);
+        (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
-    qsort(eigens, V -> rows, sizeof(Eigen), compareEigens);
+    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens);
     return eigens;
 }
 
@@ -458,6 +462,22 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     I = createUnitMatrix(W -> rows, true);
     tmp = multiply(multiply(D2, W), D2);
     return sub(I, tmp);
+}
+
+int eigengapGetK(Eigens_Arr* eigens) {
+    int delta, max_delta = 0, max_index, i;
+    Eigen *arr = eigens -> arr;
+
+    for (i = 0; i < eigens->length - 1; i++) {
+        assert(arr[i].value <= arr[i + 1].value); /* ///////////////////////////////////////////////////////////////FOR DEBUG//////////////////////////////////////////////*/
+        delta = fabs(arr[i].value - arr[i + 1].value);
+        if (delta > max_delta) {
+            max_delta = delta;
+            max_index = i;
+        }
+    }
+
+    return max_index + 1;
 }
 
 /* ################ */
@@ -1061,7 +1081,6 @@ void TestE1(bool isDebug) {
     freeMemPointsArr(pointsArr, numOfPoints);
 }
 
-
 void testJacobi(bool isDebug) {
     Matrix *V, *expectedV, *A, *expectedA;
     bool testResult;
@@ -1109,7 +1128,9 @@ void testJacobi(bool isDebug) {
 void testEigen(bool isDebug) {
     Matrix *A;
     bool testResult;
-    Eigen *eigens, *expectedEigens;
+    double epsilon = 0.0000001;
+    Eigens_Arr *eigensArr;
+    Eigen *eigens, *expectedEigens1, *expectedEigens2;
     int i;
     A = createMatrix(3, 3, true);
     setMatrixValue(A, 0, 0, 3.0);
@@ -1119,32 +1140,52 @@ void testEigen(bool isDebug) {
     setMatrixValue(A, 2, 1, 2.0);
     setMatrixValue(A, 2, 2, 3.0);
 
-    expectedEigens = (Eigen *) calloc(3, sizeof(Eigen));
-    assert(expectedEigens != NULL);
-    expectedEigens[0].value = -1;
-    expectedEigens[0].vector = createPoint(3);
-    expectedEigens[1].value = -1;
-    expectedEigens[1].vector = createPoint(3);
-    expectedEigens[2].value = 8;
-    expectedEigens[2].vector = createPoint(3);
-    setDataPointVal(expectedEigens[0].vector, 0, 1 / sqrt(2));
-    setDataPointVal(expectedEigens[0].vector, 1, 0);
-    setDataPointVal(expectedEigens[0].vector, 2, - 1 / sqrt(2));
-    setDataPointVal(expectedEigens[1].vector, 0, - 1 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[1].vector, 1, 4 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[1].vector, 2, - 1 / (3 * sqrt(2)));
-    setDataPointVal(expectedEigens[2].vector, 0, 2.0 / 3.0);
-    setDataPointVal(expectedEigens[2].vector, 1, 1.0 / 3.0);
-    setDataPointVal(expectedEigens[2].vector, 2, 2.0 / 3.0);
+    expectedEigens1 = (Eigen *) calloc(3, sizeof(Eigen));
+    assert(expectedEigens1 != NULL);
+    expectedEigens1[0].value = -1;
+    expectedEigens1[0].vector = createPoint(3);
+    expectedEigens1[1].value = -1;
+    expectedEigens1[1].vector = createPoint(3);
+    expectedEigens1[2].value = 8;
+    expectedEigens1[2].vector = createPoint(3);
+    setDataPointVal(expectedEigens1[0].vector, 0, 1 / sqrt(2));
+    setDataPointVal(expectedEigens1[0].vector, 1, 0);
+    setDataPointVal(expectedEigens1[0].vector, 2, - 1 / sqrt(2));
+    setDataPointVal(expectedEigens1[1].vector, 0, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens1[1].vector, 1, 4 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens1[1].vector, 2, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens1[2].vector, 0, 2.0 / 3.0);
+    setDataPointVal(expectedEigens1[2].vector, 1, 1.0 / 3.0);
+    setDataPointVal(expectedEigens1[2].vector, 2, 2.0 / 3.0);
 
-    eigens = getSortedEigen(A);
+    expectedEigens2 = (Eigen *) calloc(3, sizeof(Eigen));
+    assert(expectedEigens2 != NULL);
+    expectedEigens2[0].value = -1;
+    expectedEigens2[0].vector = createPoint(3);
+    expectedEigens2[1].value = -1;
+    expectedEigens2[1].vector = createPoint(3);
+    expectedEigens2[2].value = 8;
+    expectedEigens2[2].vector = createPoint(3);
+    setDataPointVal(expectedEigens2[1].vector, 0, 1 / sqrt(2));
+    setDataPointVal(expectedEigens2[1].vector, 1, 0);
+    setDataPointVal(expectedEigens2[1].vector, 2, - 1 / sqrt(2));
+    setDataPointVal(expectedEigens2[0].vector, 0, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens2[0].vector, 1, 4 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens2[0].vector, 2, - 1 / (3 * sqrt(2)));
+    setDataPointVal(expectedEigens2[2].vector, 0, 2.0 / 3.0);
+    setDataPointVal(expectedEigens2[2].vector, 1, 1.0 / 3.0);
+    setDataPointVal(expectedEigens2[2].vector, 2, 2.0 / 3.0);
+
+    eigensArr = getSortedEigen(A);
+    eigens = eigensArr->arr;
     testResult = true;
     for(i = 0; i < 3; i++) {
-        if (eigens[i].value != expectedEigens[i].value) {
+        if (fabs(eigens[i].value - expectedEigens1[i].value) > epsilon) {
             testResult = false;
             break;
         }
-        if(!isPointsEquel(eigens[i].vector, expectedEigens[i].vector)) {
+        if(!isPointsEquel(eigens[i].vector, expectedEigens1[i].vector) &&
+           !isPointsEquel(eigens[i].vector, expectedEigens2[i].vector)) {
             testResult = false;
             break;
         }
@@ -1155,6 +1196,10 @@ void testEigen(bool isDebug) {
     if (isDebug == 1) {
         printf("Eigens\n");
     }
+
+    (eigengapGetK(eigensArr) == 2) ?
+        printf("'test Eigengap Heuristic'\tresult: Great!\n") :
+        printf("'test Eigengap Heuristic'\tresult: Problem!\n");
 }
 
 void testMain(bool isDebug) {
@@ -1178,7 +1223,7 @@ int main() {
     res = sqrt(res); 
     res = res*-0.5; 
     res = exp(res);
-    printf("res = %f", res);
+    printf("res = %f\n", res);
 
     if (TestMode) {
         testMain(false);

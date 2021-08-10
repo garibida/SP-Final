@@ -23,9 +23,14 @@ typedef struct {
 } Point;
 
 typedef struct {
-    int value;
+    double value;
     Point* vector;
 } Eigen;
+
+typedef struct {
+    Eigen* arr;
+    int length;
+} Eigens_Arr;
 
 
 /* ! validated, ? coded */ 
@@ -37,6 +42,7 @@ Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
 Matrix* computeMatrixL(Matrix *W, Matrix *D); 
 Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* write tester */ 
+int eigengapGetK(Eigens_Arr* eigens); /* write tester */ 
 
 /* Point's operations section */
 Point* createPoint(int d);
@@ -69,7 +75,7 @@ bool isMatrixEqual(Matrix *A, Matrix *B);
 void printMatrix(Matrix* A);
 Point* createPointFromMatrixCol(Matrix* A, int col);
 int compareEigens(const void *a, const void *b);
-Eigen* getSortedEigen(Matrix* A);
+Eigens_Arr* getSortedEigen(Matrix* A);
 
 /* Jacobi algorithm */
 typedef struct
