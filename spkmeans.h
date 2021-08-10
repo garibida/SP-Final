@@ -32,6 +32,13 @@ typedef struct {
     int length;
 } Eigens_Arr;
 
+enum Goal {
+    spk, 
+    wam, 
+    ddg,
+    lnorm, 
+    jacobi
+};
 
 /* ! validated, ? coded */ 
 int validateInput(); /* !? */ 

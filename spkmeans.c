@@ -207,7 +207,7 @@ void freeMatrix(Matrix *A) {
 
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
-    double epsilon = 0.00000001;
+    double epsilon = 0.0001; /* set to 4 digits after the dot */ 
     bool isSymmetric;
     assert(A -> rows == B -> rows);
     assert(A -> cols == B -> cols);
@@ -215,7 +215,7 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
     isSymmetric = A -> isSymmetric && B -> isSymmetric;
 
     MatrixIterRows(A, i) {
-        if (isSymmetric){
+        if (isSymmetric) {
             MatrixIterColsSym(A, i, j) {
                 if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
                     return false;
@@ -280,7 +280,7 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
-    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens);
+    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); /* check if the in order of vector of the same value is meaningful*/ 
     return eigens;
 }
 
@@ -588,7 +588,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
 
     while (true) {
         mav = getmaxAbsulteValue(A);
-        if (mav.value == 0) { /*///////////////////////////////////////////////////////////need to talk about it///////////////////////////////////////////////////*/
+        if (mav.value == 0) { /* the Matrix is diagonal */ 
             break;
         }
         theta = getTheta(A, mav);
@@ -609,4 +609,61 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     }
     *A_origin = A;
     return V;
+}
+
+int readArgs(int argc, char *argv[], int *k, char *path, enum Goal goalChoice) {
+    char *goal_str;
+    k = atoi(argv[1]); 
+    if (*k <= 0) {
+        printf("K is not a valid integer, exits...\n");
+        return false; 
+    }
+
+    goal_str = argv[1]; 
+    if (strcmp(goal_str, "spk") == 0) {
+        goalChoice = spk;
+    } else if (strcmp(goal_str, "wam") == 0) {
+        goalChoice = wam;
+    } else if (strcmp(goal_str, "ddg") == 0) {
+        goalChoice = ddg;
+    } else if (strcmp(goal_str, "lnorm") == 0) {
+        goalChoice = lnorm;
+    } else if (strcmp(goal_str, "jacobi") == 0) {
+        goalChoice = jacobi;
+    } else {
+        printf("%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", goal_str);
+        return false;
+    }
+    
+    path = argv[2];
+    
+    /* *max_iter = argc == 3 ? atoi(argv[2]) : DEFAULT_MAX_ITER;
+    if (*max_iter <= 0) {
+        printf("max_iter is not a valid integer, exits...\n");
+        return false;
+    } 
+    */
+    return true;
+}
+
+int main(int argc, char *argv[]) {
+    int k, res; /* max_iter? */ 
+    enum Goal goal; 
+    char *path, *goal;
+    assert(argc <= 3); /* if k not provided set to 0 or exit? */ 
+
+    res = readArgs(argc, argv, &k, &path, &goal);
+    
+    if (res == false) {
+        return 0; /* check how to exit */
+    }
+    
+    /* read point from file */ 
+    
+    /*if (k >= pointsList->length) { 
+        printf("K is not smaller then n, exits...\n");
+        return false; 
+    } */ /* check how to exit */
+    
+    return 0; /* check how to exit */
 }
