@@ -465,10 +465,10 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
 }
 
 int eigengapGetK(Eigens_Arr* eigens) {
-    int delta, max_delta = 0, max_index, i;
+    int delta, max_delta = 0, max_index = 0, i;
     Eigen *arr = eigens -> arr;
 
-    for (i = 0; i < eigens->length - 1; i++) {
+    for (i = 0; i < (eigens->length) / 2; i++) {
         assert(arr[i].value <= arr[i + 1].value); /* ///////////////////////////////////////////////////////////////FOR DEBUG//////////////////////////////////////////////*/
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
@@ -478,6 +478,20 @@ int eigengapGetK(Eigens_Arr* eigens) {
     }
 
     return max_index + 1;
+}
+
+Matrix* computeMatrixU(Eigens_Arr* eigens, int k) {
+    Matrix* U;
+    int i, j;
+
+    U = createMatrix((eigens->arr)[0].vector->d, k, false);
+    MatrixIterRows(U, i) {
+        MatrixIterCols(U, j) {
+            setMatrixValue(U, i, j, ((eigens->arr)[j].vector->data)[i]);
+        }
+    }
+
+    return U;
 }
 
 /* ################ */
