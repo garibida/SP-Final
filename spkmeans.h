@@ -5,6 +5,10 @@
 #define MatrixIterRows(A, i) for ((i) = 0; (i) < ((A) -> rows); (i)++)
 #define MatrixIterCols(A, j) for ((j) = 0; (j) < ((A) -> cols); (j)++)
 #define MatrixIterColsSym(A, i, j) for ((j) = 0; (j) <= (i); (j)++)
+#define MAX_CMDS 3
+#define MAX_NUMBER_OF_POINTS 1000
+#define MAX_FEATURES 10
+
 
 typedef double** Matrix_data;
 typedef double* Point_data; 
@@ -32,31 +36,33 @@ typedef struct {
     int length;
 } Eigens_Arr;
 
-enum Goal {
-    spk, 
-    wam, 
-    ddg,
-    lnorm, 
-    jacobi
-};
+typedef enum { 
+    spk = 0, 
+    wam = 1, 
+    ddg = 2, 
+    lnorm = 3, 
+    jacobi = 4
+} Goal;
 
-/* ! validated, ? coded */ 
-int validateInput(); /* !? */ 
+/* get input and validation */
+Goal decide_command(char *arg);
+Point** readPointsArray(char *path, int *d, int *numOfPoints);
+Point** readPointsfromFile(int argc, char *argv[]);
 
 /* Algorith's operations section */
 Matrix* computeMatrixW(Point** pointsArr, int n);
 Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
 Matrix* computeMatrixL(Matrix *W, Matrix *D); 
-Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); /* write tester */ 
-int eigengapGetK(Eigens_Arr* eigens); /* write tester */
+Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); 
+int eigengapGetK(Eigens_Arr* eigens);
 Matrix* computeMatrixU(Eigens_Arr* eigens, int k);
 double* getRowsSqureRootSum(Matrix* U);
 Matrix* computeMatrixT(Matrix* U);
 
 /* Point's operations section */
 Point* createPoint(int d);
-Point* setDataPointVal(Point *point, int index, double value);
+void setDataPointVal(Point *point, int index, double value);
 double getDataPointVal(Point *point, int index);
 void printPoint(Point* point);
 void printPointsArr(Point **pointArr, int n);

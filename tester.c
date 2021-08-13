@@ -14,6 +14,8 @@ Point** pointsForTestE1();
 void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
 void testEigen(bool isDebug);
+void testReadPoints_Input0(bool isDebug, char *path);
+void testReadPoints_Input1(bool isDebug, char *path);
 
 # define isDoubleEqual(_a, _b) (fabs((_a) - (_b)) < 0.0001)
 
@@ -531,6 +533,44 @@ void testEigen(bool isDebug) {
         printf("'test Matrix U'\t\t\tresult: Problem!\n");
 }
 
+void testReadPoints_Input0(bool isDebug, char *path) {
+    Point **pointsArr, **pointsArrRes;
+    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    char* argv[] = {"2", "ddg", "<path1>"}; /* set path! */
+    pointsArr = readPointsfromFile(argc, argv);
+    pointsArrRes = pointsForTestE0();
+
+    for (i = 0; i < numOfPoint; i++) {
+        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+            testResult = false;
+            break;
+        }
+    }
+
+    (testResult) ?
+        printf("TestE0 - Read Input\t\tresult: Great!\n") : 
+        printf("TestE0 - Read Input\t\tresult: Problem!\n");
+}
+
+void testReadPoints_Input1(bool isDebug, char *path) {
+    Point **pointsArr, **pointsArrRes;
+    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    char* argv[] = {"2", "ddg", "<path2>"}; /* set path! */
+    pointsArr = readPointsfromFile(argc, argv);
+    pointsArrRes = pointsForTestE1();
+
+    for (i = 0; i < numOfPoint; i++) {
+        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+            testResult = false;
+            break;
+        }
+    }
+
+    (testResult) ?
+        printf("TestE1 - Read Input\t\tresult: Great!\n") : 
+        printf("TestE1 - Read Input\t\tresult: Problem!\n");
+}
+
 void testMain(bool isDebug) {
     testMultiplyMatrixs(isDebug);
     testJacobi(isDebug);
@@ -540,8 +580,11 @@ void testMain(bool isDebug) {
 }
 
 int main() {
-    if (TestMode) {
-        testMain(false);
-    }
+    char *path;
+    testMain(false);
+    
+    path = "";
+    testReadPoints(false, path);
+    
     return 0;
 }

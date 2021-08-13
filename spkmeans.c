@@ -315,9 +315,8 @@ Point* createPointWithVals(int d, double *values) {
     return point;
 }
 
-Point* setDataPointVal(Point *point, int index, double value) {
-    point->data[index] = value;
-    return point;
+void setDataPointVal(Point *point, int index, double value) {
+    (point->data)[index] = value;
 }
 
 double getDataPointVal(Point *point, int index) {
@@ -660,59 +659,109 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     return V;
 }
 
-int readArgs(int argc, char *argv[], int *k, char *path, enum Goal goalChoice) {
-    char *goal_str;
-    k = atoi(argv[1]); 
-    if (*k <= 0) {
-        printf("K is not a valid integer, exits...\n");
-        return false; 
+/* ######################## */
+/* Get input and validation */
+/* ######################## */
+
+Point** readPointsArray(char *path, int *d, int *numOfPoints) {
+    double value, *firstPointValues;
+    char ch;
+    Point **pointsArr, *point;
+    FILE *input;
+    int i = 0;
+    *d = 0; 
+    *numOfPoints = 0;
+
+    pointsArr = (Point**)calloc(MAX_NUMBER_OF_POINTS, sizeof(Point*)); /* free mem */ 
+    assert(pointsArr != NULL);
+
+    firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
+    assert(firstPointValues != NULL);
+
+    /* read points from file */
+    input = fopen(path, "r");
+    assert(input != NULL);
+
+    while ( ( !feof(input) ) && ( (*d) < MAX_FEATURES) ) {
+        fscanf(input, "%lf%c", &value, &ch);
+        firstPointValues[ (*d)++ ] = value;
+        if (ch == '\n') {
+            break;
+        }
     }
 
-    goal_str = argv[1]; 
-    if (strcmp(goal_str, "spk") == 0) {
-        goalChoice = spk;
-    } else if (strcmp(goal_str, "wam") == 0) {
-        goalChoice = wam;
-    } else if (strcmp(goal_str, "ddg") == 0) {
-        goalChoice = ddg;
-    } else if (strcmp(goal_str, "lnorm") == 0) {
-        goalChoice = lnorm;
-    } else if (strcmp(goal_str, "jacobi") == 0) {
-        goalChoice = jacobi;
-    } else {
-        printf("%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", goal_str);
-        return false;
+    pointsArr[0] = createPointWithVals( (*d), firstPointValues);
+    (*numOfPoints)++;
+    free(firstPointValues);
+    point = createPoint( (*d) );  
+
+    while(!feof(input)) {
+        fscanf(input, "%lf%c", &value, &ch);
+        setDataPointVal(point, i ,value);
+        i++;
+        if (i == (*d) ) { 
+            pointsArr[ (*numOfPoints) ] = point;
+            point = createPoint( (*d) );
+            (*numOfPoints)++;
+            i = 0;
+        }
+    }
+
+    if (*numOfPoints < MAX_NUMBER_OF_POINTS) {
+        realloc(pointsArr, (*numOfPoints) * sizeof(Point));
+    }
+
+    freeMemPoint(point);
+    fclose(input);
+    
+    return pointsArr;
+}
+
+Goal decide_command(char *arg) {
+    int enumIndex;
+    char *commands[] = {"spk", "wam", "ddg", "lnorm", "jacobi"};
+    for (enumIndex = 0; enumIndex < MAX_CMDS; enumIndex++) {
+        if (strcmp(commands[enumIndex], arg) == 0) {
+            return enumIndex; /* since spk == 0 in enum Goal, the correct value will set, if found */
+        } else { 
+            printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
+            assert(0);
+            return 0; /* check how to exit */
+        }
+    }
+    return 0;
+}
+
+Point** readPointsfromFile(int argc, char *argv[]) {
+    int k, d, numOfPoints; /* max_iter? */ 
+    Goal command;
+    char *path;
+    Point **pointsArr;
+    
+    assert( !(argc == 3) ); /* if k not provided set to 0 or exit? */ 
+    
+    k = atoi(argv[1]); 
+    if (k <= 0) {
+        printf("Invalid Input!"); /* "K is not a valid integer, exits...\n" */
+        assert(0);
+        return NULL; /* check how to exit */
     }
     
-    path = argv[2];
+    command = decide_command(argv[2]);
+    path = argv[3];
+    pointsArr = readPointsArray(path, &d, &numOfPoints);
     
-    /* *max_iter = argc == 3 ? atoi(argv[2]) : DEFAULT_MAX_ITER;
-    if (*max_iter <= 0) {
-        printf("max_iter is not a valid integer, exits...\n");
-        return false;
-    } 
-    */
-    return true;
+    if (k >= numOfPoints) {
+        printf("Invalid Input!"); /* "K is not smaller then n, exits...\n" */ 
+        assert(0);
+        return 0; /* check how to exit */
+    }
+    printPointsArr(pointsArr, numOfPoints);
+    printf("command: %d\n", command); /* set for gcc no to cry */ 
+    return pointsArr;
 }
 
 int main(int argc, char *argv[]) {
-    int k, res; /* max_iter? */ 
-    enum Goal goal; 
-    char *path, *goal;
-    assert(argc <= 3); /* if k not provided set to 0 or exit? */ 
-
-    res = readArgs(argc, argv, &k, &path, &goal);
-    
-    if (res == false) {
-        return 0; /* check how to exit */
-    }
-    
-    /* read point from file */ 
-    
-    /*if (k >= pointsList->length) { 
-        printf("K is not smaller then n, exits...\n");
-        return false; 
-    } */ /* check how to exit */
-    
-    return 0; /* check how to exit */
+    readPointsfromFile(argc, argv);
+    return 0;
 }
