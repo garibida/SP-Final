@@ -66,5 +66,4 @@ def main():
         print("points:")
         printPointsArr(pointsArray)
     
-
 main()
