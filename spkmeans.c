@@ -207,7 +207,7 @@ void freeMatrix(Matrix *A) {
 
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
-    double epsilon = 0.00000001;
+    double epsilon = 0.0001; /* set to 4 digits after the dot */ 
     bool isSymmetric;
     assert(A -> rows == B -> rows);
     assert(A -> cols == B -> cols);
@@ -215,7 +215,7 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
     isSymmetric = A -> isSymmetric && B -> isSymmetric;
 
     MatrixIterRows(A, i) {
-        if (isSymmetric){
+        if (isSymmetric) {
             MatrixIterColsSym(A, i, j) {
                 if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
                     return false;
@@ -280,7 +280,7 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
-    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens);
+    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); /* check if the in order of vector of the same value is meaningful*/ 
     return eigens;
 }
 
@@ -315,9 +315,8 @@ Point* createPointWithVals(int d, double *values) {
     return point;
 }
 
-Point* setDataPointVal(Point *point, int index, double value) {
-    point->data[index] = value;
-    return point;
+void setDataPointVal(Point *point, int index, double value) {
+    (point->data)[index] = value;
 }
 
 double getDataPointVal(Point *point, int index) {
@@ -498,7 +497,7 @@ double* getRowsSqureRootSum(Matrix* U) {
     int i, j;
     double *squreSumPerCol;
 
-    squreSumPerCol = (double*) calloc(U->row, sizeof(double));
+    squreSumPerCol = (double*) calloc(U->rows, sizeof(double));
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
@@ -525,7 +524,7 @@ Matrix* computeMatrixT(Matrix* U) {
         }
     }
 
-    free(squreSumPerCol);
+    free(squreSumPerRow);
     return T;
 }
 
@@ -637,7 +636,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
 
     while (true) {
         mav = getmaxAbsulteValue(A);
-        if (mav.value == 0) { /*///////////////////////////////////////////////////////////need to talk about it///////////////////////////////////////////////////*/
+        if (mav.value == 0) { /* the Matrix is diagonal */ 
             break;
         }
         theta = getTheta(A, mav);
@@ -658,4 +657,111 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     }
     *A_origin = A;
     return V;
+}
+
+/* ######################## */
+/* Get input and validation */
+/* ######################## */
+
+Point** readPointsArray(char *path, int *d, int *numOfPoints) {
+    double value, *firstPointValues;
+    char ch;
+    Point **pointsArr, *point;
+    FILE *input;
+    int i = 0;
+    *d = 0; 
+    *numOfPoints = 0;
+
+    pointsArr = (Point**)calloc(MAX_NUMBER_OF_POINTS, sizeof(Point*)); /* free mem */ 
+    assert(pointsArr != NULL);
+
+    firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
+    assert(firstPointValues != NULL);
+
+    /* read points from file */
+    input = fopen(path, "r");
+    assert(input != NULL);
+
+    while ( ( !feof(input) ) && ( (*d) < MAX_FEATURES) ) {
+        fscanf(input, "%lf%c", &value, &ch);
+        firstPointValues[ (*d)++ ] = value;
+        if (ch == '\n') {
+            break;
+        }
+    }
+
+    pointsArr[0] = createPointWithVals( (*d), firstPointValues);
+    (*numOfPoints)++;
+    free(firstPointValues);
+    point = createPoint( (*d) );  
+
+    while(!feof(input)) {
+        fscanf(input, "%lf%c", &value, &ch);
+        setDataPointVal(point, i ,value);
+        i++;
+        if (i == (*d) ) { 
+            pointsArr[ (*numOfPoints) ] = point;
+            point = createPoint( (*d) );
+            (*numOfPoints)++;
+            i = 0;
+        }
+    }
+
+    if (*numOfPoints < MAX_NUMBER_OF_POINTS) {
+        realloc(pointsArr, (*numOfPoints) * sizeof(Point));
+    }
+
+    freeMemPoint(point);
+    fclose(input);
+    
+    return pointsArr;
+}
+
+Goal decide_command(char *arg) {
+    int enumIndex;
+    char *commands[] = {"spk", "wam", "ddg", "lnorm", "jacobi"};
+    for (enumIndex = 0; enumIndex < MAX_CMDS; enumIndex++) {
+        if (strcmp(commands[enumIndex], arg) == 0) {
+            return enumIndex; /* since spk == 0 in enum Goal, the correct value will set, if found */
+        } else { 
+            printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
+            assert(0);
+            return 0; /* check how to exit */
+        }
+    }
+    return 0;
+}
+
+Point** readPointsfromFile(int argc, char *argv[]) {
+    int k, d, numOfPoints; /* max_iter? */ 
+    Goal command;
+    char *path;
+    Point **pointsArr;
+    
+    assert( !(argc == 3) ); /* if k not provided set to 0 or exit? */ 
+    
+    k = atoi(argv[1]); 
+    if (k <= 0) {
+        printf("Invalid Input!"); /* "K is not a valid integer, exits...\n" */
+        assert(0);
+        return NULL; /* check how to exit */
+    }
+    
+    command = decide_command(argv[2]);
+    path = argv[3];
+    pointsArr = readPointsArray(path, &d, &numOfPoints);
+    
+    if (k >= numOfPoints) {
+        printf("Invalid Input!"); /* "K is not smaller then n, exits...\n" */ 
+        assert(0);
+        return 0; /* check how to exit */
+    }
+    printPointsArr(pointsArr, numOfPoints);
+    printf("command: %d\n", command); /* set for gcc no to cry */ 
+    return pointsArr;
+}
+
+int main(int argc, char *argv[]) {
+    readPointsfromFile(argc, argv);
+    return 0;
 }

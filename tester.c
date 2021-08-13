@@ -8,14 +8,14 @@
 /* test section */
 void testMain(bool isDebug);
 void testMultiplyMatrixs(bool isDebug);
-Point** pointsForTest1();
-void Test1(bool isDebug);
 Point** pointsForTestE0();
 void TestE0(bool isDebug);
 Point** pointsForTestE1();
 void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
 void testEigen(bool isDebug);
+void testReadPoints_Input0();
+void testReadPoints_Input1();
 
 # define isDoubleEqual(_a, _b) (fabs((_a) - (_b)) < 0.0001)
 
@@ -76,103 +76,6 @@ void testMultiplyMatrixs(bool isDebug) {
     freeMatrix(B);
     freeMatrix(C);
     freeMatrix(D);
-}
-
-Point** pointsForTest1() {
-    Point **pointsArr;
-    int numOfPoints = 3;
-    int dim = 3;
-    double pointVal1[3] = {0,0,0};
-    double pointVal2[3] = {1,1,1}; 
-    double pointVal3[3] = {2,2,2};
-
-    pointsArr = calloc(numOfPoints, sizeof(Point));
-    assert(pointsArr != NULL); 
-    
-    pointsArr[0] = createPointWithVals(dim, pointVal1);
-    pointsArr[1] = createPointWithVals(dim, pointVal2);
-    pointsArr[2] = createPointWithVals(dim, pointVal3);
-    return pointsArr;
-}
-
-void Test1(bool isDebug) {
-    Point **pointsArr;
-    Matrix *W, *WA, *D1, *DA1, *D2, *DA2;
-
-    /* Genarate points arr as input */
-    pointsArr = pointsForTest1();
-    W = computeMatrixW(pointsArr, 3);
-
-    /* Calculate Matrix W */
-    WA = createMatrix(3, 3, true);
-    setMatrixValue(WA, 0 ,0, 0.0);
-    setMatrixValue(WA, 0 ,1, exp(-1.5));
-    setMatrixValue(WA, 0 ,2, exp(-6));
-    setMatrixValue(WA, 1 ,1, 0.0);
-    setMatrixValue(WA, 1 ,2, exp(-1.5));
-    setMatrixValue(WA, 2 ,2, 0.0);
-
-    if (isDebug == 1) {
-        printf("Test 1 - points array: \n");
-        printPointsArr(pointsArr, 3);
-        printf("Test 1 - Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Test 1 - Matrix A correct Matrix\n");
-        printMatrix(WA);
-    }
-    
-    (isMatrixEqual(W,WA)) ?
-        printf("Test1 - Matrix W\t\tresult: Great!\n") : 
-        printf("Test1 - Matrix W\t\tresult: Problem!\n");
-    
-    /* Calculate Matrix D */
-    D1 = computeMatrixD(W);    
-    DA1 = createMatrix(3, 3, true);
-    setMatrixValue(DA1, 0 ,0, (0.0 + exp(-1.5) + exp(-6)));
-    setMatrixValue(DA1, 1 ,1, (exp(-1.5) + 0 + exp(-1.5)));
-    setMatrixValue(DA1, 2 ,2, (exp(-6) + exp(-1.5) + 0.0));
-
-    if (isDebug == 1) {
-        printf("Test1 - Matrix W calculated: \n");
-        printMatrix(W);
-        printf("Test1 - Matrix D calc:\n");
-        printMatrix(D1);
-        printf("Test1 - Matrix A correct Matrix\n");
-        printMatrix(DA1);
-    }
-    
-    (isMatrixEqual(D1,DA1)) ?
-        printf("Test1 - Matrix D\t\tresult: Great!\n") : 
-        printf("Test1 - Matrix D\t\tresult: Problem!\n");
-
-    /* Calculate Matrix D^-0.5 if Matrix D is good */
-    if (isMatrixEqual(D1,DA1)) {
-        D2 = computeMatrixDMinusHalf(D1);
-
-        DA2 = createMatrix(3, 3, true);
-        setMatrixValue(DA2, 0 ,0, 1 / sqrt(0.0 + exp(-1.5) + exp(-6)));
-        setMatrixValue(DA2, 1 ,1, 1 / sqrt(exp(-1.5) + 0 + exp(-1.5)));
-        setMatrixValue(DA2, 2 ,2, 1 / sqrt(exp(-6) + exp(-1.5) + 0.0));
-
-        if (isDebug) {
-            printf("Test1 - Matrix D^-0.5 calculated: \n");
-            printMatrix(D2);
-            printf("Test1 - Matrix A2 correct Matrix:\n");
-            printMatrix(DA2);
-        }
-        
-        (isMatrixEqual(D2,DA2)) ?
-        printf("Test1 - Matrix D^-0.5\t\tresult: Great!\n") : 
-        printf("Test1 - Matrix D^-0.5\t\tresult: Problem!\n");
-    }
-
-    freeMatrix(W);
-    freeMatrix(WA);
-    freeMatrix(D1);
-    freeMatrix(D2);
-    freeMatrix(DA1);
-    freeMatrix(DA2);
-    freeMemPointsArr(pointsArr, 3);
 }
 
 Point** pointsForTestE0() {
@@ -630,32 +533,58 @@ void testEigen(bool isDebug) {
         printf("'test Matrix U'\t\t\tresult: Problem!\n");
 }
 
+void testReadPoints_Input0() {
+    Point **pointsArr, **pointsArrRes;
+    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_0.txt"}; /* set path! */
+    pointsArr = readPointsfromFile(argc, argv);
+    pointsArrRes = pointsForTestE0();
+
+    for (i = 0; i < numOfPoint; i++) {
+        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+            testResult = false;
+            break;
+        }
+    }
+
+    (testResult) ?
+        printf("TestE0 - Read Input\t\tresult: Great!\n") : 
+        printf("TestE0 - Read Input\t\tresult: Problem!\n");
+}
+
+void testReadPoints_Input1() {
+    Point **pointsArr, **pointsArrRes;
+    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_1.txt"}; /* set path! */
+    pointsArr = readPointsfromFile(argc, argv);
+    pointsArrRes = pointsForTestE1();
+
+    for (i = 0; i < numOfPoint; i++) {
+        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+            testResult = false;
+            break;
+        }
+    }
+
+    (testResult) ?
+        printf("TestE1 - Read Input\t\tresult: Great!\n") : 
+        printf("TestE1 - Read Input\t\tresult: Problem!\n");
+}
+
 void testMain(bool isDebug) {
     testMultiplyMatrixs(isDebug);
-    /*Test1(isDebug);*/
     testJacobi(isDebug);
     testEigen(isDebug);
-    TestE0(1);
+    TestE0(isDebug);
     TestE1(isDebug);
 }
 
+/*
 int main() {
-    int i;
-    double arr1[4] = {0.1255,-0.4507,-0.2320,-0.0987}; 
-    double arr2[4] = {0.3440,0.3440,0.4419,-0.3662};
-    double tmp, res = 0;
-    for (i = 0; i < 4; i++) {
-        tmp = arr1[i] - arr2[i]; 
-        res += tmp * tmp;
-    }
-    res = sqrt(res); 
-    res = res*-0.5; 
-    res = exp(res);
-    printf("res = %f\n", res);
-
-    if (TestMode) {
-        testMain(false);
-    }
-
+    testMain(false);
+    
+    testReadPoints(false, path);
+    
     return 0;
 }
+*/
