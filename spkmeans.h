@@ -8,6 +8,7 @@
 #define MAX_CMDS 3
 #define MAX_NUMBER_OF_POINTS 1000
 #define MAX_FEATURES 10
+#define EPSILON 0.0001 /* set to 4 digits after the dot */ 
 
 
 typedef double** Matrix_data;
@@ -47,7 +48,7 @@ typedef enum {
 /* get input and validation */
 Goal decide_command(char *arg);
 Point** readPointsArray(char *path, int *d, int *numOfPoints);
-Point** readPointsfromFile(int argc, char *argv[]);
+Point** readPointsFromFile(int argc, char *argv[]);
 
 /* Algorith's operations section */
 Matrix* computeMatrixW(Point** pointsArr, int n);
@@ -65,7 +66,7 @@ Point* createPoint(int d);
 void setDataPointVal(Point *point, int index, double value);
 double getDataPointVal(Point *point, int index);
 void printPoint(Point* point);
-void printPointsArr(Point **pointArr, int n);
+void printPointsArr(Point **pointArr, int numOfPoints);
 int isPointsEquel(Point *point1, Point* point2);
 double computeDist(Point *point1, Point* point2);
 double computeDistW(Point *point1, Point* point2); 
@@ -101,7 +102,7 @@ typedef struct
     double value;
 } MaxAbsulteValue;
 
-MaxAbsulteValue getmaxAbsulteValue(Matrix* A);
+MaxAbsulteValue getMaxAbsulteValue(Matrix* A);
 double getTheta(Matrix* A, MaxAbsulteValue mav);
 double getT(double theta);
 double getC(double t);

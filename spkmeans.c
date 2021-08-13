@@ -19,16 +19,6 @@ Matrix* createMatrix(int rows, int cols, bool isSymmetric) {
     return A;
 }
 
-Matrix* createUnitMatrix(int dim, bool isSymmetric) {
-    Matrix* I; 
-    int i;
-    I = createMatrix(dim, dim, isSymmetric);
-    MatrixIterRows(I, i) {
-        setMatrixValue(I, i, i, 1.0);
-    }
-    return I;
-}
-
 Matrix_data createMatrixData(int rows, int cols) {
     Matrix_data data;
     int i;
@@ -39,7 +29,6 @@ Matrix_data createMatrixData(int rows, int cols) {
         data[i] = (double*) calloc(cols, sizeof(double));
         assert(data[i] != NULL);
     }
-
     return data;
 }
 
@@ -53,8 +42,17 @@ Matrix_data createSymmetricMatrixData(int rows) {
         data[i] = (double*) calloc(i + 1, sizeof(double));
         assert(data[i] != NULL);
     }
-
     return data;
+}
+
+Matrix* createUnitMatrix(int dim, bool isSymmetric) {
+    Matrix* I; 
+    int i;
+    I = createMatrix(dim, dim, isSymmetric);
+    MatrixIterRows(I, i) {
+        setMatrixValue(I, i, i, 1.0);
+    }
+    return I;
 }
 
 Matrix* cloneMatrix(Matrix* A) {
@@ -91,15 +89,15 @@ void updateMatrixSymmertircStatus(Matrix* A) {
 }
 
 double getMatrixValue(Matrix* A, int row, int col) {
-    assert(row < A -> rows && col < A -> cols);
-    return (A -> isSymmetric && col > row) ?
+    assert(row < (A -> rows) && col < (A -> cols));
+    return ((A -> isSymmetric) && col > row) ?
                 (A -> data)[col][row]:
                 (A -> data)[row][col];
 }
 
 void setMatrixValue(Matrix* A, int row, int col, double value) {
-    assert(row < A -> rows && col < A -> cols);
-    if (A -> isSymmetric && col > row) {
+    assert(row < (A -> rows) && col < (A -> cols));
+    if ((A -> isSymmetric) && col > row) {
         (A -> data)[col][row] = value;
     } else {
         (A -> data)[row][col] = value;
@@ -129,7 +127,7 @@ Matrix* add(Matrix *A, Matrix *B) {
     assert(A -> rows == B -> rows);
     assert(A -> cols == B -> cols);
 
-    isSymmetric = A -> isSymmetric && B -> isSymmetric;
+    isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
     C = createMatrix(A -> rows, B -> cols, isSymmetric);
 
@@ -145,7 +143,6 @@ Matrix* add(Matrix *A, Matrix *B) {
             }
         }
     }
-
     return C;
 }
 
@@ -156,7 +153,7 @@ Matrix* sub(Matrix *A, Matrix *B) {
     assert(A -> rows == B -> rows);
     assert(A -> cols == B -> cols);
 
-    isSymmetric = A -> isSymmetric && B -> isSymmetric;
+    isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
     C = createMatrix(A -> rows, B -> cols, isSymmetric);
 
@@ -172,7 +169,6 @@ Matrix* sub(Matrix *A, Matrix *B) {
             }
         }
     }
-
     return C;
 }
 
@@ -192,7 +188,7 @@ Matrix* multiply(Matrix* A, Matrix* B) {
             setMatrixValue(C, i, j, value);
         }
     }
-
+    updateMatrixSymmertircStatus(C); /* ########################################################### ask Garibi if needed */
     return C;
 }
 
@@ -207,30 +203,28 @@ void freeMatrix(Matrix *A) {
 
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
-    double epsilon = 0.0001; /* set to 4 digits after the dot */ 
     bool isSymmetric;
     assert(A -> rows == B -> rows);
     assert(A -> cols == B -> cols);
 
-    isSymmetric = A -> isSymmetric && B -> isSymmetric;
+    isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
     MatrixIterRows(A, i) {
         if (isSymmetric) {
             MatrixIterColsSym(A, i, j) {
-                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
+                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > EPSILON) {
                     return false;
                 }
             }
         }
         else {
             MatrixIterCols(A, j) {
-                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > epsilon) {
+                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > EPSILON) {
                     return false;
                 }
             }
         }
     }
-
     return true;
 }
 
@@ -246,16 +240,16 @@ void printMatrix(Matrix* A) {
 }
 
 Point* createPointFromMatrixCol(Matrix* A, int col) {
-    Point *p;
+    Point *point;
     int i;
-    p = createPoint(A -> rows);
+    point = createPoint(A -> rows);
     MatrixIterRows(A, i) {
-        setDataPointVal(p, i, getMatrixValue(A, i, col));
+        setDataPointVal(point, i, getMatrixValue(A, i, col));
     }
-    return p;
+    return point;
 }
 
-int compareEigens(const void * a, const void * b) {
+int compareEigens(const void *a, const void *b) {
     Eigen *A, *B;
     A = (Eigen *) a;
     B = (Eigen *) b;
@@ -280,7 +274,7 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
-    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); /* check if the in order of vector of the same value is meaningful*/ 
+    qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); /* ########################################################### check if the in order of vector of the same value is meaningful */ 
     return eigens;
 }
 
@@ -291,23 +285,18 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
 Point* createPoint(int d) {
     Point *point;
     Point_data data;
-    
     point = (Point*) malloc(sizeof(Point));
     assert(point != NULL);
-    point -> d = d;
-
+    point->d = d;
     data = (Point_data) calloc(d, sizeof(double));
     assert(data != NULL);
-    point -> data = data;
-
+    point->data = data;
     return point;
 }
 
 Point* createPointWithVals(int d, double *values) {
-    /* add assertion for length comp to len(values) */
     Point *point;
-    int i;
-    
+    int i;    
     point = createPoint(d);
     for (i = 0; i < d; i++) {
         setDataPointVal(point, i, values[i]);
@@ -325,7 +314,7 @@ double getDataPointVal(Point *point, int index) {
 
 void printPoint(Point *point) {
     int i, dim;
-    dim = point -> d;
+    dim = point->d;
     for (i = 0; i < dim; i++) {
         printf("%.4f", point -> data[i]);
         if (i != dim - 1) {
@@ -335,18 +324,17 @@ void printPoint(Point *point) {
     printf("\n");
 }
 
-void printPointsArr(Point **pointArr, int n) {
+void printPointsArr(Point **pointArr, int numOfPoints) {
     int i;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < numOfPoints; i++) {
         printPoint(pointArr[i]);
     }
 }
 
 int isPointsEquel(Point *point1, Point *point2){
     int i;
-    double epsilon = 0.00000001;
     for (i = 0; i < point1 -> d; i++) {
-        if (fabs(getDataPointVal(point1, i) - getDataPointVal(point2, i)) > epsilon) {
+        if (fabs(getDataPointVal(point1, i) - getDataPointVal(point2, i)) > EPSILON) {
             return false;
         }
     }
@@ -468,7 +456,7 @@ int eigengapGetK(Eigens_Arr* eigens) {
     Eigen *arr = eigens -> arr;
 
     for (i = 0; i < (eigens->length) / 2; i++) {
-        assert(arr[i].value <= arr[i + 1].value); /* ///////////////////////////////////////////////////////////////FOR DEBUG//////////////////////////////////////////////*/
+        assert(arr[i].value <= arr[i + 1].value); /* ########################################################### FOR DEBUG */
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
             max_delta = delta;
@@ -482,14 +470,12 @@ int eigengapGetK(Eigens_Arr* eigens) {
 Matrix* computeMatrixU(Eigens_Arr* eigens, int k) {
     Matrix* U;
     int i, j;
-
     U = createMatrix((eigens->arr)[0].vector->d, k, false);
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
             setMatrixValue(U, i, j, ((eigens->arr)[j].vector->data)[i]);
         }
     }
-
     return U;
 }
 
@@ -498,6 +484,7 @@ double* getRowsSqureRootSum(Matrix* U) {
     double *squreSumPerCol;
 
     squreSumPerCol = (double*) calloc(U->rows, sizeof(double));
+    assert(squreSumPerCol != NULL);
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
@@ -532,7 +519,7 @@ Matrix* computeMatrixT(Matrix* U) {
 /* Jacobi algorithm */
 /* ################ */
 
-MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
+MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
     int i, j;
     MaxAbsulteValue m;
     assert(A -> isSymmetric == true);
@@ -540,7 +527,7 @@ MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
     m.value = 0;
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
-            if(i == j) {
+            if (i == j) {
                 continue;
             }
             if (fabs(getMatrixValue(A, i, j)) > fabs(m.value)) {
@@ -550,22 +537,19 @@ MaxAbsulteValue getmaxAbsulteValue(Matrix* A) {
             }
         }
     }
-
     return m;
 }
 
 double getTheta(Matrix* A, MaxAbsulteValue mav) {
     double Aii, Aij, Ajj;
-
     Aij = mav.value;
     Aii = getMatrixValue(A, mav.i, mav.i);
     Ajj = getMatrixValue(A, mav.j, mav.j);
-
     return (Ajj - Aii) / (2 * Aij);
 }
 
 double getT(double theta) {
-    int signTheta = theta >= 0 ? 1 : -1;
+    int signTheta = (theta >= 0) ? 1 : -1;
     return signTheta / (fabs(theta) + sqrt(theta * theta + 1));
 }
 
@@ -621,8 +605,8 @@ double getOffDiagMatrixSquareSum(Matrix* A) {
 }
 
 bool isNeedToStopJabobi(Matrix* A, Matrix* Atag) {
-    double epsilon = 0.001;
-    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) <= epsilon);
+    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) <= EPSILON); 
+    /* ################################################################################## ask Garibi - is 0.0001 ok or should it stay 0.001? */ 
 }
 
 Matrix* jacobiAlgo(Matrix** A_origin) {
@@ -635,11 +619,15 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     V = createUnitMatrix(A -> rows, false);
 
     while (true) {
-        mav = getmaxAbsulteValue(A);
+        mav = getMaxAbsulteValue(A);
         if (mav.value == 0) { /* the Matrix is diagonal */ 
             break;
         }
-        theta = getTheta(A, mav);
+
+        /* ################################################################################# ask Garibi - maybe we should calc all params in a function for readability? */ 
+        /* something like calcParams(&theth, &t, &c, &s) */ 
+
+        theta = getTheta(A, mav); 
         t = getT(theta);
         c = getC(t);
         s = t * c;
@@ -649,7 +637,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
         V = PTemp;
         Atag = createAtag(A, c, s, mav);
         isNeedToStop = isNeedToStopJabobi(A, Atag);
-        freeMatrix(A); /*//////////////////////////////????? maybe need original A in anther step? ////////////////////////////////////////////////////////////*/
+        freeMatrix(A); /* ################################################################################# maybe need original A in anther step? ////////////////////////////////////////////////////////////*/
         A = Atag;
         if (isNeedToStop) {
             break;
@@ -706,14 +694,12 @@ Point** readPointsArray(char *path, int *d, int *numOfPoints) {
             i = 0;
         }
     }
-
+    
     if (*numOfPoints < MAX_NUMBER_OF_POINTS) {
         realloc(pointsArr, (*numOfPoints) * sizeof(Point));
     }
-
     freeMemPoint(point);
     fclose(input);
-    
     return pointsArr;
 }
 
@@ -726,42 +712,39 @@ Goal decide_command(char *arg) {
         } else { 
             printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
             assert(0);
-            return 0; /* check how to exit */
         }
     }
     return 0;
 }
 
-Point** readPointsfromFile(int argc, char *argv[]) {
+Point** readPointsFromFile(int argc, char *argv[]) {
     int k, d, numOfPoints; /* max_iter? */ 
     Goal command;
     char *path;
     Point **pointsArr;
+    bool findK = 0;
     
     assert( !(argc == 3) ); /* if k not provided set to 0 or exit? */ 
-    
     k = atoi(argv[1]); 
-    if (k <= 0) {
-        printf("Invalid Input!"); /* "K is not a valid integer, exits...\n" */
+    if (k < 0) {
+        printf("Invalid Input!\n"); /* "K is not a valid integer, exits...\n" */
         assert(0);
-        return NULL; /* check how to exit */
+    } else if (k == 0) {
+        findK = 1;
     }
-    
     command = decide_command(argv[2]);
     path = argv[3];
     pointsArr = readPointsArray(path, &d, &numOfPoints);
-    
-    if (k >= numOfPoints) {
-        printf("Invalid Input!"); /* "K is not smaller then n, exits...\n" */ 
+    if (k > numOfPoints) {
+        printf("Invalid Input!\n"); /* "K is not smaller then n, exits...\n" */ 
         assert(0);
-        return 0; /* check how to exit */
     }
     printPointsArr(pointsArr, numOfPoints);
-    printf("command: %d\n", command); /* set for gcc no to cry */ 
+    printf("command: %d\tfindK: %d\n", command, findK); /* set for gcc no to cry */ 
     return pointsArr;
 }
 
 int main(int argc, char *argv[]) {
-    readPointsfromFile(argc, argv);
+    readPointsFromFile(argc, argv);
     return 0;
 }
