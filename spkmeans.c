@@ -396,6 +396,7 @@ Point* copy_point(Point *point) {
 double computeDist(Point *point1, Point *point2) {
     double dist = 0, tmp = 0; 
     int i;
+    assert(point1->d == point2->d);
     for (i = 0; i < point1 -> d; i++) {
         tmp = getDataPointVal(point1, i) - getDataPointVal(point2,i);
         dist += tmp * tmp;
@@ -677,6 +678,120 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     }
     *A_origin = A;
     return V;
+}
+
+/* ######### */
+/* Link List */
+/* ######### */
+
+void addToList(linked_list* list, Point* point) {
+    node *n = (node*)malloc(sizeof(node));
+    assert(n != NULL);
+    n -> point = point;
+    n -> next = NULL;
+    (list->length)++;
+    if(list -> head == NULL) {
+        list -> head = n;
+        list -> tail = n;
+    } else {
+        list -> tail -> next = n;
+        list -> tail = n;
+    }
+}
+
+void freeList(linked_list* list, int isDeletePoint) {
+    freeNode(list -> head, isDeletePoint);
+    free(list);
+}
+
+void freeNode(node* n, int isDeletePoint) {
+    if (n != NULL) {
+        freeNode(n -> next, isDeletePoint);
+        if(isDeletePoint == true){
+            free(n -> point);
+        }
+        free(n);
+    }
+}
+
+/* ####### */
+/* K-Means */
+/* ####### */
+
+Point* getPointFropPointArr(PointsArray *pointsArr, int i) {
+    return (pointsArr->points)[i];
+}
+
+PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, int max_iter) {
+    int iter, isChanged;
+
+    for (iter = 0; iter < max_iter; iter++) {
+        isChanged = computeCluster(k, centroidsArr, pointsArr);
+        if (!isChanged) {
+            break;
+        }
+    }
+    return centroidsArr;
+}
+
+bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr) {
+    double minDist, dist;
+    int minIndex, i, j;
+    bool isChanged;
+    Point* point;
+    linked_list** clusters = (linked_list**)calloc(k, sizeof(linked_list*));
+    assert(clusters != NULL);
+
+    for(i = 0; i < k; i++) {
+        clusters[i] = (linked_list*)calloc(1, sizeof(linked_list));
+        assert(clusters[i] != NULL);
+    }
+
+    for (i = 0; i < (pointsArr->n); i++) {
+        point = getPointFropPointArr(pointsArr, i);
+        minIndex = 0;
+        minDist = computeDist(getPointFropPointArr(centroidsArr, 0), point);
+        for (j = 1; j < k; j++) {
+            dist = computeDist(getPointFropPointArr(centroidsArr, j), point);
+            if (dist < minDist) {
+                minDist = dist;
+                minIndex = j;
+            }
+        }
+        addToList(clusters[minIndex], point);
+    }
+
+    isChanged = computeNewCentroids(clusters, centroidsArr, k);
+    for (i = 0; i < k; i++){
+        freeList(clusters[i], false);
+    }
+    free(clusters);
+    return isChanged;
+}
+
+bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int k) {
+    Point* oldCentroid, *newCentroid;
+    int i, j, t, isChanged = false;
+    double temp;
+    node* n;
+    for (i = 0; i < k; i++) {
+        oldCentroid = copy_point(getPointFropPointArr(centroidsArr, i));
+        newCentroid = getPointFropPointArr(centroidsArr, i);
+        j = 0;
+        for (n = (clusters[i]) -> head; n != NULL; n = n-> next) {
+            for(t = 0; t < newCentroid->d; t++) {
+                temp = getDataPointVal(newCentroid, t);
+                temp = (temp * j + getDataPointVal(n->point,t)) / (j + 1);
+                setDataPointVal(newCentroid, t, temp);
+            }
+            j++;
+        }
+        if (isPointsEquel(oldCentroid, newCentroid) == false) {
+            isChanged = true;
+        }
+        free(oldCentroid);
+    }
+    return isChanged;
 }
 
 /* ######################## */

@@ -28,6 +28,11 @@ typedef struct {
 } Point;
 
 typedef struct {
+    Point** points;
+    int n;
+} PointsArray;
+
+typedef struct {
     double value;
     Point* vector;
 } Eigen;
@@ -44,6 +49,22 @@ typedef enum {
     lnorm = 3, 
     jacobi = 4
 } Goal;
+
+struct node
+{
+    Point* point;
+    struct node *next;
+};
+
+struct linked_list
+{
+    struct node *head;
+    struct node *tail;
+    int length;
+};
+
+typedef struct node node;
+typedef struct linked_list linked_list;
 
 /* get input and validation */
 Goal decide_command(char *arg);
@@ -115,3 +136,16 @@ bool isNeedToStopJabobi(Matrix* A, Matrix* Atag);
 void calacJacobiParams(Matrix* A, MaxAbsulteValue mav, double *c, double *s);
 void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V);
 Matrix* jacobiAlgo(Matrix** A_origin);
+
+/* K - Means */
+Point* getPointFropPointArr(PointsArray *pointsArr, int i);
+PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, int max_iter);
+bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr);
+bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int k);
+void printOutput(double** centroids, int k, int d);
+void freeDouble2DArray(double **centroids, int k);
+
+/* Link List */
+void addToList(linked_list* list, Point* point);
+void freeList(linked_list* list, int isDeletePoint);
+void freeNode(node* n, int isDeletePoint);
