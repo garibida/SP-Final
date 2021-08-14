@@ -537,7 +537,7 @@ void testReadPoints_Input0() {
     Point **pointsArr, **pointsArrRes;
     int i, testResult = true, argc = 3, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_0.txt"}; /* set path! */
-    pointsArr = readPointsfromFile(argc, argv);
+    pointsArr = readPointsFromFile(argc, argv);
     pointsArrRes = pointsForTestE0();
 
     for (i = 0; i < numOfPoint; i++) {
@@ -556,7 +556,7 @@ void testReadPoints_Input1() {
     Point **pointsArr, **pointsArrRes;
     int i, testResult = true, argc = 3, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_1.txt"}; /* set path! */
-    pointsArr = readPointsfromFile(argc, argv);
+    pointsArr = readPointsFromFile(argc, argv);
     pointsArrRes = pointsForTestE1();
 
     for (i = 0; i < numOfPoint; i++) {

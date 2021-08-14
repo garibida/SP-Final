@@ -720,7 +720,8 @@ Point** readPointsArray(char *path, int *d, int *numOfPoints) {
     }
     
     if (*numOfPoints < MAX_NUMBER_OF_POINTS) {
-        realloc(pointsArr, (*numOfPoints) * sizeof(Point));
+        pointsArr = (Point **) realloc(pointsArr, (*numOfPoints) * sizeof(Point*));
+        assert(pointsArr != NULL);
     }
     freeMemPoint(point);
     fclose(input);
