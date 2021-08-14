@@ -68,11 +68,11 @@ typedef struct linked_list linked_list;
 
 /* get input and validation */
 Goal decide_command(char *arg);
-Point** readPointsArray(char *path, int *d, int *numOfPoints);
-Point** readPointsFromFile(int argc, char *argv[]);
+PointsArray* readPointsArray(char *path);
+PointsArray* readPointsFromFile(int argc, char *argv[]);
 
 /* Algorith's operations section */
-Matrix* computeMatrixW(Point** pointsArr, int n);
+Matrix* computeMatrixW(PointsArray *pointsArr);
 Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
 Matrix* computeMatrixL(Matrix *W, Matrix *D); 
@@ -87,13 +87,18 @@ Point* createPoint(int d);
 void setDataPointVal(Point *point, int index, double value);
 double getDataPointVal(Point *point, int index);
 void printPoint(Point* point);
-void printPointsArr(Point **pointArr, int numOfPoints);
 int isPointsEquel(Point *point1, Point* point2);
 double computeDist(Point *point1, Point* point2);
 double computeDistW(Point *point1, Point* point2); 
 void freeMemPoint(Point *point);
-void freeMemPointsArr(Point **pointsArr, int n);
 Point* copy_point(Point *point);
+/* Points Arr */
+PointsArray* createPointsArr(int n);
+Point* getPointFromArr(PointsArray* pointsArr, int i);
+void setPointInArr(PointsArray* pointsArr, int i, Point* point);
+void reallocPointsArr(PointsArray* pointsArr, int n);
+void printPointsArr(PointsArray *pointsArr);
+void freeMemPointsArr(PointsArray *pointsArr);
 
 /* Matrix's operations section */
 void freeMatrix(Matrix* A);
@@ -138,7 +143,6 @@ void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V)
 Matrix* jacobiAlgo(Matrix** A_origin);
 
 /* K - Means */
-Point* getPointFropPointArr(PointsArray *pointsArr, int i);
 PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, int max_iter);
 bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr);
 bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int k);

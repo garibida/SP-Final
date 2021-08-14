@@ -346,13 +346,6 @@ void printPoint(Point *point) {
     printf("\n");
 }
 
-void printPointsArr(Point **pointArr, int numOfPoints) {
-    int i;
-    for (i = 0; i < numOfPoints; i++) {
-        printPoint(pointArr[i]);
-    }
-}
-
 int isPointsEquel(Point *point1, Point *point2){
     int i;
     for (i = 0; i < point1 -> d; i++) {
@@ -370,14 +363,6 @@ void freeMemPoint(Point *point) {
     }
 }
 
-void freeMemPointsArr(Point **pointsArr, int n) {
-    int i; 
-    for (i = 0; i < n; i++) {
-        freeMemPoint(pointsArr[i]);
-    }
-    free(pointsArr);
-}
-
 Point* copy_point(Point *point) {
     int i;
     double val;
@@ -387,6 +372,46 @@ Point* copy_point(Point *point) {
         setDataPointVal(newPoint, i, val);
     }
     return newPoint;
+}
+
+/* Points Array` */
+
+PointsArray* createPointsArr(int n)  {
+    PointsArray* pointsArr = (PointsArray*) malloc(sizeof(pointsArr));
+    assert(pointsArr != NULL);
+    pointsArr->n = n;
+    pointsArr->points = (Point**) calloc(n, sizeof(Point *));
+    return pointsArr;
+}
+
+Point* getPointFromArr(PointsArray* pointsArr, int i) {
+    return (pointsArr->points)[i];
+}
+
+void setPointInArr(PointsArray* pointsArr, int i, Point* point) {
+    (pointsArr->points)[i] = point;
+}
+
+void reallocPointsArr(PointsArray* pointsArr, int n) {
+    pointsArr->points = (Point **) realloc(pointsArr->points, n * sizeof(Point*));
+    assert(pointsArr != NULL);
+    pointsArr->n = n;
+}
+
+void printPointsArr(PointsArray *pointsArr) {
+    int i;
+    for (i = 0; i < (pointsArr->n); i++) {
+        printPoint(getPointFromArr(pointsArr,i));
+    }
+}
+
+void freeMemPointsArr(PointsArray *pointsArr) {
+    int i;
+    for (i = 0; i < (pointsArr->n); i++) {
+        freeMemPoint(getPointFromArr(pointsArr, i));
+    }
+    free(pointsArr->points);
+    free(pointsArr);
 }
 
 /* ######### */
@@ -409,17 +434,17 @@ double computeDistW(Point *point1, Point *point2) {
     return exp(-0.5 * dist);
 }
 
-Matrix* computeMatrixW(Point **pointsArr, int dim) {
+Matrix* computeMatrixW(PointsArray *pointsArr) {
     Matrix *W; 
     Point *pointI, *pointJ;
     int i, j;
     double wVal;
-    W = createMatrix(dim, dim, true); 
+    W = createMatrix(pointsArr->n, pointsArr->n, true);
     
     MatrixIterRows(W, i) {
-        pointI = pointsArr[i]; 
+        pointI = getPointFromArr(pointsArr, i);
         MatrixIterColsSym(W, i, j) {
-            pointJ = pointsArr[j];
+            pointJ = getPointFromArr(pointsArr, j);
             if (i == j) {
                 setMatrixValue(W, i, j, 0);
             } else {
@@ -718,10 +743,6 @@ void freeNode(node* n, int isDeletePoint) {
 /* K-Means */
 /* ####### */
 
-Point* getPointFropPointArr(PointsArray *pointsArr, int i) {
-    return (pointsArr->points)[i];
-}
-
 PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, int max_iter) {
     int iter, isChanged;
 
@@ -748,11 +769,11 @@ bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr) {
     }
 
     for (i = 0; i < (pointsArr->n); i++) {
-        point = getPointFropPointArr(pointsArr, i);
+        point = getPointFromArr(pointsArr, i);
         minIndex = 0;
-        minDist = computeDist(getPointFropPointArr(centroidsArr, 0), point);
+        minDist = computeDist(getPointFromArr(centroidsArr, 0), point);
         for (j = 1; j < k; j++) {
-            dist = computeDist(getPointFropPointArr(centroidsArr, j), point);
+            dist = computeDist(getPointFromArr(centroidsArr, j), point);
             if (dist < minDist) {
                 minDist = dist;
                 minIndex = j;
@@ -775,8 +796,8 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
     double temp;
     node* n;
     for (i = 0; i < k; i++) {
-        oldCentroid = copy_point(getPointFropPointArr(centroidsArr, i));
-        newCentroid = getPointFropPointArr(centroidsArr, i);
+        oldCentroid = copy_point(getPointFromArr(centroidsArr, i));
+        newCentroid = getPointFromArr(centroidsArr, i);
         j = 0;
         for (n = (clusters[i]) -> head; n != NULL; n = n-> next) {
             for(t = 0; t < newCentroid->d; t++) {
@@ -798,17 +819,16 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
 /* Get input and validation */
 /* ######################## */
 
-Point** readPointsArray(char *path, int *d, int *numOfPoints) {
+PointsArray* readPointsArray(char *path) {
     double value, *firstPointValues;
+    int d = 0, numOfPoints = 0;
     char ch;
-    Point **pointsArr, *point;
+    Point *point;
+    PointsArray *pointsArr;
     FILE *input;
     int i = 0;
-    *d = 0; 
-    *numOfPoints = 0;
 
-    pointsArr = (Point**)calloc(MAX_NUMBER_OF_POINTS, sizeof(Point*)); /* free mem */ 
-    assert(pointsArr != NULL);
+    pointsArr = createPointsArr(MAX_NUMBER_OF_POINTS); /* free mem */
 
     firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
     assert(firstPointValues != NULL);
@@ -817,34 +837,34 @@ Point** readPointsArray(char *path, int *d, int *numOfPoints) {
     input = fopen(path, "r");
     assert(input != NULL);
 
-    while ( ( !feof(input) ) && ( (*d) < MAX_FEATURES) ) {
+    while ((!feof(input)) && (d < MAX_FEATURES) ) {
         fscanf(input, "%lf%c", &value, &ch);
-        firstPointValues[ (*d)++ ] = value;
+        firstPointValues[d] = value;
+        d++;
         if (ch == '\n') {
             break;
         }
     }
 
-    pointsArr[0] = createPointWithVals( (*d), firstPointValues);
-    (*numOfPoints)++;
+    setPointInArr(pointsArr, 0, createPointWithVals(d, firstPointValues));
+    numOfPoints++;
     free(firstPointValues);
-    point = createPoint( (*d) );  
+    point = createPoint(d);
 
     while(!feof(input)) {
         fscanf(input, "%lf%c", &value, &ch);
         setDataPointVal(point, i ,value);
         i++;
-        if (i == (*d) ) { 
-            pointsArr[ (*numOfPoints) ] = point;
-            point = createPoint( (*d) );
-            (*numOfPoints)++;
+        if (i == d) {
+            setPointInArr(pointsArr, numOfPoints, point);
+            point = createPoint(d);
+            numOfPoints++;
             i = 0;
         }
     }
     
-    if (*numOfPoints < MAX_NUMBER_OF_POINTS) {
-        pointsArr = (Point **) realloc(pointsArr, (*numOfPoints) * sizeof(Point*));
-        assert(pointsArr != NULL);
+    if (numOfPoints < MAX_NUMBER_OF_POINTS) {
+        reallocPointsArr(pointsArr, numOfPoints);
     }
     freeMemPoint(point);
     fclose(input);
@@ -865,11 +885,11 @@ Goal decide_command(char *arg) {
     return 0;
 }
 
-Point** readPointsFromFile(int argc, char *argv[]) {
-    int k, d, numOfPoints; /* max_iter? */ 
+PointsArray* readPointsFromFile(int argc, char *argv[]) {
+    int k; /* max_iter? */ 
     Goal command;
     char *path;
-    Point **pointsArr;
+    PointsArray *pointsArr;
     bool findK = 0;
     
     assert( !(argc == 3) ); /* if k not provided set to 0 or exit? */ 
@@ -882,15 +902,16 @@ Point** readPointsFromFile(int argc, char *argv[]) {
     }
     command = decide_command(argv[2]);
     path = argv[3];
-    pointsArr = readPointsArray(path, &d, &numOfPoints);
-    if (k > numOfPoints) {
+    pointsArr = readPointsArray(path);
+    if (k > pointsArr->n) {
         printf("Invalid Input!\n"); /* "K is not smaller then n, exits...\n" */ 
         assert(0);
     }
-    printPointsArr(pointsArr, numOfPoints);
+    printPointsArr(pointsArr);
     printf("command: %d\tfindK: %d\n", command, findK); /* set for gcc no to cry */ 
     return pointsArr;
 }
+
 
 /*
 int main(int argc, char *argv[]) {
