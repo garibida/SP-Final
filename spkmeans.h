@@ -112,4 +112,6 @@ Matrix* createP(int dim, double c, double s, MaxAbsulteValue mav);
 Matrix* createAtag(Matrix* A, double c, double s, MaxAbsulteValue mav);
 double getOffDiagMatrixSquareSum(Matrix* A);
 bool isNeedToStopJabobi(Matrix* A, Matrix* Atag);
+void calacJacobiParams(Matrix* A, MaxAbsulteValue mav, double *c, double *s);
+void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V);
 Matrix* jacobiAlgo(Matrix** A_origin);

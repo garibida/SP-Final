@@ -627,17 +627,34 @@ double getOffDiagMatrixSquareSum(Matrix* A) {
 }
 
 bool isNeedToStopJabobi(Matrix* A, Matrix* Atag) {
-    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) <= EPSILON); 
+    double epsilon = 0.001;
+    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) <= epsilon); 
     /* ################################################################################## ask Garibi - is 0.0001 ok or should it stay 0.001? */ 
 }
 
+void calcJacobiParams(Matrix* A, MaxAbsulteValue mav, double *c, double *s) {
+    double theta, t;
+    theta = getTheta(A, mav);
+    t = getT(theta);
+    *c = getC(t);
+    *s = t * (*c);
+}
+
+void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V) {
+    Matrix *Pi, *PTemp;
+    Pi = createP(A -> rows, c, s, mav);
+    PTemp = multiply(*V, Pi);
+    freeMatrix(*V);
+    *V = PTemp;
+}
+
 Matrix* jacobiAlgo(Matrix** A_origin) {
-    Matrix *Pi, *V, *PTemp, *Atag, *A;
+    Matrix *V, *Atag, *A;
     MaxAbsulteValue mav;
     bool isNeedToStop;
     int i;
     const int MAX_ITER = 100;
-    double theta, c, s, t;
+    double c, s;
     A = *A_origin;
     assert(A -> rows == A -> cols);
     V = createUnitMatrix(A -> rows, false);
@@ -648,17 +665,8 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
             break;
         }
 
-        /* ################################################################################# ask Garibi - maybe we should calc all params in a function for readability? */ 
-        /* something like calcParams(&theth, &t, &c, &s) */ 
-
-        theta = getTheta(A, mav); 
-        t = getT(theta);
-        c = getC(t);
-        s = t * c;
-        Pi = createP(A -> rows, c, s, mav);
-        PTemp = multiply(V, Pi);
-        freeMatrix(V);
-        V = PTemp;
+        calcJacobiParams(A, mav, &c, &s);
+        calcJacobiV(A, mav, c, s, &V);
         Atag = createAtag(A, c, s, mav);
         isNeedToStop = isNeedToStopJabobi(A, Atag);
         freeMatrix(A); /* ################################################################################# maybe need original A in anther step? ////////////////////////////////////////////////////////////*/
@@ -769,7 +777,9 @@ Point** readPointsFromFile(int argc, char *argv[]) {
     return pointsArr;
 }
 
+/*
 int main(int argc, char *argv[]) {
     readPointsFromFile(argc, argv);
     return 0;
 }
+*/

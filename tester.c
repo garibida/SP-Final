@@ -579,12 +579,12 @@ void testMain(bool isDebug) {
     TestE1(isDebug);
 }
 
-/*
 int main() {
     testMain(false);
-    
+
+    /*
     testReadPoints(false, path);
+    */
     
     return 0;
 }
-*/
