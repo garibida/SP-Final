@@ -249,6 +249,16 @@ Point* createPointFromMatrixCol(Matrix* A, int col) {
     return point;
 }
 
+Point* createPointFromMatrixRow(Matrix* A, int row) {
+    Point *p;
+    int i;
+    p = createPoint(A -> cols);
+    MatrixIterCols(A, i) {
+        setDataPointVal(p, i, getMatrixValue(A, row, i));
+    }
+    return p;
+}
+
 int compareEigens(const void *a, const void *b) {
     Eigen *A, *B;
     A = (Eigen *) a;
@@ -276,6 +286,18 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
 
     qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); /* ########################################################### check if the in order of vector of the same value is meaningful */ 
     return eigens;
+}
+
+Point* convertMatrixRowsToPoints(Matrix* A) {
+    int i;
+    Point *points;
+    points = (Point *) calloc(A->rows, sizeof(Point));
+    assert(points != NULL);
+    MatrixIterRows(A, i) {
+        points[i] = *createPointFromMatrixRow(A, i);
+    }
+
+    return points;
 }
 
 /* ######################## */

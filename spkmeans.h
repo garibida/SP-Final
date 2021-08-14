@@ -91,8 +91,10 @@ Matrix* multiply(Matrix* A, Matrix* B);
 bool isMatrixEqual(Matrix *A, Matrix *B);
 void printMatrix(Matrix* A);
 Point* createPointFromMatrixCol(Matrix* A, int col);
+Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
 Eigens_Arr* getSortedEigen(Matrix* A);
+Point* convertMatrixRowsToPoints(Matrix* A);
 
 /* Jacobi algorithm */
 typedef struct
