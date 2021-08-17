@@ -9,6 +9,7 @@
 #define MAX_NUMBER_OF_POINTS 1000
 #define MAX_FEATURES 10
 #define EPSILON 0.0001 /* set to 4 digits after the dot */ 
+#define EPSILON_YACOBI 0.001
 
 
 typedef double** Matrix_data;
@@ -69,7 +70,6 @@ typedef struct linked_list linked_list;
 /* get input and validation */
 Goal decide_command(char *arg);
 PointsArray* readPointsArray(char *path);
-PointsArray* readPointsFromFile(int argc, char *argv[]);
 
 /* Algorith's operations section */
 Matrix* computeMatrixW(PointsArray *pointsArr);
@@ -121,7 +121,6 @@ Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
 Eigens_Arr* getSortedEigen(Matrix* A);
 void freeEigens(Eigens_Arr *eigens);
-Point* convertMatrixRowsToPoints(Matrix* A);
 PointsArray* matrixToPointsArray(Matrix *A);
 
 /* Jacobi algorithm */
@@ -139,7 +138,7 @@ double getC(double t);
 Matrix* createP(int dim, double c, double s, MaxAbsulteValue mav);
 Matrix* createAtag(Matrix* A, double c, double s, MaxAbsulteValue mav);
 double getOffDiagMatrixSquareSum(Matrix* A);
-bool isNeedToStopJabobi(Matrix* A, Matrix* Atag);
+bool isNeedToStopJacobi(Matrix* A, Matrix* Atag);
 void calacJacobiParams(Matrix* A, MaxAbsulteValue mav, double *c, double *s);
 void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V);
 Matrix* jacobiAlgo(Matrix** A_origin);
