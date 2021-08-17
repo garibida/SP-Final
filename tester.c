@@ -8,9 +8,9 @@
 /* test section */
 void testMain(bool isDebug);
 void testMultiplyMatrixs(bool isDebug);
-Point** pointsForTestE0();
+PointsArray* pointsForTestE0();
 void TestE0(bool isDebug);
-Point** pointsForTestE1();
+PointsArray* pointsForTestE1();
 void TestE1(bool isDebug);
 void testJacobi(bool isDebug);
 void testEigen(bool isDebug);
@@ -78,8 +78,8 @@ void testMultiplyMatrixs(bool isDebug) {
     freeMatrix(D);
 }
 
-Point** pointsForTestE0() {
-    Point **pointsArr;
+PointsArray* pointsForTestE0() {
+    PointsArray *pointsArr;
     int numOfPoints = 5;
     int dim = 4;
     double pointVal1[4] = {0.1255,-0.4507,-0.232,-0.0987};
@@ -88,28 +88,26 @@ Point** pointsForTestE0() {
     double pointVal4[4] = {-0.3324,0.2877,0.3182,0.3166}; 
     double pointVal5[4] = {0.1958,-0.0248,0.0681,0.2088};
 
-    pointsArr = calloc(numOfPoints, sizeof(Point));
-    assert(pointsArr != NULL); 
+    pointsArr = createPointsArr(numOfPoints);
     
-    pointsArr[0] = createPointWithVals(dim, pointVal1);
-    pointsArr[1] = createPointWithVals(dim, pointVal2);
-    pointsArr[2] = createPointWithVals(dim, pointVal3);
-    pointsArr[3] = createPointWithVals(dim, pointVal4);
-    pointsArr[4] = createPointWithVals(dim, pointVal5);
+    setPointInArr(pointsArr, 0, createPointWithVals(dim, pointVal1));
+    setPointInArr(pointsArr, 1, createPointWithVals(dim, pointVal2));
+    setPointInArr(pointsArr, 2, createPointWithVals(dim, pointVal3));
+    setPointInArr(pointsArr, 3, createPointWithVals(dim, pointVal4));
+    setPointInArr(pointsArr, 4, createPointWithVals(dim, pointVal5));
     return pointsArr;
 }
 
 void TestE0(bool isDebug) {
-    Point **pointsArr;
+    PointsArray *pointsArr;
     Matrix *W, *WA, *D, *DA, *L, *LA;
-    int numOfPoints = 5; 
 
     /* Genarate points arr as input */
     pointsArr = pointsForTestE0();
-    W = computeMatrixW(pointsArr, numOfPoints);
+    W = computeMatrixW(pointsArr);
 
     /* Calculate Matrix W */
-    WA = createMatrix(numOfPoints, numOfPoints, true);
+    WA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(WA, 0 ,0, 0.0);
     setMatrixValue(WA, 0 ,1, 0.5776);
     setMatrixValue(WA, 0 ,2, 0.6478);
@@ -128,7 +126,7 @@ void TestE0(bool isDebug) {
 
     if (isDebug == 1) {
         printf("\nTestE0 - points array: \n");
-        printPointsArr(pointsArr, numOfPoints);
+        printPointsArr(pointsArr);
         printf("\nTestE0 - Matrix W calculated: \n");
         printMatrix(W);
         printf("\nTestE0 - Matrix WA correct Matrix\n");
@@ -142,7 +140,7 @@ void TestE0(bool isDebug) {
     /* Calculate Matrix D */
     D = computeMatrixD(W);    
     
-    DA = createMatrix(numOfPoints, numOfPoints, true);
+    DA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(DA, 0 ,0, 2.5372);
     setMatrixValue(DA, 1 ,1, 2.5644);
     setMatrixValue(DA, 2 ,2, 2.6098);
@@ -164,7 +162,7 @@ void TestE0(bool isDebug) {
 
     L = computeMatrixLnorm(W,D);
     
-    LA = createMatrix(numOfPoints, numOfPoints, true);
+    LA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(LA, 0 ,0, 1.0);
     setMatrixValue(LA, 0 ,1, -0.2264);
     setMatrixValue(LA, 0 ,2, -0.2517);
@@ -202,11 +200,11 @@ void TestE0(bool isDebug) {
     freeMatrix(DA);
     freeMatrix(L);
     freeMatrix(LA);
-    freeMemPointsArr(pointsArr, 3);
+    freeMemPointsArr(pointsArr);
 }
 
-Point** pointsForTestE1() {
-    Point **pointsArr;
+PointsArray* pointsForTestE1() {
+    PointsArray *pointsArr;
     int numOfPoints = 8;
     int dim = 5;
     double pointVal1[5] = {-0.1119,0.3605,0.2079,0.1336,0.0439};
@@ -218,31 +216,29 @@ Point** pointsForTestE1() {
     double pointVal7[5] = {-0.4696,-0.2751,-0.4395,-0.3948,-0.0979};
     double pointVal8[5] = {-0.4219,0.4115,0.304,0.4548,0.1747};
 
-    pointsArr = calloc(numOfPoints, sizeof(Point));
-    assert(pointsArr != NULL); 
+    pointsArr = createPointsArr(numOfPoints); 
     
-    pointsArr[0] = createPointWithVals(dim, pointVal1);
-    pointsArr[1] = createPointWithVals(dim, pointVal2);
-    pointsArr[2] = createPointWithVals(dim, pointVal3);
-    pointsArr[3] = createPointWithVals(dim, pointVal4);
-    pointsArr[4] = createPointWithVals(dim, pointVal5);
-    pointsArr[5] = createPointWithVals(dim, pointVal6);
-    pointsArr[6] = createPointWithVals(dim, pointVal7);
-    pointsArr[7] = createPointWithVals(dim, pointVal8);
+    setPointInArr(pointsArr, 0, createPointWithVals(dim, pointVal1));
+    setPointInArr(pointsArr, 1, createPointWithVals(dim, pointVal2));
+    setPointInArr(pointsArr, 2, createPointWithVals(dim, pointVal3));
+    setPointInArr(pointsArr, 3, createPointWithVals(dim, pointVal4));
+    setPointInArr(pointsArr, 4, createPointWithVals(dim, pointVal5));
+    setPointInArr(pointsArr, 5, createPointWithVals(dim, pointVal6));
+    setPointInArr(pointsArr, 6, createPointWithVals(dim, pointVal7));
+    setPointInArr(pointsArr, 7, createPointWithVals(dim, pointVal8));
     return pointsArr;
 }
 
 void TestE1(bool isDebug) {
-    Point **pointsArr;
+    PointsArray *pointsArr;
     Matrix *W, *WA, *D, *DA, *L, *LA;
-    int numOfPoints = 8; 
 
     /* Genarate points arr as input */
     pointsArr = pointsForTestE1();
-    W = computeMatrixW(pointsArr, numOfPoints);
+    W = computeMatrixW(pointsArr);
 
     /* Calculate Matrix W */
-    WA = createMatrix(numOfPoints, numOfPoints, true);
+    WA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(WA, 0 ,0, 0.0);
     setMatrixValue(WA, 0 ,1, 0.7598);
     setMatrixValue(WA, 0 ,2, 0.6679);
@@ -289,7 +285,7 @@ void TestE1(bool isDebug) {
 
     if (isDebug == 1) {
         printf("\nTestE1 - points array: \n");
-        printPointsArr(pointsArr, numOfPoints);
+        printPointsArr(pointsArr);
         printf("\nTestE1 - Matrix W calculated: \n");
         printMatrix(W);
         printf("\nTestE1 - Matrix A correct Matrix\n");
@@ -303,7 +299,7 @@ void TestE1(bool isDebug) {
     /* Calculate Matrix D */
     D = computeMatrixD(W);    
     
-    DA = createMatrix(numOfPoints, numOfPoints, true);
+    DA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(DA, 0 ,0, 5.0340);
     setMatrixValue(DA, 1 ,1, 4.9143);
     setMatrixValue(DA, 2 ,2, 4.3239);
@@ -328,7 +324,7 @@ void TestE1(bool isDebug) {
 
     L = computeMatrixLnorm(W,D);
     
-    LA = createMatrix(numOfPoints, numOfPoints, true);
+    LA = createMatrix(pointsArr->n, pointsArr->n, true);
     setMatrixValue(LA, 0 ,0, 1.0);
     setMatrixValue(LA, 0 ,1, -0.1528);
     setMatrixValue(LA, 0 ,2, -0.1432);
@@ -390,7 +386,7 @@ void TestE1(bool isDebug) {
     freeMatrix(DA);
     freeMatrix(L);
     freeMatrix(LA);
-    freeMemPointsArr(pointsArr, numOfPoints);
+    freeMemPointsArr(pointsArr);
 }
 
 void testJacobi(bool isDebug) {
@@ -534,14 +530,14 @@ void testEigen(bool isDebug) {
 }
 
 void testReadPoints_Input0() {
-    Point **pointsArr, **pointsArrRes;
+    PointsArray *pointsArr, *pointsArrRes;
     int i, testResult = true, argc = 3, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_0.txt"}; /* set path! */
-    pointsArr = readPointsfromFile(argc, argv);
+    pointsArr = readPointsFromFile(argc, argv);
     pointsArrRes = pointsForTestE0();
 
     for (i = 0; i < numOfPoint; i++) {
-        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+        if (!isPointsEquel(getPointFromArr(pointsArr, i), getPointFromArr(pointsArrRes, i))) {
             testResult = false;
             break;
         }
@@ -553,14 +549,14 @@ void testReadPoints_Input0() {
 }
 
 void testReadPoints_Input1() {
-    Point **pointsArr, **pointsArrRes;
+    PointsArray *pointsArr, *pointsArrRes;
     int i, testResult = true, argc = 3, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_1.txt"}; /* set path! */
-    pointsArr = readPointsfromFile(argc, argv);
+    pointsArr = readPointsFromFile(argc, argv);
     pointsArrRes = pointsForTestE1();
 
     for (i = 0; i < numOfPoint; i++) {
-        if ( !isPointsEquel(pointsArr[i], pointsArrRes[i])) {
+        if (!isPointsEquel(getPointFromArr(pointsArr, i), getPointFromArr(pointsArrRes, i))) {
             testResult = false;
             break;
         }
@@ -580,11 +576,13 @@ void testMain(bool isDebug) {
 }
 
 /*
+
 int main() {
     testMain(false);
-    
+
     testReadPoints(false, path);
     
     return 0;
 }
+
 */
