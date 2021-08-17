@@ -575,14 +575,16 @@ void testMain(bool isDebug) {
     TestE1(isDebug);
 }
 
-/*
+#if (TESTER == 1)
 
 int main() {
     testMain(false);
 
+    /*
     testReadPoints(false, path);
-    
+    */
+
     return 0;
 }
 
-*/
+#endif

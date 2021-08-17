@@ -89,7 +89,7 @@ void updateMatrixSymmertircStatus(Matrix* A) {
     int i, j;
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
-            if(data[i][j] != data[j][i]) {
+            if(fabs(data[i][j] - data[j][i]) > EPSILON) {
                 A -> isSymmetric = false;
                 return;
             }
@@ -587,14 +587,16 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     D2 = computeMatrixDMinusHalf(D);
     I = createUnitMatrix(W->rows, true);
     tmp = multiply(multiply(D2, W), D2);
+    updateMatrixSymmertircStatus(tmp);
     return sub(I, tmp);
 }
 
  /* ################################################################################################ */
 
 int eigengapGetK(Eigens_Arr* eigens) {
-    int delta, max_delta = 0, max_index = 0, i;
-    Eigen *arr = eigens->arr;
+    int max_index = 0, i;
+    double delta, max_delta = 0;
+    Eigen *arr = eigens -> arr;
 
     for (i = 0; i < (eigens->length) / 2; i++) {
         assert(arr[i].value <= arr[i + 1].value); /* ########################################################### FOR DEBUG */
@@ -1114,18 +1116,18 @@ Goal decide_command(char *arg) {
     return 0;
 }
 
- /* ################################################################################################ */
+#if (TESTER == 0)
 
 int main(int argc, char *argv[]) {
     PointsArray *points, *centroids;
     Goal goal;
     char *path;
-    int k, max_iter = 100; /*################################################WHAT???################################## */
-    assert( !(argc == 3) ); /* if k not provided set to 0 or exit? */ 
+    int k, max_iter = 300;
+    assert(argc == 4);
     
     path = argv[3];
     points = readPointsArray(path);
-    
+
     k = atoi(argv[1]);
     if ((k < 0) || (k > points->n)) {
         printf("Invalid Input!\n");
@@ -1144,5 +1146,8 @@ int main(int argc, char *argv[]) {
     centroids = kmeans(points, centroids, k, max_iter);
     printCentroids(centroids);
     freeMemPointsArr(centroids);
-    return 0; /* check how to exit */ 
+
+    return 0;
 }
+
+#endif
