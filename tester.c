@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h> /* check */
+#include <math.h> 
 
 /* test section */
 void testMain(bool isDebug);
@@ -531,9 +531,9 @@ void testEigen(bool isDebug) {
 
 void testReadPoints_Input0() {
     PointsArray *pointsArr, *pointsArrRes;
-    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    int i, testResult = true, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_0.txt"}; /* set path! */
-    pointsArr = readPointsFromFile(argc, argv);
+    pointsArr = readPointsArray(argv[2]);
     pointsArrRes = pointsForTestE0();
 
     for (i = 0; i < numOfPoint; i++) {
@@ -550,9 +550,9 @@ void testReadPoints_Input0() {
 
 void testReadPoints_Input1() {
     PointsArray *pointsArr, *pointsArrRes;
-    int i, testResult = true, argc = 3, numOfPoint = 5; 
+    int i, testResult = true, numOfPoint = 5; 
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_1.txt"}; /* set path! */
-    pointsArr = readPointsFromFile(argc, argv);
+    pointsArr = readPointsArray(argv[2]);
     pointsArrRes = pointsForTestE1();
 
     for (i = 0; i < numOfPoint; i++) {

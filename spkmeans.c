@@ -297,7 +297,14 @@ int compareEigens(const void *a, const void *b) {
     Eigen *A, *B;
     A = (Eigen *) a;
     B = (Eigen *) b;
-    return (A -> value < B -> value) ? -1 : (A -> value > B -> value);
+    
+    if (A->value == B->value) { /* sort by index */
+        return (A->index < B->index) ? -1 : 1; 
+    } else if (A->value < B->value) {
+        return -1; /* A first */ 
+    } else {
+        return 1; /* B first */
+    }
 }
 
  /* ################################################################################################ */
@@ -317,6 +324,7 @@ Eigens_Arr* getSortedEigen(Matrix *A) {
 
     MatrixIterCols(V, i) {
         (eigens->arr)[i].value = getMatrixValue(A, i, i);
+        (eigens->arr)[i].index = i;
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
 
