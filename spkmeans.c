@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h> /* check */
+#include <math.h>
 
 /* ################################################################################################ */
 /*                               Matrix operations section                                          */
