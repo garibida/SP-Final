@@ -6,6 +6,7 @@
 #define MatrixIterCols(A, j) for ((j) = 0; (j) < ((A) -> cols); (j)++)
 #define MatrixIterColsSym(A, i, j) for ((j) = 0; (j) <= (i); (j)++)
 #define MAX_CMDS 3
+#define ENUM_COUNT 5
 #define MAX_NUMBER_OF_POINTS 1000
 #define MAX_FEATURES 10
 #define EPSILON 0.0001 /* set to 4 digits after the dot */ 

@@ -258,7 +258,10 @@ void printMatrix(Matrix* A) { /* for debug #####################################
     printf("===================\n");
     MatrixIterRows(A,i) {
         MatrixIterCols(A,j) {
-            printf("%.4f    ", getMatrixValue(A,i,j));
+            printf("%.4f", getMatrixValue(A,i,j));
+            if(j != (A->cols) - 1) {
+                printf(",");
+            }
         }
         printf("\n");
     }
@@ -1066,7 +1069,7 @@ PointsArray* readPointsArray(char *path) {
         fscanf(input, "%lf%c", &value, &ch);
         firstPointValues[d] = value;
         d++;
-        if (ch == '\n') {
+        if (ch == '\n' || ch == '\r') {
             break;
         }
     }
@@ -1101,14 +1104,13 @@ PointsArray* readPointsArray(char *path) {
 Goal decide_command(char *arg) {
     int enumIndex;
     char *commands[] = {"spk", "wam", "ddg", "lnorm", "jacobi"};
-    for (enumIndex = 0; enumIndex < MAX_CMDS; enumIndex++) {
+    for (enumIndex = 0; enumIndex < ENUM_COUNT; enumIndex++) {
         if (strcmp(commands[enumIndex], arg) == 0) {
             return enumIndex; /* since spk == 0 in enum Goal, the correct value will set, if found */
-        } else { 
-            printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
-            assert(0);
         }
     }
+    printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
+    assert(0);
     return 0;
 }
 
