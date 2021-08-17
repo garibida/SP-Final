@@ -120,7 +120,9 @@ Point* createPointFromMatrixCol(Matrix* A, int col);
 Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
 Eigens_Arr* getSortedEigen(Matrix* A);
+void freeEigens(Eigens_Arr *eigens);
 Point* convertMatrixRowsToPoints(Matrix* A);
+PointsArray* matrixToPointsArray(Matrix *A);
 
 /* Jacobi algorithm */
 typedef struct
@@ -146,10 +148,14 @@ Matrix* jacobiAlgo(Matrix** A_origin);
 PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, int max_iter);
 bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr);
 bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int k);
-void printOutput(double** centroids, int k, int d);
-void freeDouble2DArray(double **centroids, int k);
+PointsArray* getIntialCentroids(PointsArray *pointsArr, int k);
+void printCentroids(PointsArray* centroids);
 
 /* Link List */
 void addToList(linked_list* list, Point* point);
 void freeList(linked_list* list, int isDeletePoint);
 void freeNode(node* n, int isDeletePoint);
+
+/* Main Functions */
+void matrixPrinter(PointsArray *points ,Goal goal);
+int doSpk(PointsArray **points, int k);

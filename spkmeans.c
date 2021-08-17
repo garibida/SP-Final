@@ -266,7 +266,7 @@ int compareEigens(const void *a, const void *b) {
     return (A -> value < B -> value) ? -1 : (A -> value > B -> value);
 }
 
-Eigens_Arr* getSortedEigen(Matrix* A) {
+Eigens_Arr* getSortedEigen(Matrix *A) {
     Matrix *V;
     Eigens_Arr *eigens;
     int i;
@@ -288,13 +288,35 @@ Eigens_Arr* getSortedEigen(Matrix* A) {
     return eigens;
 }
 
-Point* convertMatrixRowsToPoints(Matrix* A) {
+void freeEigens(Eigens_Arr *eigens) {
+    int i;
+    for (i = 0; i < (eigens->length); i++) {
+        freeMemPoint((eigens->arr)[i].vector);
+    }
+    free(eigens);    
+}
+
+Point* convertMatrixRowsToPoints(Matrix *A) { /* #####################################################################Delete?################# */
     int i;
     Point *points;
     points = (Point *) calloc(A->rows, sizeof(Point));
     assert(points != NULL);
     MatrixIterRows(A, i) {
         points[i] = *createPointFromMatrixRow(A, i);
+    }
+
+    return points;
+}
+
+PointsArray* matrixToPointsArray(Matrix *A) {
+    PointsArray *points;
+    Point *point;
+    int i;
+
+    points = createPointsArr(A->rows);
+    MatrixIterRows(A, i) {
+        point = createPointFromMatrixRow(A, i);
+        setPointInArr(points, i, point);
     }
 
     return points;
@@ -815,6 +837,102 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
     return isChanged;
 }
 
+PointsArray* getIntialCentroids(PointsArray *pointsArr, int k) {
+    PointsArray *centroidsArr;
+    int i;
+
+    centroidsArr = createPointsArr(k);
+    for (i = 0; i < k; i++) {
+        setPointInArr(centroidsArr, i, copy_point(getPointFromArr(pointsArr, i)));
+    }
+
+    return centroidsArr;
+}
+
+void printCentroids(PointsArray* centroids) {
+    int i, j;
+    Point *centroid;
+    for (i = 0; i < (centroids->n); i++) {
+        centroid = getPointFromArr(centroids, i);
+        for (j = 0; j < (centroid->d); j++) {
+            printf("%.4f", (centroid->data)[j]);
+            if(j != (centroid->d) - 1){
+                printf(",");
+            }
+        }
+        printf("\n");
+    }
+}
+
+/* ############## */
+/* Main Functions */
+/* ############## */
+
+void matrixPrinter(PointsArray *points ,Goal goal) {
+    Matrix *W, *D, *Lnorm;
+    Eigens_Arr *eigens;
+
+    W = computeMatrixW(points);
+    freeMemPointsArr(points); /* #############################################################################need later?########################################################### */
+    if (goal == wam) {
+        printMatrix(W); /* #################################################################Check printing##################################################### */
+        freeMatrix(W);
+        return;
+    }
+
+    D = computeMatrixD(W);
+    if (goal == ddg) {
+        printMatrix(D); /* #################################################################Check printing##################################################### */
+        freeMatrix(W);
+        freeMatrix(D);
+        return;
+    }
+
+    Lnorm = computeMatrixLnorm(W, D);
+    freeMatrix(W);
+    freeMatrix(D);
+    if (goal == lnorm) {
+        printMatrix(Lnorm); /* #################################################################Check printing##################################################### */
+        freeMatrix(Lnorm);
+        return;
+    }
+
+    eigens = getSortedEigen(Lnorm);
+    freeMatrix(Lnorm);
+    if (goal == jacobi) {
+        /* #############################################################################print Eigens########################################################### */
+    }
+    freeEigens(eigens);
+}
+
+int doSpk(PointsArray **points, int k) {
+    Matrix *W, *D, *Lnorm, *U, *T;
+    Eigens_Arr *eigens;
+
+    /* Stage 1 */
+    W = computeMatrixW(*points);
+    freeMemPointsArr(*points); /* #############################################################################need later?########################################################### */
+    /* Stage 2 */
+    D = computeMatrixD(W);
+    Lnorm = computeMatrixLnorm(W, D);
+    freeMatrix(W);
+    freeMatrix(D);
+    /* Stage 3 */
+    eigens = getSortedEigen(Lnorm);
+    freeMatrix(Lnorm);
+    k = (k == 0) ? eigengapGetK(eigens) : k;
+    /* Stage 4 */
+    U = computeMatrixU(eigens, k);
+    freeEigens(eigens);
+    /* Stage 5 */
+    T = computeMatrixT(U);
+    freeMatrix(U);
+
+    *points = matrixToPointsArray(T);
+    freeMatrix(T);
+    return k;
+}
+
 /* ######################## */
 /* Get input and validation */
 /* ######################## */
@@ -913,9 +1031,29 @@ PointsArray* readPointsFromFile(int argc, char *argv[]) {
 }
 
 
-/*
+
 int main(int argc, char *argv[]) {
-    readPointsFromFile(argc, argv);
+    PointsArray *points, *centroids;
+    Goal goal;
+    int k, max_iter = 100; /*################################################WHAT???################################## */
+
+    points = readPointsFromFile(argc, argv);
+    k = atoi(argv[1]);
+    if (k < 0) {
+        printf("Invalid Input!\n");
+        assert(0);
+    }
+    goal = decide_command(argv[2]);
+
+    if (goal != spk) {
+        matrixPrinter(points, goal);
+        return 0;
+    }
+    
+    k = doSpk(&points, k);
+    centroids = getIntialCentroids(points, k);
+    centroids = kmeans(points, centroids, k, max_iter);
+    printCentroids(centroids);
+    freeMemPointsArr(centroids);
     return 0;
 }
-*/
