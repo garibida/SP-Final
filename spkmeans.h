@@ -39,6 +39,7 @@ typedef struct {
 typedef struct {
     double value;
     Point* vector;
+    int index;
 } Eigen;
 
 typedef struct {
