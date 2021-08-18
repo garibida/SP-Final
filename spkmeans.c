@@ -224,6 +224,8 @@ void freeMatrix(Matrix *A) {
     free(A);
 }
 
+ /* ################################################################################################ */
+
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
     bool isSymmetric;
@@ -1137,7 +1139,7 @@ int main(int argc, char *argv[]) {
     points = readPointsArray(path);
 
     k = atoi(argv[1]);
-    if ((k < 0) || (k > points->n)) {
+    if ((k < 0) || (k >= points->n)) {
         printf("Invalid Input!\n");
         assert(0);
     } 
