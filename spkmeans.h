@@ -2,7 +2,7 @@
 #define false 0
 #define TestMode 1
 
-#define TESTER 1
+#define TESTER 0
 
 #define MatrixIterRows(A, i) for ((i) = 0; (i) < ((A) -> rows); (i)++)
 #define MatrixIterCols(A, j) for ((j) = 0; (j) < ((A) -> cols); (j)++)
