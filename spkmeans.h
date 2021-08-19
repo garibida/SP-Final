@@ -125,6 +125,7 @@ Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
 Eigens_Arr* getSortedEigen(Matrix* A);
 void freeEigens(Eigens_Arr *eigens);
+void printEigens(Eigens_Arr *eigens);
 PointsArray* matrixToPointsArray(Matrix *A);
 
 /* Jacobi algorithm */

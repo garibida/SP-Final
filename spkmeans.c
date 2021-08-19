@@ -347,6 +347,19 @@ void freeEigens(Eigens_Arr *eigens) {
 
  /* ################################################################################################ */
 
+void printEigens(Eigens_Arr *eigens) {
+    int i;
+    Eigen eigen;
+
+    for (i = 0; i < (eigens->length); i++) {
+        eigen = (eigens->arr)[i];
+        printf("index=%d, value=%f\n", i, eigen.value);
+        printPoint(eigen.vector);
+    }
+}
+
+ /* ################################################################################################ */
+
 PointsArray* matrixToPointsArray(Matrix *A) {
     PointsArray *points;
     Point *point;
@@ -661,12 +674,14 @@ double* getRowsSqureRootSum(Matrix* U) {
 Matrix* computeMatrixT(Matrix* U) {
     Matrix *T;
     int i, j;
+    double value;
     double *squreSumPerRow = getRowsSqureRootSum(U);
     T = createMatrix(U->rows, U->cols, false);
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
-            setMatrixValue(T, i, j, getMatrixValue(U, i, j) / squreSumPerRow[i]);
+            value = (getMatrixValue(U, i, j) == 0) ? 0 : getMatrixValue(U, i, j) / squreSumPerRow[i];
+            setMatrixValue(T, i, j, value);
         }
     }
 
@@ -1033,7 +1048,7 @@ int doSpk(PointsArray **points, int k) {
 
     /* Stage 1 */
     W = computeMatrixW(*points);
-    freeMemPointsArr(*points); /* #############################################################################need later?########################################################### */
+    freeMemPointsArr(*points);
     /* Stage 2 */
     D = computeMatrixD(W);
     Lnorm = computeMatrixLnorm(W, D);
