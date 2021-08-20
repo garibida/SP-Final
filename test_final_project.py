@@ -113,8 +113,8 @@ if __name__ == "__main__":
     goals = ["wam", "ddg", "lnorm", "jacobi", "spk"]
     result_file = "tmp.txt"
     for index in range(10):
-        vectors_filename = f".\\tests\\test{index}.csv"
-        lnorm_filename = f".\\tests\\test{index}_lnorm_output.txt"
+        vectors_filename = f"./tests/test{index}.csv"
+        lnorm_filename = f"./tests/test{index}_lnorm_output.txt"
         for goal in goals:
             # k matter only for spk
             if goal == "spk":
@@ -126,10 +126,10 @@ if __name__ == "__main__":
                     curr_file = lnorm_filename
                 else:
                     curr_file = vectors_filename
-                os.system(f"python spkmeans.py {k_value} {goal} {curr_file} > {result_file}")
+                os.system(f"python3 spkmeans.py {k_value} {goal} {curr_file} > {result_file}")
                 vectors = np.array(get_vectors(vectors_filename))
                 if goal == "spk":
-                    correct_matrix = get_vectors(f".\\tests\\test{index}_{goal}_{k_value}_output.txt")
+                    correct_matrix = get_vectors(f"./tests/test{index}_{goal}_{k_value}_output.txt")
                 else:
                     if goal == "wam":
                         correct_matrix = build_weight_matrix(vectors)

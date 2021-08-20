@@ -217,6 +217,7 @@ Matrix* multiply(Matrix* A, Matrix* B) {
 
 void freeMatrix(Matrix *A) {
     int i;
+    assert(A->rows != 0);
     MatrixIterRows(A, i) {
         free((A -> data)[i]);
     }
@@ -257,7 +258,6 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
 
 void printMatrix(Matrix* A) { /* for debug ################################################################################## */
     int i, j;
-    printf("===================\n");
     MatrixIterRows(A,i) {
         MatrixIterCols(A,j) {
             printf("%.4f", getMatrixValue(A,i,j));
@@ -311,7 +311,7 @@ int compareEigens(const void *a, const void *b) {
 
  /* ################################################################################################ */
 
-Eigens_Arr* getSortedEigen(Matrix *A) {
+Eigens_Arr* getSortedEigen(Matrix **A) {
     Matrix *V;
     Eigens_Arr *eigens;
     int i;
@@ -319,13 +319,13 @@ Eigens_Arr* getSortedEigen(Matrix *A) {
     eigens = (Eigens_Arr*) malloc(sizeof(Eigens_Arr));
     assert(eigens != NULL);
 
-    V = jacobiAlgo(&A);
+    V = jacobiAlgo(A);
     eigens->length = V->rows;
     eigens->arr = (Eigen*) calloc(eigens->length, sizeof(Eigen));
     assert(eigens->arr != NULL);
 
     MatrixIterCols(V, i) {
-        (eigens->arr)[i].value = getMatrixValue(A, i, i);
+        (eigens->arr)[i].value = getMatrixValue(*A, i, i);
         (eigens->arr)[i].index = i;
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
@@ -846,6 +846,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
         }
     }
     *A_origin = A;
+
     return V;
 }
 
@@ -1032,7 +1033,7 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
         return;
     }
 
-    eigens = getSortedEigen(Lnorm);
+    eigens = getSortedEigen(&Lnorm);
     freeMatrix(Lnorm);
     if (goal == jacobi) {
         /* #############################################################################print Eigens########################################################### */
@@ -1055,7 +1056,7 @@ int doSpk(PointsArray **points, int k) {
     freeMatrix(W);
     freeMatrix(D);
     /* Stage 3 */
-    eigens = getSortedEigen(Lnorm);
+    eigens = getSortedEigen(&Lnorm);
     freeMatrix(Lnorm);
     k = (k == 0) ? eigengapGetK(eigens) : k;
     /* Stage 4 */
