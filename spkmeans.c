@@ -681,6 +681,9 @@ double* getRowsSqureRootSum(Matrix* U) {
 
     MatrixIterRows(U, i) {
         squreSumPerCol[i] = sqrt(squreSumPerCol[i]);
+        if (squreSumPerCol[i] == 0) { /* debug! */ 
+            printf("squreSumPerCol[%d]: %f\n", i, squreSumPerCol[i]);
+        }
     }
 
     return squreSumPerCol;
@@ -1077,9 +1080,21 @@ int doSpk(PointsArray **points, int k) {
     k = (k == 0) ? eigengapGetK(eigens) : k;
     /* Stage 4 */
     U = computeMatrixU(eigens, k);
+    
+    /* debug! */
+    printf("Matrix U:\n");
+    printMatrix(U);
+    printf("\n##################################\n");
+
     freeEigens(eigens);
     /* Stage 5 */
     T = computeMatrixT(U);
+
+    /* debug! */
+    printf("Matrix T:\n");
+    printMatrix(T);
+    printf("\n##################################\n");
+
     freeMatrix(U);
 
     *points = matrixToPointsArray(T);
