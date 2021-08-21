@@ -2,112 +2,136 @@
 
 #include "spkmeans.h"
 
-static double **convertPyListToCentroidsArray(PyObject *cetroidsList, int d);
-static linked_list *convertPyListToPointsLinkList(PyObject *datapointsList, int d);
+static PointsArray *convertPyListToPointsArray(PyObject *datapointsList);
+PyObject *convertPointsArrayToPyList(PointsArray *pointsArray);
 PyObject *convertCentroidsArrayToPyList(double** array, int k, int d);
-static PyObject *fit( PyObject *self, PyObject *args );
+static PyObject *fit(PyObject *self, PyObject *args);
+static PyObject *doSpkPython(PyObject *self, PyObject *args);
+static PyObject *printMatrixes(PyObject *self, PyObject *args);
 
-static double **convertPyListToCentroidsArray(PyObject *cetroidsList, int d) {
-    PyObject *centroidItem, *pointItem;
-    double **centroids, *new_point;
-    int cetroidsLength, i, j;
-
-    cetroidsLength = PyObject_Length(cetroidsList); 
-    assert(cetroidsLength == -1); // PyObject_Length return -1 for error
-
-    // insert centroids to double array
-    centroids = calloc(cetroidsLength, sizeof(double*));
-    assert(centroids != NULL);
-
-    for (i = 0; i < cetroidsLength; i++) {        
-        centroidItem = PyList_GetItem(cetroidsList, i);
-        assert(centroidItem =! NULL);
-        new_point = calloc(d, sizeof(double));
-        for (j = 0; j < d; j++) {
-            pointItem = PyList_GetItem(centroidItem, j);
-            assert(pointItem =! NULL);
-            assert(PyFloat_Check(pointItem));
-            new_point[j] = PyFloat_AsDouble(pointItem);
-        }
-        centroids[i] = new_point;
-    }
-    return centroids;
-}
-
-static linked_list *convertPyListToPointsLinkList(PyObject *datapointsList, int d) {
+static PointsArray *convertPyListToPointsArray(PyObject *datapointsList) {
     PyObject *datapointsItem, *pointItem;
-    linked_list* pointsList;
-    double *new_point;
-    int datapointsLength, i, j;
 
-    datapointsLength = PyObject_Length(datapointsList);
-    assert(datapointsLength == -1); // PyObject_Length return -1 for error
-    pointsList = (linked_list*)calloc(1,sizeof(linked_list));
-    pointsList->length = 0;
+    PointsArray* pointsArr;
+    Point *newPoint;
+
+    int n, d, i, j;
+
+    n = PyObject_Length(datapointsList);
+    assert(n == -1); // PyObject_Length return -1 for error
+
+    pointsArr = createPointsArr(n);
 
     // insert datapoints to linked list
-    for (i = 0; i < datapointsLength; i++) {        
+    for (i = 0; i < n; i++) {
         datapointsItem = PyList_GetItem(datapointsList, i);
         assert(datapointsItem =! NULL);
-        new_point = calloc(d, sizeof(double)); 
+
+        d = PyObject_Length(datapointsItem);
+        assert(d == -1); // PyObject_Length return -1 for error
+
+        newPoint = createPoint(d);
         for (j = 0; j < d; j++) {
             pointItem = PyList_GetItem(datapointsItem, j);
             assert(pointItem =! NULL);
             assert(PyFloat_Check(pointItem));
-            new_point[j] = PyFloat_AsDouble(pointItem);
+            setDataPointVal(newPoint, j, PyFloat_AsDouble(pointItem));
         }
-        addToList(pointsList, new_point);
+        setPointInArr(pointsArr, i, newPoint);
     }
-    return pointsList;
+    return pointsArr;
 }
 
-PyObject *convertCentroidsArrayToPyList(double** array, int k, int d) {
-    PyObject * lst = PyList_New(k), *innerLst;
+PyObject *convertPointsArrayToPyList(PointsArray *pointsArray) {
+    PyObject *lst, *innerLst;
+    Point *point;
+    lst = PyList_New(pointsArray->n);
     int i ,j;
-    for (i = 0; i < k ; i++) {
-        innerLst = PyList_New(d);
-        for (j = 0; j < d; j++) {
-            PyList_SET_ITEM(innerLst, j, Py_BuildValue("d", array[i][j]));
+    for (i = 0; i < (pointsArray->n); i++) {
+        point = getPointFromArr(pointsArray, i);
+        innerLst = PyList_New(point->d);
+        for (j = 0; j < (point->d); j++) {
+            PyList_SET_ITEM(innerLst, j, Py_BuildValue("d", getDataPointVal(point, j)));
         }
         PyList_SET_ITEM(lst, i, innerLst);
     }
-    freeDouble2DArray(array, k);
+    freeMemPointsArr(pointsArray);
     return lst;
 }
 
-static PyObject *fit(PyObject *self, PyObject *args ) {
+static PyObject *fit(PyObject *self, PyObject *args) {
     PyObject *datapointsList, *cetroidsList;
-    int k, max_iter, d;
-    linked_list* pointsList;
-    double **centroids;
-    assert(pointsList != NULL);
-    
-    if (!PyArg_ParseTuple(args, "iiiOO", &k, &d, &max_iter, &datapointsList, &cetroidsList))
+    int k, max_iter = 300;
+    PointsArray *points, *centroids;
+
+    if (!PyArg_ParseTuple(args, "iOO", &k, &datapointsList, &cetroidsList))
         return NULL;
 
-    centroids = convertPyListToCentroidsArray(cetroidsList, d);
-    pointsList = convertPyListToPointsLinkList(datapointsList, d);
-    
-    centroids = kmean(pointsList, centroids, k, max_iter, d);
-    freeList(pointsList, true);
+    centroids = convertPyListToPointsArray(cetroidsList);
+    points = convertPyListToPointsArray(datapointsList);
 
-    return convertCentroidsArrayToPyList(centroids, k, d);
+    centroids = kmeans(points, centroids, k, max_iter);
+    freeMemPointsArr(points);
+    printCentroids(centroids);
+    freeMemPointsArr(centroids);
+
+    Py_RETURN_NONE;
 }
 
-static PyMethodDef Mykmeanssp_FunctionsTable[] = {
+static PyObject *doSpkPython(PyObject *self, PyObject *args) {
+    PyObject *datapointsList, *lst;
+    int k;
+    PointsArray *points;
+    assert(pointsList != NULL);
+    
+    if (!PyArg_ParseTuple(args, "iO", &k, &datapointsList))
+        return NULL;
+
+    points = convertPyListToPointsArray(datapointsList);
+
+    k = doSpk(&points, k);
+    datapointsList = convertPointsArrayToPyList(points);
+
+    lst = PyList_New(2);
+    PyList_SET_ITEM(lst, 0, Py_BuildValue("i", k));
+    PyList_SET_ITEM(lst, 1, Py_BuildValue("O", datapointsList));
+
+    return lst;
+}
+
+static PyObject *printMatrixes(PyObject *self, PyObject *args) {
+    PyObject *datapointsList;
+    Goal goal;
+    int goal_int;
+    PointsArray *points;
+    
+    if (!PyArg_ParseTuple(args, "iO", &goal_int, &datapointsList))
+        return NULL;
+
+    goal = (Goal) goal_int;
+    points = convertPyListToPointsArray(datapointsList);
+
+    matrixPrinter(points, goal);
+
+    Py_RETURN_NONE;
+}
+
+static PyMethodDef SpkmeansModule_FunctionsTable[] = {
    { "fit", fit, METH_VARARGS, NULL },
+   { "spk", doSpkPython, METH_VARARGS, NULL },
+   { "printMatrixes", printMatrixes, METH_VARARGS, NULL },
    { NULL, NULL, 0, NULL }
 };
 
 // modules definition
-static struct PyModuleDef Mykmeanssp_Module = {
+static struct PyModuleDef SpkmeansModule = {
     PyModuleDef_HEAD_INIT,
-    "spkmeans",     // name of module exposed to Python
-    "spkmeans doc", // module documentation
+    "spkmeansModule",     // name of module exposed to Python
+    "spkmeansModule doc", // module documentation
     -1,
-    Mykmeanssp_FunctionsTable
+    SpkmeansModule_FunctionsTable
 };
 
-PyMODINIT_FUNC PyInit_mykmeanssp(void) {
-    return PyModule_Create(&Mykmeanssp_Module);
+PyMODINIT_FUNC PyInit_spkmeansModule(void) {
+    return PyModule_Create(&SpkmeansModule);
 }

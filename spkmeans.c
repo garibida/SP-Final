@@ -217,12 +217,15 @@ Matrix* multiply(Matrix* A, Matrix* B) {
 
 void freeMatrix(Matrix *A) {
     int i;
+    assert(A->rows != 0);
     MatrixIterRows(A, i) {
         free((A -> data)[i]);
     }
     free(A -> data);
     free(A);
 }
+
+ /* ################################################################################################ */
 
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
@@ -255,7 +258,6 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
 
 void printMatrix(Matrix* A) { /* for debug ################################################################################## */
     int i, j;
-    printf("===================\n");
     MatrixIterRows(A,i) {
         MatrixIterCols(A,j) {
             printf("%.4f", getMatrixValue(A,i,j));
@@ -309,7 +311,7 @@ int compareEigens(const void *a, const void *b) {
 
  /* ################################################################################################ */
 
-Eigens_Arr* getSortedEigen(Matrix *A) {
+Eigens_Arr* getSortedEigen(Matrix **A) {
     Matrix *V;
     Eigens_Arr *eigens;
     int i;
@@ -317,13 +319,13 @@ Eigens_Arr* getSortedEigen(Matrix *A) {
     eigens = (Eigens_Arr*) malloc(sizeof(Eigens_Arr));
     assert(eigens != NULL);
 
-    V = jacobiAlgo(&A);
+    V = jacobiAlgo(A);
     eigens->length = V->rows;
     eigens->arr = (Eigen*) calloc(eigens->length, sizeof(Eigen));
     assert(eigens->arr != NULL);
 
     MatrixIterCols(V, i) {
-        (eigens->arr)[i].value = getMatrixValue(A, i, i);
+        (eigens->arr)[i].value = getMatrixValue(*A, i, i);
         (eigens->arr)[i].index = i;
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
@@ -341,6 +343,19 @@ void freeEigens(Eigens_Arr *eigens) {
         freeMemPoint((eigens->arr)[i].vector);
     }
     free(eigens);    
+}
+
+ /* ################################################################################################ */
+
+void printEigens(Eigens_Arr *eigens) {
+    int i;
+    Eigen eigen;
+
+    for (i = 0; i < (eigens->length); i++) {
+        eigen = (eigens->arr)[i];
+        printf("index=%d, value=%f\n", i, eigen.value);
+        printPoint(eigen.vector);
+    }
 }
 
  /* ################################################################################################ */
@@ -659,12 +674,14 @@ double* getRowsSqureRootSum(Matrix* U) {
 Matrix* computeMatrixT(Matrix* U) {
     Matrix *T;
     int i, j;
+    double value;
     double *squreSumPerRow = getRowsSqureRootSum(U);
     T = createMatrix(U->rows, U->cols, false);
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
-            setMatrixValue(T, i, j, getMatrixValue(U, i, j) / squreSumPerRow[i]);
+            value = (getMatrixValue(U, i, j) == 0) ? 0 : getMatrixValue(U, i, j) / squreSumPerRow[i];
+            setMatrixValue(T, i, j, value);
         }
     }
 
@@ -829,6 +846,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
         }
     }
     *A_origin = A;
+
     return V;
 }
 
@@ -1015,7 +1033,7 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
         return;
     }
 
-    eigens = getSortedEigen(Lnorm);
+    eigens = getSortedEigen(&Lnorm);
     freeMatrix(Lnorm);
     if (goal == jacobi) {
         /* #############################################################################print Eigens########################################################### */
@@ -1031,14 +1049,14 @@ int doSpk(PointsArray **points, int k) {
 
     /* Stage 1 */
     W = computeMatrixW(*points);
-    freeMemPointsArr(*points); /* #############################################################################need later?########################################################### */
+    freeMemPointsArr(*points);
     /* Stage 2 */
     D = computeMatrixD(W);
     Lnorm = computeMatrixLnorm(W, D);
     freeMatrix(W);
     freeMatrix(D);
     /* Stage 3 */
-    eigens = getSortedEigen(Lnorm);
+    eigens = getSortedEigen(&Lnorm);
     freeMatrix(Lnorm);
     k = (k == 0) ? eigengapGetK(eigens) : k;
     /* Stage 4 */
@@ -1137,7 +1155,7 @@ int main(int argc, char *argv[]) {
     points = readPointsArray(path);
 
     k = atoi(argv[1]);
-    if ((k < 0) || (k > points->n)) {
+    if ((k < 0) || (k >= points->n)) {
         printf("Invalid Input!\n");
         assert(0);
     } 

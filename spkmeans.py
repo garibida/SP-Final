@@ -2,10 +2,18 @@ import sys
 from enum import Enum
 import pandas as pd
 import numpy as np
+import spkmeansModule
 
-DEBUG_INPUT = True
+DEBUG_INPUT = False
 MAX_ITER = 300
 GOAL_CHOICES = {"spk", "wam", "ddg", "lnorm", "jacobi"}
+
+class Goal(Enum):
+    spk = 0
+    wam = 1
+    ddg = 2
+    lnorm = 3
+    jacobi = 4
 
 def readArgs():
     assert(len(sys.argv) != 3)
@@ -17,30 +25,26 @@ def readArgs():
     if (k < 0): 
         print("Invalid Input!\n") # "K is not positive integer, exits..."
         assert(False)
-    
-    findK = 1 if (k == 0) else 0
 
     try:
-        command = sys.argv[2]
-        if (command not in GOAL_CHOICES): 
-            print("Invalid Input!\n")
-            assert(False)
+        goal = Goal[sys.argv[2]]
     except ValueError:
         print("Invalid Input!\n")
         assert(False)
 
-    file_path = ""
     try:
         path = sys.argv[3]
     except ValueError:
         print("Invalid Input!\n") # "file_name: '{file_path}' is not String, exits..."
         assert(False)
     
-    return k, command, path, findK
+    return k, goal, path
 
 def readPointsFromFile(file_path): 
     pointsDf = pd.read_csv(file_path, header=None)
-    return pointsDf.sort_index().to_numpy() # sort needed?
+    #pointsNd = pointsDf.sort_index().to_numpy() # sort needed?
+    pointsNd = pointsDf.to_numpy() # sort needed?
+    return list(map(lambda x: x.tolist(), pointsNd))
 
 def printPointsArr(pointsArr): 
     str = ""
@@ -52,18 +56,52 @@ def printPointsArr(pointsArr):
     
     print(str[:-1])
 
+def kmeans_pp(datapoints, k):
+    np.random.seed(0)
+    r = np.random.choice(len(datapoints))
+    centroids = [(r, datapoints[r])]
+    D = [np.inf for i in range(len(datapoints))]
+
+    Z = 1
+    while(Z < k):
+        for i in range(len(datapoints)):
+            x = datapoints[i]
+            curDist = np.linalg.norm(x - centroids[-1][1]) ** 2
+            D[i] = curDist if (curDist < D[i]) else D[i]
+
+        Z += 1
+        dSum = sum(D)
+        NormalizedD = list(map(lambda d: d / dSum, D))
+        r = np.random.choice(len(datapoints), p=NormalizedD)
+        centroids.append((r, datapoints[r]))
+
+    return centroids
+
 def main():
-    k, command, path, findK = readArgs()
+    k, goal, path = readArgs()
     max_iter = MAX_ITER # reminder if needed
     pointsArray = readPointsFromFile(path)
     
-    if (k > len(pointsArray)):
+    if (k >= len(pointsArray)):
         print("Invalid Input!") # "K is not smaller then n, exits..."
         assert(False)
 
     if (DEBUG_INPUT):
-        print(f"\nk: {k}\nmax_iter: {max_iter}\ncommand: {command}\npath: {path}\n")
+        print(f"\nk: {k}\nmax_iter: {max_iter}\ncommand: {goal}\npath: {path}\n")
         print("points:")
         printPointsArr(pointsArray)
     
+    if goal is not Goal.spk:
+        spkmeansModule.printMatrixes(goal.value, pointsArray)
+        return
+
+    res = spkmeansModule.spk(k, pointsArray)
+    k = res[0]
+    pointsArray = res[1]
+
+
+    centroids = kmeans_pp(np.array(pointsArray), k)
+    centroidsArray = list(map(lambda x: x[1].tolist(), centroids))
+    spkmeansModule.fit(k, pointsArray, centroidsArray)
+
 main()
