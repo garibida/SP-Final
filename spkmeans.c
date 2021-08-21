@@ -138,7 +138,7 @@ void multiply_scalar(Matrix *A, double scalar) {
 
  /* ################################################################################################ */
 
-Matrix* add(Matrix *A, Matrix *B) {
+Matrix* add(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
@@ -161,12 +161,17 @@ Matrix* add(Matrix *A, Matrix *B) {
             }
         }
     }
+
+    if (doFree) {
+        freeMatrix(A);
+        freeMatrix(B);
+    }
     return C;
 }
 
  /* ################################################################################################ */
 
-Matrix* sub(Matrix *A, Matrix *B) {
+Matrix* sub(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
@@ -189,12 +194,17 @@ Matrix* sub(Matrix *A, Matrix *B) {
             }
         }
     }
+
+    if (doFree) {
+        freeMatrix(A);
+        freeMatrix(B);
+    }
     return C;
 }
 
  /* ################################################################################################ */
 
-Matrix* multiply(Matrix* A, Matrix* B) {
+Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
     Matrix* C;
     int i, j, k;
     double value;
@@ -209,6 +219,11 @@ Matrix* multiply(Matrix* A, Matrix* B) {
             }
             setMatrixValue(C, i, j, value);
         }
+    }
+
+    if (doFree) {
+        freeMatrix(A);
+        freeMatrix(B);
     }
     return C;
 }
@@ -329,6 +344,7 @@ Eigens_Arr* getSortedEigen(Matrix **A) {
         (eigens->arr)[i].index = i;
         (eigens->arr)[i].vector = createPointFromMatrixCol(V, i);
     }
+    freeMatrix(V);
 
     qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); 
     /* ########################################################### check if the in order of vector of the same value is meaningful */ 
@@ -342,6 +358,7 @@ void freeEigens(Eigens_Arr *eigens) {
     for (i = 0; i < (eigens->length); i++) {
         freeMemPoint((eigens->arr)[i].vector);
     }
+    free(eigens->arr);
     free(eigens);    
 }
 
@@ -467,7 +484,7 @@ Point* copy_point(Point *point) {
 /* ################################################################################################ */
 
 PointsArray* createPointsArr(int n)  {
-    PointsArray* pointsArr = (PointsArray*) malloc(sizeof(pointsArr));
+    PointsArray* pointsArr = (PointsArray*) malloc(sizeof(PointsArray));
     assert(pointsArr != NULL);
     pointsArr->n = n;
     pointsArr->points = (Point**) calloc(n, sizeof(Point *));
@@ -477,7 +494,7 @@ PointsArray* createPointsArr(int n)  {
  /* ################################################################################################ */
 
 Point* getPointFromArr(PointsArray* pointsArr, int i) {
-    assert(i < pointsArr->n);
+    assert(i < (pointsArr->n));
     return (pointsArr->points)[i];
 }
 
@@ -600,7 +617,7 @@ Matrix* computeMatrixDMinusHalf(Matrix *D) {
  /* ################################################################################################ */
 
 Matrix* computeMatrixL(Matrix *W, Matrix *D) { /* delete??? #################################################################### */
-    return sub(D, W);
+    return sub(D, W, true);
 }
 
  /* ################################################################################################ */
@@ -609,9 +626,9 @@ Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     Matrix *D2, *I, *tmp;
     D2 = computeMatrixDMinusHalf(D);
     I = createUnitMatrix(W->rows, true);
-    tmp = multiply(multiply(D2, W), D2);
+    tmp = multiply(multiply(D2, W, false), D2, true);
     updateMatrixSymmertircStatus(tmp);
-    return sub(I, tmp);
+    return sub(I, tmp, true);
 }
 
  /* ################################################################################################ */
@@ -811,8 +828,7 @@ void calcJacobiParams(Matrix* A, MaxAbsulteValue mav, double *c, double *s) {
 void calcJacobiV(Matrix* A, MaxAbsulteValue mav, double c, double s, Matrix** V) {
     Matrix *Pi, *PTemp;
     Pi = createP(A -> rows, c, s, mav);
-    PTemp = multiply(*V, Pi);
-    freeMatrix(*V);
+    PTemp = multiply(*V, Pi, true);
     *V = PTemp;
 }
 
@@ -964,7 +980,7 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
         if (isPointsEquel(oldCentroid, newCentroid) == false) {
             isChanged = true;
         }
-        free(oldCentroid);
+        freeMemPoint(oldCentroid);
     }
     return isChanged;
 }
@@ -1172,6 +1188,7 @@ int main(int argc, char *argv[]) {
     centroids = kmeans(points, centroids, k, max_iter);
     printCentroids(centroids);
     freeMemPointsArr(centroids);
+    freeMemPointsArr(points);
 
     return 0;
 }
