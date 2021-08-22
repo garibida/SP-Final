@@ -115,7 +115,7 @@ if __name__ == "__main__":
     goals = ["wam", "ddg", "lnorm", "jacobi", "spk"]
     exec = ["python3 spkmeans.py", os.path.join(".", C_file_name)]
     result_file = "tmp.txt"
-    for index in range(10):
+    for index in range(11):
         vectors_filename = os.path.join(".", "tests", f"test{index}.csv")
         lnorm_filename = os.path.join(".", "tests", f"test{index}_lnorm_output.txt")
         for goal in goals:
