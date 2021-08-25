@@ -7,6 +7,7 @@
 
 /* test section */
 void testMain(bool isDebug);
+TestParams createTestParamsInit(int test_index, int dim, int n, int k, Goal goal, char *path);
 void testMultiplyMatrixs(bool isDebug);
 PointsArray* pointsForTestE0();
 void TestE0(bool isDebug);
@@ -19,69 +20,52 @@ void testReadPoints_Input1();
 
 # define isDoubleEqual(_a, _b) (fabs((_a) - (_b)) < 0.0001)
 
+int GLOBAL_TEST_INDEX = 1;
+
+typedef struct {
+    int test_index;
+    int dim; 
+    int n; 
+    int k;
+    Goal goal;
+    char *path;
+    PointsArray *pointsArr;
+    Matrix *W, *D, *Lnorm;
+} TestParams;
 
 /* ############# */
 /* Tests section */
 /* ############# */
 
-void testMultiplyMatrixs(bool isDebug) {
-    Matrix *A, *B, *C, *D;
-    A = createMatrix(3, 3, true);
-    setMatrixValue(A , 0 , 0 , 1.0);
-    setMatrixValue(A , 1 , 0 , 2.0);
-    setMatrixValue(A , 1 , 1 , 3.0);
-    setMatrixValue(A , 2 , 0 , 4.0);
-    setMatrixValue(A , 2 , 1 , 5.0);
-    setMatrixValue(A , 2 , 2 , 6.0);
-    
-    B = createMatrix(3, 2, false);
-    setMatrixValue(B , 0 , 0 , 1.0);
-    setMatrixValue(B , 1 , 0 , 8.0);
-    setMatrixValue(B , 2 , 0 , 7.0);
-    setMatrixValue(B , 0 , 1 , 11.0);
-    setMatrixValue(B , 1 , 1 , 6.0);
-    setMatrixValue(B , 2 , 1 , 1.0);
 
-    if (isDebug) {
-        printf("Matrix A: \n");
-        printMatrix(A);
-        printf("Matrix B: \n");
-        printMatrix(B);
-    }
-    
-    C = multiply(A, B);
-    if (isDebug) {
-        printf("Matrix C calculted: \n");
-        printMatrix(C);
-    }
-
-    D = createMatrix(3, 2, false);
-    setMatrixValue(D , 0 , 0 , 45.0);
-    setMatrixValue(D , 1 , 0 , 61.0);
-    setMatrixValue(D , 2 , 0 , 86.0);
-    setMatrixValue(D , 0 , 1 , 27.0);
-    setMatrixValue(D , 1 , 1 , 45.0);
-    setMatrixValue(D , 2 , 1 , 80.0);
-
-    if (isDebug) {
-        printf("Matrix D result: \n");
-        printMatrix(D);
-    }
-
-    (isMatrixEqual(C,D)) ?
-        printf("'test Multiply Matrixs'\t\tresult: Great!\n") : 
-        printf("'test Multiply Matrixs'\t\tresult: Problem!\n");
-
-    freeMatrix(A);
-    freeMatrix(B);
-    freeMatrix(C);
-    freeMatrix(D);
+TestParams createTestParamsInit(int test_index, int dim, int n, int k, Goal goal, char *path) {
+    TestParams test_params = (TestParams*) calloc(1, sizeof(TestParams));
+    assert(test_params != NULL);
+    test_params.test_index = GLOBAL_TEST_INDEX++;
+    test_params.dim = dim;
+    test_params.n = n;
+    test_params.goal = goal;
+    test_params.path = path;
+    return test_params;
 }
+
+void rintTestParams(TestParams test_params) {
+    printf("\n#########################\n");
+    printf("\t Test Parameters #index: %d\t", test_params.test_index);
+    printf("dim:\t%d\n",test_params.dim);
+    printf("n:\t%d\n",test_params.n);
+    printf("k:\t%d\n",test_params.k);
+    printf("goal:\t%d\n",test_params.goal);
+    printf("path:\t%s\n",test_params.path);
+    printf("\n#########################\n");
+}
+
 
 PointsArray* pointsForTestE0() {
     PointsArray *pointsArr;
-    int numOfPoints = 5;
-    int dim = 4;
+    int dim = 4; 
+    int numOfPoints = 5; 
+
     double pointVal1[4] = {0.1255,-0.4507,-0.232,-0.0987};
     double pointVal2[4] = {0.344,0.344,0.4419,-0.3662}; 
     double pointVal3[4] = {-0.1011,-0.2081,0.4794,-0.4699};
@@ -202,6 +186,62 @@ void TestE0(bool isDebug) {
     freeMatrix(LA);
     freeMemPointsArr(pointsArr);
 }
+
+
+void testMultiplyMatrixs(bool isDebug) {
+    Matrix *A, *B, *C, *D;
+    A = createMatrix(3, 3, true);
+    setMatrixValue(A , 0 , 0 , 1.0);
+    setMatrixValue(A , 1 , 0 , 2.0);
+    setMatrixValue(A , 1 , 1 , 3.0);
+    setMatrixValue(A , 2 , 0 , 4.0);
+    setMatrixValue(A , 2 , 1 , 5.0);
+    setMatrixValue(A , 2 , 2 , 6.0);
+    
+    B = createMatrix(3, 2, false);
+    setMatrixValue(B , 0 , 0 , 1.0);
+    setMatrixValue(B , 1 , 0 , 8.0);
+    setMatrixValue(B , 2 , 0 , 7.0);
+    setMatrixValue(B , 0 , 1 , 11.0);
+    setMatrixValue(B , 1 , 1 , 6.0);
+    setMatrixValue(B , 2 , 1 , 1.0);
+
+    if (isDebug) {
+        printf("Matrix A: \n");
+        printMatrix(A);
+        printf("Matrix B: \n");
+        printMatrix(B);
+    }
+    
+    C = multiply(A, B);
+    if (isDebug) {
+        printf("Matrix C calculted: \n");
+        printMatrix(C);
+    }
+
+    D = createMatrix(3, 2, false);
+    setMatrixValue(D , 0 , 0 , 45.0);
+    setMatrixValue(D , 1 , 0 , 61.0);
+    setMatrixValue(D , 2 , 0 , 86.0);
+    setMatrixValue(D , 0 , 1 , 27.0);
+    setMatrixValue(D , 1 , 1 , 45.0);
+    setMatrixValue(D , 2 , 1 , 80.0);
+
+    if (isDebug) {
+        printf("Matrix D result: \n");
+        printMatrix(D);
+    }
+
+    (isMatrixEqual(C,D)) ?
+        printf("'test Multiply Matrixs'\t\tresult: Great!\n") : 
+        printf("'test Multiply Matrixs'\t\tresult: Problem!\n");
+
+    freeMatrix(A);
+    freeMatrix(B);
+    freeMatrix(C);
+    freeMatrix(D);
+}
+
 
 PointsArray* pointsForTestE1() {
     PointsArray *pointsArr;
@@ -434,7 +474,7 @@ void testJacobi(bool isDebug) {
 }
 
 void testEigen(bool isDebug) {
-    Matrix *A , *U;
+    Matrix *A, *U;
     bool testResult;
     double epsilon = 0.0000001;
     Eigens_Arr *eigensArr;
@@ -530,8 +570,17 @@ void testEigen(bool isDebug) {
 }
 
 void testReadPoints_Input0() {
-    PointsArray *pointsArr, *pointsArrRes;
-    int i, testResult = true, numOfPoint = 5; 
+    int i, test_index = 0;
+    int dim = 4, n = 5; 
+    int k = rand() % n; /* default */ 
+    Goal goal = rand() % ENUM_COUNT;
+    char *path = ".\\Test_files\\Test_files\\input_0.txt";
+    bool testResult = true; 
+    PointsArray pointsArr, PointsArrRes;
+
+    TestParams test_params = createTestParamsInit(test_index, dim, n, k, goal, path);
+    printTestParams(test_params);
+
     char* argv[] = {"3", "spk", ".\\Test_files\\Test_files\\input_0.txt"}; /* set path! */
     pointsArr = readPointsArray(argv[2]);
     pointsArrRes = pointsForTestE0();
