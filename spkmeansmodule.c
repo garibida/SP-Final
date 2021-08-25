@@ -82,7 +82,7 @@ static PyObject *doSpkPython(PyObject *self, PyObject *args) {
     PyObject *datapointsList, *lst;
     int k;
     PointsArray *points;
-    assert(pointsList != NULL);
+    assert(pointsList != NULL); /* what is pointsList? */
     
     if (!PyArg_ParseTuple(args, "iO", &k, &datapointsList))
         return NULL;
