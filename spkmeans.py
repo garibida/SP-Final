@@ -99,9 +99,9 @@ def main():
     k = res[0]
     pointsArray = res[1]
 
-
     centroids = kmeans_pp(np.array(pointsArray), k)
     centroidsArray = list(map(lambda x: x[1].tolist(), centroids))
+    print(",".join([str(int(c[0])) for c in centroids]))
     spkmeansModule.fit(k, pointsArray, centroidsArray)
 
 main()
