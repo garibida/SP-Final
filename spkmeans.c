@@ -271,16 +271,23 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
 
  /* ################################################################################################ */
 
-void printMatrix(Matrix* A) { /* for debug ################################################################################## */
+void printMatrix(Matrix* A) { 
     int i, j;
+    double value;
     MatrixIterRows(A,i) {
         MatrixIterCols(A,j) {
-            printf("%.4f", getMatrixValue(A,i,j));
+            value = getMatrixValue(A,i,j);
+            if (fabs(value) < 0.00005) {
+                value = 0.0000;
+            }
+            printf("%.4f", value);
             if(j != (A->cols) - 1) {
                 printf(",");
             }
         }
-        printf("\n");
+        if (i != (A->rows) - 1) {
+            printf("\n");
+        }
     }
 }
 
@@ -437,6 +444,7 @@ void printPoint(Point *point) {
     int i, dim;
     dim = point->d;
     for (i = 0; i < dim; i++) {
+        /* change! */ 
         printf("%.4f", point -> data[i]);
         if (i != dim - 1) {
             printf(",");

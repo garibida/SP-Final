@@ -8,11 +8,11 @@ input istruction:
 # [ ] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
 
 print instruction: 
-# [ ] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
-# [ ] - printing double: 
-    1. minus zero (-0.0000 -> 0.0000) (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162051)
-    2. round 4 digit up (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
-# [ ] - print spk - print k indexes of the first centroid *only at python not at C" 
+# [V] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
+# printing double: 
+    1. [V] - minus zero (-0.0000 -> 0.0000) (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162051)
+    2. [ ] - round 4 digit up (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
+# [V] - print spk - print k indexes of the first centroid *only at python not at C" 
 
 Yacobi instruction:
 # [ ] - *calc yacobi on matrix given as input and not on lnorm!*

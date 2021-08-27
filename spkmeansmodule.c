@@ -1,5 +1,4 @@
 #include <Python.h>
-
 #include "spkmeans.h"
 
 static PointsArray *convertPyListToPointsArray(PyObject *datapointsList);
