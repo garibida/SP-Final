@@ -1,36 +1,36 @@
 input istruction: 
-# no need to validate input since 2.7.12 says that the input is valid 
-# input file will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
-# point array will have max of 50 points and not 1000
-# each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
-# file will not be empty ()
-# input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
+# [V] - no need to validate input since 2.7.12 says that the input is valid 
+# [V] - input file will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
+# [V] - point array will have max of 50 points and not 1000
+# [V] - each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
+# [V] - file will not be empty ()
+# [ ] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
 
 print instruction: 
-# printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
-# printing double: 
+# [ ] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
+# [ ] - printing double: 
     1. minus zero (-0.0000 -> 0.0000) (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162051)
     2. round 4 digit up (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
-# print spk - print k indexes of the first centroid *only at python not at C" 
+# [ ] - print spk - print k indexes of the first centroid *only at python not at C" 
 
 Yacobi instruction:
-# *calc yacobi on matrix given as input and not on lnorm!*
-# set EPSILON for yacobi to be 1.0e-15 - still relevant? 
-# pivot step - if there are 2 maxvalues chose the one with the lower index (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570, https://moodle.tau.ac.il/mod/forum/discuss.php?d=162299)
-# print yacobi: 
+# [ ] - *calc yacobi on matrix given as input and not on lnorm!*
+# [ ] - set EPSILON for yacobi to be 1.0e-15 - still relevant? 
+# [ ] - pivot step - if there are 2 maxvalues chose the one with the lower index (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570, https://moodle.tau.ac.il/mod/forum/discuss.php?d=162299)
+# [ ] - print yacobi: 
     1. https://moodle.tau.ac.il/mod/forum/discuss.php?d=157582 - first line eigen values, than eigen vectors as rows *not sorted, as we found them*, the sort is relevent only for spk
     also see https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570 Alon Harel comment regarding sorting operation
     2. https://moodle.tau.ac.il/mod/forum/discuss.php?d=159609 - eigen vector from matrix as col
-# [*no answer*] size of input for yacobi - (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162954)
+# [ ] - [*no answer*] size of input for yacobi - (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162954)
 
 Termination instruction: 
-# for errors that are not "Invalid input" (won't be since 2.7.12) print "An Error Has Occured"
+# [ ] - for errors that are not "Invalid input" (won't be since 2.7.12) print "An Error Has Occured"
     we should add exit if got failure for example memory error (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159574) and Python-C API (https://moodle.tau.ac.il/mod/forum/discuss.php?d=160194)
-# keep the mistake in the print (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162426) - Occured instead of Occurred.
-# we can terminate any way we want (assert / exit / return) so far we print the right error (https://moodle.tau.ac.il/mod/forum/discuss.php?d=160062)
+# [V] - keep the mistake in the print (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162426) - Occured instead of Occurred.
+# [V] - we can terminate any way we want (assert / exit / return) so far we print the right error (https://moodle.tau.ac.il/mod/forum/discuss.php?d=160062)
 
 other instructions: 
-# Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
-# 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
-# Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
-# [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
+# [ ] - Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
+# [V] - 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
+# [ ] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
+# [ ] - [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
