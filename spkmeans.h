@@ -7,7 +7,7 @@
 #define MatrixIterRows(A, i)            for ((i) = 0; (i) < ((A) -> rows); (i)++)
 #define MatrixIterCols(A, j)            for ((j) = 0; (j) < ((A) -> cols); (j)++)
 #define MatrixIterColsSym(A, i, j)      for ((j) = 0; (j) <= (i); (j)++)
-#define ASSERT_M(cond, msg)                    if ( !(cond) ) {printf(msg); assert(false);}
+#define ASSERT_M(cond, msg)             if ( !(cond) ) {printf(msg); assert(false);}
 #define MAX_CMDS                        3
 #define ENUM_COUNT                      5
 #define MAX_NUMBER_OF_POINTS            1000 /* set to 50 */ 
@@ -126,10 +126,12 @@ void printMatrix(Matrix* A);
 Point* createPointFromMatrixCol(Matrix* A, int col);
 Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
-Eigens_Arr* getSortedEigen(Matrix **A);
+Eigens_Arr* getEigens(Matrix **A);
+Eigens_Arr* getSortedEigens(Matrix **A);
 void freeEigens(Eigens_Arr *eigens);
 void printEigens(Eigens_Arr *eigens);
 PointsArray* matrixToPointsArray(Matrix *A);
+Matrix* PointsArrayToMatrix(PointsArray *pointsArr);
 
 /* Jacobi algorithm */
 typedef struct
