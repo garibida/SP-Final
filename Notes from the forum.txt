@@ -2,8 +2,9 @@ input istruction:
 # [V] - no need to validate input since 2.7.12 says that the input is valid 
 # [V] - input file will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
 # [V] - point array will have max of 50 points and not 1000
+# [ ] - delete tests with more that 50 points
 # [V] - each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
-# [V] - file will not be empty ()
+# [V] - file will not be empty
 # [ ] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
 
 print instruction: 
