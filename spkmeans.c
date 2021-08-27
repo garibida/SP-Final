@@ -440,17 +440,23 @@ double getDataPointVal(Point *point, int index) {
 
  /* ################################################################################################ */
 
-void printPoint(Point *point) {
+void printPoint(Point *point, bool isLast) {
     int i, dim;
+    double value;
     dim = point->d;
     for (i = 0; i < dim; i++) {
-        /* change! */ 
-        printf("%.4f", point -> data[i]);
+        value = point -> data[i];
+        if (fabs(value) < 0.00005) {
+            value = 0.0000;
+        }
+        printf("%.4f", value);
         if (i != dim - 1) {
             printf(",");
         }
     }
-    printf("\n");
+    if ( !isLast) {
+        printf("\n");
+    }
 }
 
  /* ################################################################################################ */
@@ -523,10 +529,14 @@ void reallocPointsArr(PointsArray* pointsArr, int n) {
 
  /* ################################################################################################ */
 
-void printPointsArr(PointsArray *pointsArr) { /* for debug ####################################################################### */
+void printPointsArr(PointsArray *pointsArr) {
     int i;
+    bool isLast = false;
     for (i = 0; i < (pointsArr->n); i++) {
-        printPoint(getPointFromArr(pointsArr,i));
+        if (i == (pointsArr->n) - 1) {
+            isLast = true;
+        }
+        printPoint(getPointFromArr(pointsArr,i), isLast);
     }
 }
 

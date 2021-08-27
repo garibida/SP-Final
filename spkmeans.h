@@ -92,7 +92,7 @@ Matrix* computeMatrixT(Matrix* U);
 Point* createPoint(int d);
 void setDataPointVal(Point *point, int index, double value);
 double getDataPointVal(Point *point, int index);
-void printPoint(Point* point);
+void printPoint(Point *point, bool isLast);
 int isPointsEquel(Point *point1, Point* point2);
 double computeDist(Point *point1, Point* point2);
 double computeDistW(Point *point1, Point* point2); 
