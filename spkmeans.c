@@ -381,6 +381,7 @@ void freeEigens(Eigens_Arr *eigens) {
 
 void printEigens(Eigens_Arr *eigens) { /* ADddddddddddddddddddd prining issues fix (new line and -0) */
     int i, length;
+    bool isLast;
     Eigen eigen;
     length = eigens->length;
 
@@ -394,7 +395,8 @@ void printEigens(Eigens_Arr *eigens) { /* ADddddddddddddddddddd prining issues f
     printf("\n");
     for (i = 0; i < length; i++) {
         eigen = (eigens->arr)[i];
-        printPoint(eigen.vector, false);
+        isLast = (i == length - 1);
+        printPoint(eigen.vector, isLast);
     }
 }
 
@@ -567,9 +569,7 @@ void printPointsArr(PointsArray *pointsArr) {
     int i;
     bool isLast = false;
     for (i = 0; i < (pointsArr->n); i++) {
-        if (i == (pointsArr->n) - 1) {
-            isLast = true;
-        }
+        isLast = (i == (pointsArr->n) - 1);
         printPoint(getPointFromArr(pointsArr,i), isLast);
     }
 }
@@ -769,14 +769,14 @@ MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
 
     m.value = 0;
     MatrixIterRows(A, i) {
-        MatrixIterColsSym(A, i, j) {
+        MatrixIterColsSymUperTriengle(A, i, j) {
             if (i == j) {
                 continue;
             }
-            if (fabs(getMatrixValue(A, i, j)) > fabs(m.value)) {
-                m.i = j;
-                m.j = i;
-                m.value = getMatrixValue(A, i, j);
+            if (fabs(getMatrixValue(A, j, i)) >= fabs(m.value)) {
+                m.i = i;
+                m.j = j;
+                m.value = getMatrixValue(A, j, i);
             }
         }
     }

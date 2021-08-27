@@ -15,11 +15,11 @@ print instruction:
     2. [V] - round 4 digit up or cut? cut! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
 # [V] - print spk - print k indexes of the first centroid *only at python not at C" 
 
-Yacobi instruction: /* Garibi: is finished? :) */
-# [ ] - *calc yacobi on matrix given as input and not on lnorm!*
-# [ ] - set EPSILON for yacobi to be 1.0e-15 - still relevant? 
-# [ ] - pivot step - if there are 2 maxvalues chose the one with the lower index (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570, https://moodle.tau.ac.il/mod/forum/discuss.php?d=162299)
-# [ ] - print yacobi: 
+Yacobi instruction:
+# [V] - *calc yacobi on matrix given as input and not on lnorm!*
+# [V] - set EPSILON for yacobi to be 1.0e-15 - still relevant? 
+# [V] - pivot step - if there are 2 maxvalues chose the one with the lower index (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570, https://moodle.tau.ac.il/mod/forum/discuss.php?d=162299)
+# [V] - print yacobi:
     1. https://moodle.tau.ac.il/mod/forum/discuss.php?d=157582 - first line eigen values, than eigen vectors as rows *not sorted, as we found them*, the sort is relevent only for spk
     also see https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570 Alon Harel comment regarding sorting operation
     2. https://moodle.tau.ac.il/mod/forum/discuss.php?d=159609 - eigen vector from matrix as col
