@@ -7,12 +7,13 @@
 #define MatrixIterRows(A, i) for ((i) = 0; (i) < ((A) -> rows); (i)++)
 #define MatrixIterCols(A, j) for ((j) = 0; (j) < ((A) -> cols); (j)++)
 #define MatrixIterColsSym(A, i, j) for ((j) = 0; (j) <= (i); (j)++)
+#define MatrixIterColsSymUperTriengle(A, i, j) for ((j) = (i); (j) < ((A) -> cols); (j)++)
 #define MAX_CMDS 3
 #define ENUM_COUNT 5
 #define MAX_NUMBER_OF_POINTS 1000 /* change! */
 #define MAX_FEATURES 1000 /* change! */
 #define EPSILON 0.0001 /* set to 4 digits after the dot */ 
-#define EPSILON_YACOBI 0.001
+#define EPSILON_YACOBI 1.0e-15
 #define ERROR_MSG "An Error Has Occured\n"
 #define INVALID_INPUT_MSG "Invalid Input!\n"
 
