@@ -7,6 +7,9 @@ import spkmeansModule
 DEBUG_INPUT = False
 MAX_ITER = 300
 GOAL_CHOICES = {"spk", "wam", "ddg", "lnorm", "jacobi"}
+ERROR_MSG = "An Error Has Occured\n"
+INVALID_INPUT_MSG = "Invalid Input!\n"
+
 
 class Goal(Enum):
     spk = 0
@@ -20,22 +23,22 @@ def readArgs():
     try:
         k = int(sys.argv[1])
     except ValueError:
-        print("Invalid Input!\n") # "K is not positive integer, exits..."
+        print(INVALID_INPUT_MSG)
         assert(False)
     if (k < 0): 
-        print("Invalid Input!\n") # "K is not positive integer, exits..."
+        print(INVALID_INPUT_MSG)
         assert(False)
 
     try:
         goal = Goal[sys.argv[2]]
     except ValueError:
-        print("Invalid Input!\n")
+        print(INVALID_INPUT_MSG)
         assert(False)
 
     try:
         path = sys.argv[3]
     except ValueError:
-        print("Invalid Input!\n") # "file_name: '{file_path}' is not String, exits..."
+        print(INVALID_INPUT_MSG)
         assert(False)
     
     return k, goal, path
@@ -83,7 +86,7 @@ def main():
     pointsArray = readPointsFromFile(path)
     
     if (k >= len(pointsArray)):
-        print("Invalid Input!") # "K is not smaller then n, exits..."
+        print(INVALID_INPUT_MSG)
         assert(False)
 
     if (DEBUG_INPUT):
