@@ -11,7 +11,7 @@
 
 Matrix* createMatrix(int rows, int cols, bool isSymmetric) {
     Matrix* A = (Matrix*) malloc(sizeof(Matrix));
-    assert(A != NULL);
+    ASSERT_M( (A != NULL), ERROR_MSG );
     A -> rows = rows;
     A -> cols = cols;
     A -> isSymmetric = isSymmetric;
@@ -26,10 +26,10 @@ Matrix_data createMatrixData(int rows, int cols) {
     int i;
 
     data = (Matrix_data) calloc(rows, sizeof(double*));
-    assert(data != NULL);
+    ASSERT_M( (data != NULL), ERROR_MSG );
     for (i = 0; i < rows; i++) {
         data[i] = (double*) calloc(cols, sizeof(double));
-        assert(data[i] != NULL);
+        ASSERT_M( (data[i] != NULL), ERROR_MSG );
     }
     return data;
 }
@@ -41,10 +41,10 @@ Matrix_data createSymmetricMatrixData(int rows) {
     int i;
 
     data = (Matrix_data) calloc(rows, sizeof(double*));
-    assert(data != NULL);
+    ASSERT_M( (data != NULL), ERROR_MSG );
     for (i = 0; i < rows; i++) {
         data[i] = (double*) calloc(i + 1, sizeof(double));
-        assert(data[i] != NULL);
+        ASSERT_M( (data[i] != NULL), ERROR_MSG );
     }
     return data;
 }
@@ -101,7 +101,7 @@ void updateMatrixSymmertircStatus(Matrix* A) {
  /* ################################################################################################ */
 
 double getMatrixValue(Matrix* A, int row, int col) {
-    assert(row < (A -> rows) && col < (A -> cols));
+    assert(row < (A -> rows) && col < (A -> cols)); /* debug */ 
     return ((A -> isSymmetric) && col > row) ?
                 (A -> data)[col][row]:
                 (A -> data)[row][col];
@@ -110,7 +110,7 @@ double getMatrixValue(Matrix* A, int row, int col) {
  /* ################################################################################################ */
 
 void setMatrixValue(Matrix* A, int row, int col, double value) {
-    assert(row < (A -> rows) && col < (A -> cols));
+    assert(row < (A -> rows) && col < (A -> cols)); /* debug */ 
     if ((A -> isSymmetric) && col > row) {
         (A -> data)[col][row] = value;
     } else {
@@ -142,8 +142,8 @@ Matrix* add(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows);
-    assert(A -> cols == B -> cols);
+    assert(A -> rows == B -> rows); /* debug */ 
+    assert(A -> cols == B -> cols); /* debug */ 
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -175,8 +175,8 @@ Matrix* sub(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows);
-    assert(A -> cols == B -> cols);
+    assert(A -> rows == B -> rows); /* debug */ 
+    assert(A -> cols == B -> cols); /* debug */ 
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -208,7 +208,7 @@ Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
     Matrix* C;
     int i, j, k;
     double value;
-    assert(A -> cols == B -> rows);
+    assert(A -> cols == B -> rows); /* debug */ 
 
     C = createMatrix(A -> rows, B -> cols, false);
     MatrixIterRows(C, i) {
@@ -232,7 +232,7 @@ Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
 
 void freeMatrix(Matrix *A) {
     int i;
-    assert(A->rows != 0);
+    assert(A->rows != 0); /* debug */ 
     MatrixIterRows(A, i) {
         free((A -> data)[i]);
     }
@@ -245,8 +245,8 @@ void freeMatrix(Matrix *A) {
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows);
-    assert(A -> cols == B -> cols);
+    assert(A -> rows == B -> rows); /* debug */
+    assert(A -> cols == B -> cols); /* debug */ 
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -339,12 +339,12 @@ Eigens_Arr* getSortedEigen(Matrix **A) {
     int i;
 
     eigens = (Eigens_Arr*) malloc(sizeof(Eigens_Arr));
-    assert(eigens != NULL);
+    ASSERT_M( (eigens != NULL), ERROR_MSG );
 
     V = jacobiAlgo(A);
     eigens->length = V->rows;
     eigens->arr = (Eigen*) calloc(eigens->length, sizeof(Eigen));
-    assert(eigens->arr != NULL);
+    ASSERT_M( (eigens->arr != NULL), ERROR_MSG );
 
     MatrixIterCols(V, i) {
         (eigens->arr)[i].value = getMatrixValue(*A, i, i);
@@ -378,7 +378,7 @@ void printEigens(Eigens_Arr *eigens) {
     for (i = 0; i < (eigens->length); i++) {
         eigen = (eigens->arr)[i];
         printf("index=%d, value=%f\n", i, eigen.value);
-        printPoint(eigen.vector);
+        printPoint(eigen.vector, false);
     }
 }
 
@@ -406,10 +406,10 @@ Point* createPoint(int d) {
     Point *point;
     Point_data data;
     point = (Point*) malloc(sizeof(Point));
-    assert(point != NULL);
+    ASSERT_M( (point != NULL), ERROR_MSG );
     point->d = d;
     data = (Point_data) calloc(d, sizeof(double));
-    assert(data != NULL);
+    ASSERT_M( (data != NULL), ERROR_MSG );
     point->data = data;
     return point;
 }
@@ -499,7 +499,7 @@ Point* copy_point(Point *point) {
 
 PointsArray* createPointsArr(int n)  {
     PointsArray* pointsArr = (PointsArray*) malloc(sizeof(PointsArray));
-    assert(pointsArr != NULL);
+    ASSERT_M( (pointsArr != NULL), ERROR_MSG );
     pointsArr->n = n;
     pointsArr->points = (Point**) calloc(n, sizeof(Point *));
     return pointsArr;
@@ -508,14 +508,14 @@ PointsArray* createPointsArr(int n)  {
  /* ################################################################################################ */
 
 Point* getPointFromArr(PointsArray* pointsArr, int i) {
-    assert(i < (pointsArr->n));
+    assert(i < (pointsArr->n)); /* debug */ 
     return (pointsArr->points)[i];
 }
 
  /* ################################################################################################ */
 
 void setPointInArr(PointsArray* pointsArr, int i, Point* point) {
-    assert(i < pointsArr->n);
+    assert(i < pointsArr->n); /* debug */ 
     (pointsArr->points)[i] = point;
 }
 
@@ -523,7 +523,7 @@ void setPointInArr(PointsArray* pointsArr, int i, Point* point) {
 
 void reallocPointsArr(PointsArray* pointsArr, int n) {
     pointsArr->points = (Point **) realloc(pointsArr->points, n * sizeof(Point*));
-    assert(pointsArr != NULL);
+    ASSERT_M( (pointsArr != NULL), ERROR_MSG );
     pointsArr->n = n;
 }
 
@@ -558,7 +558,7 @@ void freeMemPointsArr(PointsArray *pointsArr) {
 double computeDist(Point *point1, Point *point2) {
     double dist = 0, tmp = 0; 
     int i;
-    assert(point1->d == point2->d);
+    assert(point1->d == point2->d); /* debug */ 
     for (i = 0; i < point1->d; i++) {
         tmp = getDataPointVal(point1, i) - getDataPointVal(point2,i);
         dist += tmp * tmp;
@@ -689,7 +689,7 @@ double* getRowsSqureRootSum(Matrix* U) {
     double *squreSumPerCol;
 
     squreSumPerCol = (double*) calloc(U->rows, sizeof(double));
-    assert(squreSumPerCol != NULL);
+    ASSERT_M( (squreSumPerCol != NULL), ERROR_MSG );
 
     MatrixIterRows(U, i) {
         MatrixIterCols(U, j) {
@@ -699,9 +699,6 @@ double* getRowsSqureRootSum(Matrix* U) {
 
     MatrixIterRows(U, i) {
         squreSumPerCol[i] = sqrt(squreSumPerCol[i]);
-        if (squreSumPerCol[i] == 0) { /* debug! */ 
-            printf("squreSumPerCol[%d]: %f\n", i, squreSumPerCol[i]);
-        }
     }
 
     return squreSumPerCol;
@@ -734,7 +731,7 @@ Matrix* computeMatrixT(Matrix* U) {
 MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
     int i, j;
     MaxAbsulteValue m;
-    assert(A->isSymmetric == true);
+    assert(A->isSymmetric == true); /* debug */ 
 
     m.value = 0;
     MatrixIterRows(A, i) {
@@ -815,7 +812,7 @@ Matrix* createAtag(Matrix* A, double c, double s, MaxAbsulteValue mav) {
 double getOffDiagMatrixSquareSum(Matrix* A) {
     int i, j;
     double sum = 0;
-    assert(A->isSymmetric);
+    assert(A->isSymmetric); /* debug */ 
 
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
@@ -863,7 +860,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     const int MAX_ITER = 100;
     double c, s;
     A = *A_origin;
-    assert(A -> rows == A -> cols);
+    assert(A -> rows == A -> cols); /* debug */ 
     V = createUnitMatrix(A -> rows, false);
 
     for (i = 0; i < MAX_ITER; i++) {
@@ -893,7 +890,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
 
 void addToList(linked_list* list, Point* point) {
     node *n = (node*)malloc(sizeof(node));
-    assert(n != NULL);
+    ASSERT_M( (n != NULL), ERROR_MSG );
     n -> point = point;
     n -> next = NULL;
     (list->length)++;
@@ -950,11 +947,11 @@ bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr) {
     bool isChanged;
     Point* point;
     linked_list** clusters = (linked_list**)calloc(k, sizeof(linked_list*));
-    assert(clusters != NULL);
+    ASSERT_M( (clusters != NULL), ERROR_MSG );
 
     for(i = 0; i < k; i++) {
         clusters[i] = (linked_list*)calloc(1, sizeof(linked_list));
-        assert(clusters[i] != NULL);
+        ASSERT_M( (clusters[i] != NULL), ERROR_MSG );
     }
 
     for (i = 0; i < (pointsArr->n); i++) {
@@ -1099,20 +1096,9 @@ int doSpk(PointsArray **points, int k) {
     /* Stage 4 */
     U = computeMatrixU(eigens, k);
     
-    /* debug! */
-    printf("Matrix U:\n");
-    printMatrix(U);
-    printf("\n##################################\n");
-
     freeEigens(eigens);
     /* Stage 5 */
     T = computeMatrixT(U);
-
-    /* debug! */
-    printf("Matrix T:\n");
-    printMatrix(T);
-    printf("\n##################################\n");
-
     freeMatrix(U);
 
     *points = matrixToPointsArray(T);
@@ -1136,11 +1122,11 @@ PointsArray* readPointsArray(char *path) {
     pointsArr = createPointsArr(MAX_NUMBER_OF_POINTS); /* free mem */
 
     firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
-    assert(firstPointValues != NULL);
+    ASSERT_M( (firstPointValues != NULL), ERROR_MSG );
 
     /* read points from file */
     input = fopen(path, "r");
-    assert(input != NULL);
+    ASSERT_M( (input != NULL), ERROR_MSG );
 
     while ((!feof(input)) && (d < MAX_FEATURES) ) {
         fscanf(input, "%lf%c", &value, &ch);
@@ -1186,8 +1172,7 @@ Goal decide_command(char *arg) {
             return enumIndex; /* since spk == 0 in enum Goal, the correct value will set, if found */
         }
     }
-    printf("Invalid Input!\n"); /* "%s is not a goal.\nchoose from: spk / wam / ddg / lnorm / yacobi\nexits...\n", arg */ 
-    assert(0);
+    ASSERT_M(0, INVALID_INPUT_MSG);
     return 0;
 }
 
@@ -1198,15 +1183,14 @@ int main(int argc, char *argv[]) {
     Goal goal;
     char *path;
     int k, max_iter = 300;
-    assert(argc == 4);
+    ASSERT_M((argc == 4), INVALID_INPUT_MSG);
     
     path = argv[3];
     points = readPointsArray(path);
 
     k = atoi(argv[1]);
     if ((k < 0) || (k >= points->n)) {
-        printf("Invalid Input!\n");
-        assert(0);
+        ASSERT_M(0, INVALID_INPUT_MSG);
     } 
 
     goal = decide_command(argv[2]);
@@ -1219,7 +1203,8 @@ int main(int argc, char *argv[]) {
     k = doSpk(&points, k);
     centroids = getIntialCentroids(points, k);
     centroids = kmeans(points, centroids, k, max_iter);
-    printCentroids(centroids);
+    
+    printPointsArr(centroids);
     freeMemPointsArr(centroids);
     freeMemPointsArr(points);
 
