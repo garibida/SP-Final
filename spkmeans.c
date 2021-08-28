@@ -271,16 +271,23 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
 
  /* ################################################################################################ */
 
-void printMatrix(Matrix* A) { /* for debug ################################################################################## */
+void printMatrix(Matrix* A) { 
     int i, j;
+    double value;
     MatrixIterRows(A,i) {
         MatrixIterCols(A,j) {
-            printf("%.4f", getMatrixValue(A,i,j));
+            value = getMatrixValue(A,i,j);
+            if (fabs(value) < 0.00005) {
+                value = 0.0000;
+            }
+            printf("%.4f", value);
             if(j != (A->cols) - 1) {
                 printf(",");
             }
         }
-        printf("\n");
+        if (i != (A->rows) - 1) {
+            printf("\n");
+        }
     }
 }
 
@@ -433,16 +440,23 @@ double getDataPointVal(Point *point, int index) {
 
  /* ################################################################################################ */
 
-void printPoint(Point *point) {
+void printPoint(Point *point, bool isLast) {
     int i, dim;
+    double value;
     dim = point->d;
     for (i = 0; i < dim; i++) {
-        printf("%.4f", point -> data[i]);
+        value = point -> data[i];
+        if (fabs(value) < 0.00005) {
+            value = 0.0000;
+        }
+        printf("%.4f", value);
         if (i != dim - 1) {
             printf(",");
         }
     }
-    printf("\n");
+    if ( !isLast) {
+        printf("\n");
+    }
 }
 
  /* ################################################################################################ */
@@ -515,10 +529,14 @@ void reallocPointsArr(PointsArray* pointsArr, int n) {
 
  /* ################################################################################################ */
 
-void printPointsArr(PointsArray *pointsArr) { /* for debug ####################################################################### */
+void printPointsArr(PointsArray *pointsArr) {
     int i;
+    bool isLast = false;
     for (i = 0; i < (pointsArr->n); i++) {
-        printPoint(getPointFromArr(pointsArr,i));
+        if (i == (pointsArr->n) - 1) {
+            isLast = true;
+        }
+        printPoint(getPointFromArr(pointsArr,i), isLast);
     }
 }
 
@@ -681,6 +699,9 @@ double* getRowsSqureRootSum(Matrix* U) {
 
     MatrixIterRows(U, i) {
         squreSumPerCol[i] = sqrt(squreSumPerCol[i]);
+        if (squreSumPerCol[i] == 0) { /* debug! */ 
+            printf("squreSumPerCol[%d]: %f\n", i, squreSumPerCol[i]);
+        }
     }
 
     return squreSumPerCol;
@@ -1077,9 +1098,21 @@ int doSpk(PointsArray **points, int k) {
     k = (k == 0) ? eigengapGetK(eigens) : k;
     /* Stage 4 */
     U = computeMatrixU(eigens, k);
+    
+    /* debug! */
+    printf("Matrix U:\n");
+    printMatrix(U);
+    printf("\n##################################\n");
+
     freeEigens(eigens);
     /* Stage 5 */
     T = computeMatrixT(U);
+
+    /* debug! */
+    printf("Matrix T:\n");
+    printMatrix(T);
+    printf("\n##################################\n");
+
     freeMatrix(U);
 
     *points = matrixToPointsArray(T);
