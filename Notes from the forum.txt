@@ -14,7 +14,7 @@ print instruction:
     2. [ ] - round 4 digit up (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
 # [V] - print spk - print k indexes of the first centroid *only at python not at C" 
 
-Yacobi instruction:
+Yacobi instruction: /* Garibi: is finished? :) */
 # [ ] - *calc yacobi on matrix given as input and not on lnorm!*
 # [ ] - set EPSILON for yacobi to be 1.0e-15 - still relevant? 
 # [ ] - pivot step - if there are 2 maxvalues chose the one with the lower index (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570, https://moodle.tau.ac.il/mod/forum/discuss.php?d=162299)
@@ -35,3 +35,11 @@ other instructions:
 # [V] - 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
 # [ ] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
 # [ ] - [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
+
+TODO: 
+# [ ] - Run Rami's example 
+# [ ] - print and compare mid result of test 1 of Ron's tester 
+# [ ] - go over use cases for tester and see if there is something to add
+# [ ] - check invalid input use cases
+# [ ] - check run time of test and compare with friends
+# [ ] - Run on Nova

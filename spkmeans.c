@@ -1084,19 +1084,22 @@ int doSpk(PointsArray **points, int k) {
     /* Stage 1 */
     W = computeMatrixW(*points);
     freeMemPointsArr(*points);
+
     /* Stage 2 */
     D = computeMatrixD(W);
     Lnorm = computeMatrixLnorm(W, D);
     freeMatrix(W);
     freeMatrix(D);
+
     /* Stage 3 */
     eigens = getSortedEigen(&Lnorm);
     freeMatrix(Lnorm);
     k = (k == 0) ? eigengapGetK(eigens) : k;
+
     /* Stage 4 */
     U = computeMatrixU(eigens, k);
-    
     freeEigens(eigens);
+    
     /* Stage 5 */
     T = computeMatrixT(U);
     freeMatrix(U);
@@ -1119,7 +1122,7 @@ PointsArray* readPointsArray(char *path) {
     FILE *input;
     int i = 0;
 
-    pointsArr = createPointsArr(MAX_NUMBER_OF_POINTS); /* free mem */
+    pointsArr = createPointsArr(MAX_NUMBER_OF_POINTS);
 
     firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
     ASSERT_M( (firstPointValues != NULL), ERROR_MSG );
@@ -1197,7 +1200,7 @@ int main(int argc, char *argv[]) {
 
     if (goal != spk) {
         matrixPrinter(points, goal);
-        return 0; /* check how to exit */ 
+        return 0; 
     }
     
     k = doSpk(&points, k);
