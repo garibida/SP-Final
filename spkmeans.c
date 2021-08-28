@@ -1125,11 +1125,11 @@ PointsArray* readPointsArray(char *path) {
     pointsArr = createPointsArr(MAX_NUMBER_OF_POINTS);
 
     firstPointValues = (double*)calloc(MAX_FEATURES, sizeof(double));
-    ASSERT_M( (firstPointValues != NULL), ERROR_MSG );
+    ASSERT_M( (firstPointValues != NULL), INVALID_INPUT_MSG );
 
     /* read points from file */
     input = fopen(path, "r");
-    ASSERT_M( (input != NULL), ERROR_MSG );
+    ASSERT_M( (input != NULL), INVALID_INPUT_MSG );
 
     while ((!feof(input)) && (d < MAX_FEATURES) ) {
         fscanf(input, "%lf%c", &value, &ch);
@@ -1195,7 +1195,7 @@ int main(int argc, char *argv[]) {
     if ((k < 0) || (k >= points->n)) {
         ASSERT_M(0, INVALID_INPUT_MSG);
     } 
-
+    
     goal = decide_command(argv[2]);
 
     if (goal != spk) {

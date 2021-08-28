@@ -2,16 +2,16 @@ input istruction:
 # [V] - no need to validate input since 2.7.12 says that the input is valid 
 # [V] - input file will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
 # [V] - point array will have max of 50 points and not 1000
-# [ ] - delete tests with more that 50 points
+# [V] - delete tests with more that 50 points - only test8 of Ron has more than 50 points
 # [V] - each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
 # [V] - file will not be empty
-# [ ] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
+# [V] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
 
 print instruction: 
 # [V] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
 # printing double: 
     1. [V] - minus zero (-0.0000 -> 0.0000) (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162051)
-    2. [ ] - round 4 digit up (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
+    2. [ ] - [*no answer*] round 4 digit up or cut? (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
 # [V] - print spk - print k indexes of the first centroid *only at python not at C" 
 
 Yacobi instruction: /* Garibi: is finished? :) */
@@ -25,21 +25,29 @@ Yacobi instruction: /* Garibi: is finished? :) */
 # [ ] - [*no answer*] size of input for yacobi - (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162954)
 
 Termination instruction: 
-# [ ] - for errors that are not "Invalid input" (won't be since 2.7.12) print "An Error Has Occured"
+# [V] - for errors that are not "Invalid input" (won't be since 2.7.12) print "An Error Has Occured"
     we should add exit if got failure for example memory error (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159574) and Python-C API (https://moodle.tau.ac.il/mod/forum/discuss.php?d=160194)
 # [V] - keep the mistake in the print (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162426) - Occured instead of Occurred.
 # [V] - we can terminate any way we want (assert / exit / return) so far we print the right error (https://moodle.tau.ac.il/mod/forum/discuss.php?d=160062)
 
 other instructions: 
-# [ ] - Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
+# [V] - Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
 # [V] - 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
 # [ ] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
 # [ ] - [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
 
 TODO: 
-# [ ] - Run Rami's example 
-# [ ] - print and compare mid result of test 1 of Ron's tester 
-# [ ] - go over use cases for tester and see if there is something to add
-# [ ] - check invalid input use cases
-# [ ] - check run time of test and compare with friends
+# [V] - print and compare mid result of test 1 of Ron's tester // no need, invalid input (2 rows are the same)
+# go over use cases for tester and see if there is something to add:
+    [ ] - add to Ron's test input of 1 and 2 points and compare
+    [ ] - add to Ron's test runtime and compare with others
+    [ ] - add to Ron's test Rami's example
+
+# check input use cases:
+    [V] - negtive k
+    [V] - k >= number of points
+    [V] - k = 0, k = 1
+    [V] - goal not sported
+    [V] - change order of args 
+    [V] - invalid path for file
 # [ ] - Run on Nova
