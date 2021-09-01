@@ -1224,8 +1224,15 @@ int main(int argc, char *argv[]) {
 
     k = atoi(argv[1]);
     if ((k < 0) || (k >= points->n)) {
+<<<<<<< HEAD
         ASSERT_M(0, INVALID_INPUT_MSG);
     } 
+=======
+        printf("Invalid Input!\n");
+        assert(0);
+    }
+
+>>>>>>> d54c2ff678013aaf2ff3ff40e2ed9214de0e7750
     goal = decide_command(argv[2]);
 
     if (goal != spk) {
