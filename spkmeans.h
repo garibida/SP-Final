@@ -4,18 +4,19 @@
 
 #define TESTER 0
 
-#define MatrixIterRows(A, i)            for ((i) = 0; (i) < ((A) -> rows); (i)++)
-#define MatrixIterCols(A, j)            for ((j) = 0; (j) < ((A) -> cols); (j)++)
-#define MatrixIterColsSym(A, i, j)      for ((j) = 0; (j) <= (i); (j)++)
-#define ASSERT_M(cond, msg)                    if ( !(cond) ) {printf(msg); assert(false);}
-#define MAX_CMDS                        3
-#define ENUM_COUNT                      5
-#define MAX_NUMBER_OF_POINTS            1000 /* set to 50 */ 
-#define MAX_FEATURES                    10
-#define EPSILON                         0.0001 /* set to 4 digits after the dot */ 
-#define EPSILON_YACOBI                  0.001
-#define ERROR_MSG                       "An Error Has Occured\n"
-#define INVALID_INPUT_MSG               "Invalid Input!\n"
+#define MatrixIterRows(A, i)                    for ((i) = 0; (i) < ((A) -> rows); (i)++)
+#define MatrixIterCols(A, j)                    for ((j) = 0; (j) < ((A) -> cols); (j)++)
+#define MatrixIterColsSym(A, i, j)              for ((j) = 0; (j) <= (i); (j)++)
+#define MatrixIterColsSymUperTriengle(A, i, j)  for ((j) = (i); (j) < ((A) -> cols); (j)++)
+#define ASSERT_M(cond, msg)                     if ( !(cond) ) {printf(msg); assert(false);}
+#define MAX_CMDS                                3
+#define ENUM_COUNT                              5
+#define MAX_NUMBER_OF_POINTS                    1000 /* set to 50 */ 
+#define MAX_FEATURES                            10
+#define EPSILON                                 0.0001 /* set to 4 digits after the dot */ 
+#define EPSILON_YACOBI                          1.0e-15
+#define ERROR_MSG                               "An Error Has Occured\n"
+#define INVALID_INPUT_MSG                       "Invalid Input!\n"
 
 
 typedef double** Matrix_data;
@@ -82,7 +83,6 @@ PointsArray* readPointsArray(char *path);
 Matrix* computeMatrixW(PointsArray *pointsArr);
 Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
-Matrix* computeMatrixL(Matrix *W, Matrix *D); 
 Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); 
 int eigengapGetK(Eigens_Arr* eigens);
 Matrix* computeMatrixU(Eigens_Arr* eigens, int k);
@@ -126,10 +126,12 @@ void printMatrix(Matrix* A);
 Point* createPointFromMatrixCol(Matrix* A, int col);
 Point* createPointFromMatrixRow(Matrix* A, int row);
 int compareEigens(const void *a, const void *b);
-Eigens_Arr* getSortedEigen(Matrix **A);
+Eigens_Arr* getEigens(Matrix **A);
+Eigens_Arr* getSortedEigens(Matrix **A);
 void freeEigens(Eigens_Arr *eigens);
 void printEigens(Eigens_Arr *eigens);
 PointsArray* matrixToPointsArray(Matrix *A);
+Matrix* PointsArrayToMatrix(PointsArray *pointsArr);
 
 /* Jacobi algorithm */
 typedef struct

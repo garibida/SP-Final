@@ -274,8 +274,8 @@ bool isMatrixEqual(Matrix *A, Matrix *B) {
 void printMatrix(Matrix* A) { 
     int i, j;
     double value;
-    MatrixIterRows(A,i) {
-        MatrixIterCols(A,j) {
+    MatrixIterRows(A, i) {
+        MatrixIterCols(A, j) {
             value = getMatrixValue(A,i,j);
             if (fabs(value) < 0.00005) {
                 value = 0.0000;
@@ -333,7 +333,7 @@ int compareEigens(const void *a, const void *b) {
 
  /* ################################################################################################ */
 
-Eigens_Arr* getSortedEigen(Matrix **A) {
+Eigens_Arr* getEigens(Matrix **A) {
     Matrix *V;
     Eigens_Arr *eigens;
     int i;
@@ -353,6 +353,14 @@ Eigens_Arr* getSortedEigen(Matrix **A) {
     }
     freeMatrix(V);
 
+    return eigens;
+}
+
+ /* ################################################################################################ */
+
+Eigens_Arr* getSortedEigens(Matrix **A) {
+    Eigens_Arr *eigens = getEigens(A);
+
     qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); 
     /* ########################################################### check if the in order of vector of the same value is meaningful */ 
     return eigens;
@@ -371,14 +379,24 @@ void freeEigens(Eigens_Arr *eigens) {
 
  /* ################################################################################################ */
 
-void printEigens(Eigens_Arr *eigens) {
-    int i;
+void printEigens(Eigens_Arr *eigens) { /* ADddddddddddddddddddd prining issues fix (new line and -0) */
+    int i, length;
+    bool isLast;
     Eigen eigen;
+    length = eigens->length;
 
-    for (i = 0; i < (eigens->length); i++) {
+    for (i = 0; i < length; i++) {
         eigen = (eigens->arr)[i];
-        printf("index=%d, value=%f\n", i, eigen.value);
-        printPoint(eigen.vector, false);
+        printf("%.4f", eigen.value);
+        if (i != length - 1) {
+            printf(",");
+        }
+    }
+    printf("\n");
+    for (i = 0; i < length; i++) {
+        eigen = (eigens->arr)[i];
+        isLast = (i == length - 1);
+        printPoint(eigen.vector, isLast);
     }
 }
 
@@ -396,6 +414,24 @@ PointsArray* matrixToPointsArray(Matrix *A) {
     }
 
     return points;
+}
+
+ /* ################################################################################################ */
+
+Matrix* PointsArrayToMatrix(PointsArray *pointsArr) {
+    Matrix *A;
+    Point *point;
+    int i, j;
+    A = createMatrix(pointsArr->n, pointsArr->n, false);
+
+    MatrixIterRows(A, i) {
+        point = getPointFromArr(pointsArr, i);
+        MatrixIterCols(A, j) {
+            setMatrixValue(A, i, j, getDataPointVal(point, j));
+        }
+    }
+
+    return A;
 }
 
 /* ################################################################################################ */
@@ -533,9 +569,7 @@ void printPointsArr(PointsArray *pointsArr) {
     int i;
     bool isLast = false;
     for (i = 0; i < (pointsArr->n); i++) {
-        if (i == (pointsArr->n) - 1) {
-            isLast = true;
-        }
+        isLast = (i == (pointsArr->n) - 1);
         printPoint(getPointFromArr(pointsArr,i), isLast);
     }
 }
@@ -634,12 +668,6 @@ Matrix* computeMatrixDMinusHalf(Matrix *D) {
 
  /* ################################################################################################ */
 
-Matrix* computeMatrixL(Matrix *W, Matrix *D) { /* delete??? #################################################################### */
-    return sub(D, W, true);
-}
-
- /* ################################################################################################ */
-
 Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     Matrix *D2, *I, *tmp;
     D2 = computeMatrixDMinusHalf(D);
@@ -657,7 +685,7 @@ int eigengapGetK(Eigens_Arr* eigens) {
     Eigen *arr = eigens -> arr;
 
     for (i = 0; i < (eigens->length) / 2; i++) {
-        assert(arr[i].value <= arr[i + 1].value); /* ########################################################### FOR DEBUG */
+        assert(arr[i].value <= arr[i + 1].value); /* debug */ 
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
             max_delta = delta;
@@ -735,14 +763,14 @@ MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
 
     m.value = 0;
     MatrixIterRows(A, i) {
-        MatrixIterColsSym(A, i, j) {
+        MatrixIterColsSymUperTriengle(A, i, j) {
             if (i == j) {
                 continue;
             }
-            if (fabs(getMatrixValue(A, i, j)) > fabs(m.value)) {
-                m.i = j;
-                m.j = i;
-                m.value = getMatrixValue(A, i, j);
+            if (fabs(getMatrixValue(A, j, i)) >= fabs(m.value)) {
+                m.i = i;
+                m.j = j;
+                m.value = getMatrixValue(A, j, i);
             }
         }
     }
@@ -922,7 +950,6 @@ void freeNode(node* n, int isDeletePoint) {
     }
 }
 
-
 /* ################################################################################################ */
 /*                                       K-means algorithm                                          */
 /* ################################################################################################ */
@@ -1039,8 +1066,19 @@ void printCentroids(PointsArray* centroids) {
 /* ################################################################################################ */
 
 void matrixPrinter(PointsArray *points ,Goal goal) {
-    Matrix *W, *D, *Lnorm;
+    Matrix *W, *D, *Lnorm, *J;
     Eigens_Arr *eigens;
+
+    if (goal == jacobi) {
+        J = PointsArrayToMatrix(points);
+        updateMatrixSymmertircStatus(J);
+        assert(J->isSymmetric);
+        eigens = getEigens(&J);
+        freeMatrix(J);
+        printEigens(eigens);
+        freeEigens(eigens);
+        return;
+    }
 
     W = computeMatrixW(points);
     freeMemPointsArr(points); /* #############################################################################need later?########################################################### */
@@ -1066,13 +1104,6 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
         freeMatrix(Lnorm);
         return;
     }
-
-    eigens = getSortedEigen(&Lnorm);
-    freeMatrix(Lnorm);
-    if (goal == jacobi) {
-        /* #############################################################################print Eigens########################################################### */
-    }
-    freeEigens(eigens);
 }
 
  /* ################################################################################################ */
@@ -1092,7 +1123,7 @@ int doSpk(PointsArray **points, int k) {
     freeMatrix(D);
 
     /* Stage 3 */
-    eigens = getSortedEigen(&Lnorm);
+    eigens = getSortedEigens(&Lnorm);
     freeMatrix(Lnorm);
     k = (k == 0) ? eigengapGetK(eigens) : k;
 
@@ -1193,9 +1224,15 @@ int main(int argc, char *argv[]) {
 
     k = atoi(argv[1]);
     if ((k < 0) || (k >= points->n)) {
+<<<<<<< HEAD
         ASSERT_M(0, INVALID_INPUT_MSG);
     } 
-    
+=======
+        printf("Invalid Input!\n");
+        assert(0);
+    }
+
+>>>>>>> d54c2ff678013aaf2ff3ff40e2ed9214de0e7750
     goal = decide_command(argv[2]);
 
     if (goal != spk) {
