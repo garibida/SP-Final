@@ -17,23 +17,23 @@ static PointsArray *convertPyListToPointsArray(PyObject *datapointsList) {
     int n, d, i, j;
 
     n = PyObject_Length(datapointsList);
-    assert(n == -1); // PyObject_Length return -1 for error
+    ASSERT_M((n == -1), ERROR_MSG); // PyObject_Length return -1 for error
 
     pointsArr = createPointsArr(n);
 
     // insert datapoints to linked list
     for (i = 0; i < n; i++) {
         datapointsItem = PyList_GetItem(datapointsList, i);
-        assert(datapointsItem =! NULL);
+        ASSERT_M((datapointsItem =! NULL), ERROR_MSG); 
 
         d = PyObject_Length(datapointsItem);
-        assert(d == -1); // PyObject_Length return -1 for error
+        ASSERT_M((d == -1), ERROR_MSG); // PyObject_Length return -1 for error
 
         newPoint = createPoint(d);
         for (j = 0; j < d; j++) {
             pointItem = PyList_GetItem(datapointsItem, j);
-            assert(pointItem =! NULL);
-            assert(PyFloat_Check(pointItem));
+            ASSERT_M((pointItem =! NULL), ERROR_MSG); 
+            ASSERT_M((PyFloat_Check(pointItem)), ERROR_MSG); /* assert(PyFloat_Check(pointItem)); */ // Garibi: check since I'm allways get confuse with assert :) 
             setDataPointVal(newPoint, j, PyFloat_AsDouble(pointItem));
         }
         setPointInArr(pointsArr, i, newPoint);
@@ -64,6 +64,7 @@ static PyObject *fit(PyObject *self, PyObject *args) {
     PointsArray *points, *centroids;
 
     if (!PyArg_ParseTuple(args, "iOO", &k, &datapointsList, &cetroidsList))
+        ASSERT_M((false), ERROR_MSG); 
         return NULL;
 
     centroids = convertPyListToPointsArray(cetroidsList);
@@ -81,9 +82,10 @@ static PyObject *doSpkPython(PyObject *self, PyObject *args) {
     PyObject *datapointsList, *lst;
     int k;
     PointsArray *points;
-    assert(pointsList != NULL); /* what is pointsList? */
+    assert(pointsList != NULL); /* Garibi: what is pointsList? change to ASSERT_M*/
     
     if (!PyArg_ParseTuple(args, "iO", &k, &datapointsList))
+        ASSERT_M((false), ERROR_MSG); 
         return NULL;
 
     points = convertPyListToPointsArray(datapointsList);
@@ -105,6 +107,7 @@ static PyObject *printMatrixes(PyObject *self, PyObject *args) {
     PointsArray *points;
     
     if (!PyArg_ParseTuple(args, "iO", &goal_int, &datapointsList))
+        ASSERT_M((false), ERROR_MSG); 
         return NULL;
 
     goal = (Goal) goal_int;
