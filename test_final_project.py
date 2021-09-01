@@ -5,6 +5,7 @@ import numpy as np
 from math import e
 import os.path
 import filecmp
+import time
 
 epsilon = 1e-6
 C_file_name = "hw1"
@@ -131,7 +132,9 @@ def generate_correct_files_general():
                     lng = "P" if ex == "python3 spkmeans.py" else "C"
                     result_file = f"test{input_index}_{goal}_{k}_output_{lng}.txt"
                     result_path = os.path.join(".", "tests", "reference", "general", result_file)
+                    start = time.time()
                     returnCode = os.system(f"{ex} {k} {goal} {input_data_filename} > {result_path}")
+                    end = time.time()
                     if returnCode != 0:
                         print("Something went wrong generating this file...")
                         print(f"k = {k} goal = {goal} lng = {lng} input = {input_index}")
@@ -148,7 +151,9 @@ def generate_correct_files_jacobi():
             lng = "P" if ex == "python3 spkmeans.py" else "C"
             result_file = f"test{i}_jacobi_output_{lng}.txt"
             result_path = os.path.join(".", "tests", "reference", "jacobi", result_file)
+            start = time.time()
             returnCode = os.system(f"{ex} 1 jacobi {input_data_filename} > {result_path}")
+            end = time.time()
             if returnCode != 0:
                 print("Something went wrong generating this file...")
                 print(f"k = 1 goal = jacobi lng = {lng} input = {input_index}")
@@ -162,7 +167,9 @@ def handle_goal(ex, k_values, goal, input_data_filename, result_file, input_inde
     success = 0
     lng = "P" if ex == "python3 spkmeans.py" else "C"
     for k in k_values:
+        start = time.time()
         returnStatus = os.system(f"{ex} {k} {goal} {input_data_filename} > {result_file}")
+        end = time.time()
         result_matrix = get_vectors(result_file)
         vectors = np.array(get_vectors(input_data_filename))
         correctOutputPath = os.path.join(".", "tests", "reference", "general", f"test{input_index}_{goal}_{k}_output_{lng}.txt")
@@ -193,7 +200,8 @@ def handle_goal(ex, k_values, goal, input_data_filename, result_file, input_inde
             else:
                 res_str = "Failed numeric and file"
                 failes_file+=1
-        print(f"check file={input_data_filename} \tlanguage={lng} \tk_value={k} \tgoal={goal} \tResult={res_str}")
+        time_str = "{:.4f}".format(end-start)
+        print(f"check file={input_data_filename} \tlanguage={lng} \tk_value={k} \tgoal={goal} \ttime={time_str} \tResult={res_str}")
         if not res_numeric:
             print("Your output:")
             print_mat(result_matrix)
@@ -246,7 +254,9 @@ if __name__ == "__main__":
         input_data_filename = os.path.join(".", "tests", "test_data", "jacobi_tests", f"test{i}.csv")
         for ex in exec:
             lng = "P" if ex == "python3 spkmeans.py" else "C"
+            start = time.time()
             returnStatus = os.system(f"{ex} 1 jacobi {input_data_filename} > {result_file}")
+            end = time.time()
             result_matrix = get_vectors(result_file)
             if returnStatus != 0:
                 erroeFiles+=1
@@ -254,7 +264,8 @@ if __name__ == "__main__":
             correct_matrix = get_vectors(os.path.join(".", "tests", "reference", "jacobi", f"test{i}_jacobi_output_{lng}.txt"))
             res = np.array_equal(correct_matrix, result_matrix)
             res_str = "Passed" if res else "Failed"
-            print(f"check file={input_data_filename} \tlanguage={lng} \tgoal=jacobi \tResult={res_str}")
+            time_str = "{:.4f}".format(end-start)
+            print(f"check file={input_data_filename} \tlanguage={lng} \tgoal=jacobi \ttime={time_str} \tResult={res_str}")
             if not res:
                 print("Your output:")
                 print_mat(result_matrix)
