@@ -12,7 +12,7 @@
 #define MAX_CMDS                                3
 #define ENUM_COUNT                              5
 #define MAX_NUMBER_OF_POINTS                    1000 /* set to 50 */ 
-#define MAX_FEATURES                            10
+#define MAX_FEATURES                            1000 /* set to 10 */ 
 #define EPSILON                                 0.0001 /* set to 4 digits after the dot */ 
 #define EPSILON_YACOBI                          1.0e-15
 #define ERROR_MSG                               "An Error Has Occured\n"
