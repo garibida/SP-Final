@@ -668,12 +668,6 @@ Matrix* computeMatrixDMinusHalf(Matrix *D) {
 
  /* ################################################################################################ */
 
-Matrix* computeMatrixL(Matrix *W, Matrix *D) { /* delete??? #################################################################### */
-    return sub(D, W, true);
-}
-
- /* ################################################################################################ */
-
 Matrix* computeMatrixLnorm(Matrix *W ,Matrix *D) {
     Matrix *D2, *I, *tmp;
     D2 = computeMatrixDMinusHalf(D);
@@ -691,7 +685,7 @@ int eigengapGetK(Eigens_Arr* eigens) {
     Eigen *arr = eigens -> arr;
 
     for (i = 0; i < (eigens->length) / 2; i++) {
-        assert(arr[i].value <= arr[i + 1].value); /* ########################################################### FOR DEBUG */
+        assert(arr[i].value <= arr[i + 1].value); /* debug */ 
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
             max_delta = delta;

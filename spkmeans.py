@@ -45,7 +45,7 @@ def readArgs():
 
 def readPointsFromFile(file_path): 
     pointsDf = pd.read_csv(file_path, header=None)
-    pointsNd = pointsDf.to_numpy() # Garibi: from what I understand there is no need to sort the input (got same result with the other friends)
+    pointsNd = pointsDf.to_numpy()
     return list(map(lambda x: x.tolist(), pointsNd))
 
 def printPointsArr(pointsArr): 

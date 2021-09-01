@@ -6,7 +6,7 @@ input istruction:
 # [V] - each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
 # [V] - file will not be empty
 # [V] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
-# [ ] - input will have at least 2 points, Ron's test rub 3 points, we should make sure that 2 points is working fine (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163230)
+# [V] - input will have at least 2 points, Ron's test rub 3 points, we should make sure that 2 points is working fine (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163230)
 
 print instruction: 
 # [V] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
@@ -34,13 +34,13 @@ Termination instruction:
 other instructions: 
 # [V] - Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
 # [V] - 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
-# [ ] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
+# [V] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
 # [ ] - [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
 
 TODO: 
 # [V] - print and compare mid result of test 1 of Ron's tester // no need, invalid input (2 rows are the same)
 # go over use cases for tester and see if there is something to add:
-    [ ] - add to Ron's test input of 1 and 2 points and compare
+    [ ] - add to Ron's test input of 2 points and compare
     [ ] - add to Ron's test runtime and compare with others
     [ ] - add to Ron's test Rami's example
 

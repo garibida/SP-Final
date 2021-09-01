@@ -83,7 +83,6 @@ PointsArray* readPointsArray(char *path);
 Matrix* computeMatrixW(PointsArray *pointsArr);
 Matrix* computeMatrixD(Matrix *W);
 Matrix* computeMatrixDMinusHalf(Matrix *D);
-Matrix* computeMatrixL(Matrix *W, Matrix *D); 
 Matrix* computeMatrixLnorm(Matrix *L, Matrix *D); 
 int eigengapGetK(Eigens_Arr* eigens);
 Matrix* computeMatrixU(Eigens_Arr* eigens, int k);
