@@ -6,12 +6,13 @@ input istruction:
 # [V] - each cordination in point as input will be with max 4 digits dot max of 4 digits like: 1234.1234 (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159898)
 # [V] - file will not be empty
 # [V] - input and output for each goal! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=159899)
+# [ ] - input will have at least 2 points, Ron's test rub 3 points, we should make sure that 2 points is working fine (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163230)
 
 print instruction: 
 # [V] - printing output will *not* have an empty line at the end (https://moodle.tau.ac.il/mod/forum/discuss.php?d=161522)
 # printing double: 
     1. [V] - minus zero (-0.0000 -> 0.0000) (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162051)
-    2. [ ] - [*no answer*] round 4 digit up or cut? (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
+    2. [V] - round 4 digit up or cut? cut! (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162710)
 # [V] - print spk - print k indexes of the first centroid *only at python not at C" 
 
 Yacobi instruction: /* Garibi: is finished? :) */
