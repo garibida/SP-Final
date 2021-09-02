@@ -145,7 +145,7 @@ def generate_correct_files_jacobi():
     print("======JACOBI WILL BE ALWWAYS TRUE=========")
     exec = ["python3 spkmeans.py", os.path.join(".", C_file_name)]
     
-    for i in range(11):
+    for i in range(12):
         input_data_filename = os.path.join(".", "tests", "test_data", "jacobi_tests", f"test{i}.csv")     
         for ex in exec:
             lng = "P" if ex == "python3 spkmeans.py" else "C"
@@ -250,7 +250,7 @@ if __name__ == "__main__":
         input_index+=1
 
     # Jacobi testing
-    for i in range(11):
+    for i in range(12):
         input_data_filename = os.path.join(".", "tests", "test_data", "jacobi_tests", f"test{i}.csv")
         for ex in exec:
             lng = "P" if ex == "python3 spkmeans.py" else "C"

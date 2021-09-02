@@ -11,6 +11,8 @@ filesToCreate = pd.read_csv(os.path.join(".", "tests", "FilesToCreate.csv"))
 i = 0
 
 for row in filesToCreate.itertuples():
+    if (i == 10):
+        continue
     n_centers = row.n_clusters
     samples = row.n_samples
     features = row.features
@@ -30,7 +32,9 @@ for row in filesToCreate.itertuples():
 '''Creates the files for jacobi'''
 np.random.seed(0)
 dim = 2
-for i in range(11):
+for i in range(12):
+    if (i == 11):
+        continue
     mat = np.random.rand(dim, dim)
     mat = np.tril(mat) + np.tril(mat, -1).T
     resultPath = os.path.join(".", "tests", "test_data", 'jacobi_tests',f"test{i}.csv")
