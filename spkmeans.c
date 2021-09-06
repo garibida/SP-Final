@@ -101,7 +101,7 @@ void updateMatrixSymmertircStatus(Matrix* A) {
  /* ################################################################################################ */
 
 double getMatrixValue(Matrix* A, int row, int col) {
-    assert(row < (A -> rows) && col < (A -> cols)); /* debug */ 
+    assert(row < (A -> rows) && col < (A -> cols));
     return ((A -> isSymmetric) && col > row) ?
                 (A -> data)[col][row]:
                 (A -> data)[row][col];
@@ -110,7 +110,7 @@ double getMatrixValue(Matrix* A, int row, int col) {
  /* ################################################################################################ */
 
 void setMatrixValue(Matrix* A, int row, int col, double value) {
-    assert(row < (A -> rows) && col < (A -> cols)); /* debug */ 
+    assert(row < (A -> rows) && col < (A -> cols));
     if ((A -> isSymmetric) && col > row) {
         (A -> data)[col][row] = value;
     } else {
@@ -142,8 +142,8 @@ Matrix* add(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows); /* debug */ 
-    assert(A -> cols == B -> cols); /* debug */ 
+    assert(A -> rows == B -> rows);
+    assert(A -> cols == B -> cols);
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -175,8 +175,8 @@ Matrix* sub(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows); /* debug */ 
-    assert(A -> cols == B -> cols); /* debug */ 
+    assert(A -> rows == B -> rows); 
+    assert(A -> cols == B -> cols); 
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -208,7 +208,7 @@ Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
     Matrix* C;
     int i, j, k;
     double value;
-    assert(A -> cols == B -> rows); /* debug */ 
+    assert(A -> cols == B -> rows); 
 
     C = createMatrix(A -> rows, B -> cols, false);
     MatrixIterRows(C, i) {
@@ -232,7 +232,7 @@ Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
 
 void freeMatrix(Matrix *A) {
     int i;
-    assert(A->rows != 0); /* debug */ 
+    assert(A->rows != 0); 
     MatrixIterRows(A, i) {
         free((A -> data)[i]);
     }
@@ -245,8 +245,8 @@ void freeMatrix(Matrix *A) {
 bool isMatrixEqual(Matrix *A, Matrix *B) {
     int i, j;
     bool isSymmetric;
-    assert(A -> rows == B -> rows); /* debug */
-    assert(A -> cols == B -> cols); /* debug */ 
+    assert(A -> rows == B -> rows);
+    assert(A -> cols == B -> cols); 
 
     isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
 
@@ -317,6 +317,42 @@ Point* createPointFromMatrixRow(Matrix* A, int row) {
 
  /* ################################################################################################ */
 
+PointsArray* matrixToPointsArray(Matrix *A) {
+    PointsArray *points;
+    Point *point;
+    int i;
+
+    points = createPointsArr(A->rows);
+    MatrixIterRows(A, i) {
+        point = createPointFromMatrixRow(A, i);
+        setPointInArr(points, i, point);
+    }
+
+    return points;
+}
+
+ /* ################################################################################################ */
+
+Matrix* PointsArrayToMatrix(PointsArray *pointsArr) {
+    Matrix *A;
+    Point *point;
+    int i, j;
+    A = createMatrix(pointsArr->n, pointsArr->n, false);
+
+    MatrixIterRows(A, i) {
+        point = getPointFromArr(pointsArr, i);
+        MatrixIterCols(A, j) {
+            setMatrixValue(A, i, j, getDataPointVal(point, j));
+        }
+    }
+
+    return A;
+}
+
+/* ################################################################################################ */
+/*                               Eigen operations section                                          */
+/* ################################################################################################ */
+
 int compareEigens(const void *a, const void *b) {
     Eigen *A, *B;
     A = (Eigen *) a;
@@ -360,9 +396,7 @@ Eigens_Arr* getEigens(Matrix **A) {
 
 Eigens_Arr* getSortedEigens(Matrix **A) {
     Eigens_Arr *eigens = getEigens(A);
-
     qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); 
-    /* ########################################################### check if the in order of vector of the same value is meaningful */ 
     return eigens;
 }
 
@@ -379,14 +413,19 @@ void freeEigens(Eigens_Arr *eigens) {
 
  /* ################################################################################################ */
 
-void printEigens(Eigens_Arr *eigens) { /* ADddddddddddddddddddd prining issues fix (new line and -0) */
-    int i, length;
+void printEigens(Eigens_Arr *eigens) { 
+    int i, length, value;
     bool isLast;
     Eigen eigen;
     length = eigens->length;
 
     for (i = 0; i < length; i++) {
         eigen = (eigens->arr)[i];
+
+        value = eigen.value;
+        if (fabs(value) < 0.00005) {
+            value = 0.0000;
+        }
         printf("%.4f", eigen.value);
         if (i != length - 1) {
             printf(",");
@@ -400,42 +439,8 @@ void printEigens(Eigens_Arr *eigens) { /* ADddddddddddddddddddd prining issues f
     }
 }
 
- /* ################################################################################################ */
-
-PointsArray* matrixToPointsArray(Matrix *A) {
-    PointsArray *points;
-    Point *point;
-    int i;
-
-    points = createPointsArr(A->rows);
-    MatrixIterRows(A, i) {
-        point = createPointFromMatrixRow(A, i);
-        setPointInArr(points, i, point);
-    }
-
-    return points;
-}
-
- /* ################################################################################################ */
-
-Matrix* PointsArrayToMatrix(PointsArray *pointsArr) {
-    Matrix *A;
-    Point *point;
-    int i, j;
-    A = createMatrix(pointsArr->n, pointsArr->n, false);
-
-    MatrixIterRows(A, i) {
-        point = getPointFromArr(pointsArr, i);
-        MatrixIterCols(A, j) {
-            setMatrixValue(A, i, j, getDataPointVal(point, j));
-        }
-    }
-
-    return A;
-}
-
 /* ################################################################################################ */
-/*                               Points operation section                                           */
+/*                               Point operation section                                           */
 /* ################################################################################################ */
 
 Point* createPoint(int d) {
@@ -529,6 +534,20 @@ Point* copy_point(Point *point) {
     return newPoint;
 }
 
+ /* ################################################################################################ */
+
+double computeDist(Point *point1, Point *point2) {
+    double dist = 0, tmp = 0; 
+    int i;
+    assert(point1->d == point2->d); 
+    for (i = 0; i < point1->d; i++) {
+        tmp = getDataPointVal(point1, i) - getDataPointVal(point2,i);
+        dist += tmp * tmp;
+    }
+    return sqrt(dist);
+}
+
+
 /* ################################################################################################ */
 /*                               Points Array operation section                                     */
 /* ################################################################################################ */
@@ -544,14 +563,14 @@ PointsArray* createPointsArr(int n)  {
  /* ################################################################################################ */
 
 Point* getPointFromArr(PointsArray* pointsArr, int i) {
-    assert(i < (pointsArr->n)); /* debug */ 
+    assert(i < (pointsArr->n)); 
     return (pointsArr->points)[i];
 }
 
  /* ################################################################################################ */
 
 void setPointInArr(PointsArray* pointsArr, int i, Point* point) {
-    assert(i < pointsArr->n); /* debug */ 
+    assert(i < pointsArr->n); 
     (pointsArr->points)[i] = point;
 }
 
@@ -586,21 +605,46 @@ void freeMemPointsArr(PointsArray *pointsArr) {
 }
 
 /* ################################################################################################ */
-/*                                       Algorithm                                                  */
+/*                                 Link list operations section                                     */
 /* ################################################################################################ */
 
-double computeDist(Point *point1, Point *point2) {
-    double dist = 0, tmp = 0; 
-    int i;
-    assert(point1->d == point2->d); /* debug */ 
-    for (i = 0; i < point1->d; i++) {
-        tmp = getDataPointVal(point1, i) - getDataPointVal(point2,i);
-        dist += tmp * tmp;
+void addToList(linked_list* list, Point* point) {
+    node *n = (node*)malloc(sizeof(node));
+    ASSERT_M( (n != NULL), ERROR_MSG );
+    n -> point = point;
+    n -> next = NULL;
+    (list->length)++;
+    if(list -> head == NULL) {
+        list -> head = n;
+        list -> tail = n;
+    } else {
+        list -> tail -> next = n;
+        list -> tail = n;
     }
-    return sqrt(dist);
 }
 
  /* ################################################################################################ */
+
+void freeList(linked_list* list, int isDeletePoint) {
+    freeNode(list -> head, isDeletePoint);
+    free(list);
+}
+
+ /* ################################################################################################ */
+
+void freeNode(node* n, int isDeletePoint) {
+    if (n != NULL) {
+        freeNode(n -> next, isDeletePoint);
+        if(isDeletePoint == true){
+            free(n -> point);
+        }
+        free(n);
+    }
+}
+
+/* ################################################################################################ */
+/*                                       Algorithm                                                  */
+/* ################################################################################################ */
 
 double computeDistW(Point *point1, Point *point2) {
     double dist = computeDist(point1, point2);
@@ -685,7 +729,7 @@ int eigengapGetK(Eigens_Arr* eigens) {
     Eigen *arr = eigens -> arr;
 
     for (i = 0; i < (eigens->length) / 2; i++) {
-        assert(arr[i].value <= arr[i + 1].value); /* debug */ 
+        assert(arr[i].value <= arr[i + 1].value); 
         delta = fabs(arr[i].value - arr[i + 1].value);
         if (delta > max_delta) {
             max_delta = delta;
@@ -759,7 +803,7 @@ Matrix* computeMatrixT(Matrix* U) {
 MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
     int i, j;
     MaxAbsulteValue m;
-    assert(A->isSymmetric == true); /* debug */ 
+    assert(A->isSymmetric == true); 
 
     m.value = 0;
     MatrixIterRows(A, i) {
@@ -840,7 +884,7 @@ Matrix* createAtag(Matrix* A, double c, double s, MaxAbsulteValue mav) {
 double getOffDiagMatrixSquareSum(Matrix* A) {
     int i, j;
     double sum = 0;
-    assert(A->isSymmetric); /* debug */ 
+    assert(A->isSymmetric); 
 
     MatrixIterRows(A, i) {
         MatrixIterColsSym(A, i, j) {
@@ -888,7 +932,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     const int MAX_ITER = 100;
     double c, s;
     A = *A_origin;
-    assert(A -> rows == A -> cols); /* debug */ 
+    assert(A -> rows == A -> cols); 
     V = createUnitMatrix(A -> rows, false);
 
     for (i = 0; i < MAX_ITER; i++) {
@@ -901,7 +945,7 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
         calcJacobiV(A, mav, c, s, &V);
         Atag = createAtag(A, c, s, mav);
         isNeedToStop = isNeedToStopJacobi(A, Atag);
-        freeMatrix(A); /* ################################################################################# maybe need original A in anther step? ////////////////////////////////////////////////////////////*/
+        freeMatrix(A);
         A = Atag;
         if (isNeedToStop) {
             break;
@@ -910,44 +954,6 @@ Matrix* jacobiAlgo(Matrix** A_origin) {
     *A_origin = A;
 
     return V;
-}
-
-/* ################################################################################################ */
-/*                                       Link list operations                                       */
-/* ################################################################################################ */
-
-void addToList(linked_list* list, Point* point) {
-    node *n = (node*)malloc(sizeof(node));
-    ASSERT_M( (n != NULL), ERROR_MSG );
-    n -> point = point;
-    n -> next = NULL;
-    (list->length)++;
-    if(list -> head == NULL) {
-        list -> head = n;
-        list -> tail = n;
-    } else {
-        list -> tail -> next = n;
-        list -> tail = n;
-    }
-}
-
- /* ################################################################################################ */
-
-void freeList(linked_list* list, int isDeletePoint) {
-    freeNode(list -> head, isDeletePoint);
-    free(list);
-}
-
- /* ################################################################################################ */
-
-void freeNode(node* n, int isDeletePoint) {
-    if (n != NULL) {
-        freeNode(n -> next, isDeletePoint);
-        if(isDeletePoint == true){
-            free(n -> point);
-        }
-        free(n);
-    }
 }
 
 /* ################################################################################################ */
@@ -1064,16 +1070,16 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
     }
 
     W = computeMatrixW(points);
-    freeMemPointsArr(points); /* #############################################################################need later?########################################################### */
+    freeMemPointsArr(points); 
     if (goal == wam) {
-        printMatrix(W); /* #################################################################Check printing##################################################### */
+        printMatrix(W); 
         freeMatrix(W);
         return;
     }
 
     D = computeMatrixD(W);
     if (goal == ddg) {
-        printMatrix(D); /* #################################################################Check printing##################################################### */
+        printMatrix(D); 
         freeMatrix(W);
         freeMatrix(D);
         return;
@@ -1083,7 +1089,7 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
     freeMatrix(W);
     freeMatrix(D);
     if (goal == lnorm) {
-        printMatrix(Lnorm); /* #################################################################Check printing##################################################### */
+        printMatrix(Lnorm);
         freeMatrix(Lnorm);
         return;
     }
@@ -1193,8 +1199,6 @@ Goal decide_command(char *arg) {
     return 0;
 }
 
-#if (TESTER == 0)
-
 int main(int argc, char *argv[]) {
     PointsArray *points, *centroids;
     Goal goal;
@@ -1226,5 +1230,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-#endif
