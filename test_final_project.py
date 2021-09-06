@@ -239,7 +239,10 @@ if __name__ == "__main__":
         for ex in exec:
             for goal in goals:
                 if goal == "spk":
-                    k_values = [k_orig, k_orig//2, 0]
+                    if(input_index == 1):
+                        k_values = [k_orig//2]
+                    else:
+                        k_values = [k_orig, k_orig//2, 0]
                 else:
                     k_values = [1]       
                 result = handle_goal(ex, k_values, goal, input_data_filename, result_file, input_index)

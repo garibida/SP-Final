@@ -158,7 +158,6 @@ PointsArray* kmeans(PointsArray *pointsArr, PointsArray *centroidsArr, int k, in
 bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr);
 bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int k);
 PointsArray* getIntialCentroids(PointsArray *pointsArr, int k);
-void printCentroids(PointsArray* centroids);
 
 /* Link List */
 void addToList(linked_list* list, Point* point);
