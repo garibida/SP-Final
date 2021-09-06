@@ -51,4 +51,4 @@ TODO:
     [V] - goal not sported
     [V] - change order of args 
     [V] - invalid path for file
-# [ ] - Run on Nova
+# [V] - Run on Nova
