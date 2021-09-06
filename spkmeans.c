@@ -856,7 +856,7 @@ double getOffDiagMatrixSquareSum(Matrix* A) {
  /* ################################################################################################ */
 
 bool isNeedToStopJacobi(Matrix* A, Matrix* Atag) {
-    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) <= EPSILON_YACOBI); 
+    return (fabs(getOffDiagMatrixSquareSum(A) - getOffDiagMatrixSquareSum(Atag)) < EPSILON_YACOBI); 
 }
 
  /* ################################################################################################ */
@@ -1042,23 +1042,6 @@ PointsArray* getIntialCentroids(PointsArray *pointsArr, int k) {
     }
 
     return centroidsArr;
-}
-
- /* ################################################################################################ */
-
-void printCentroids(PointsArray* centroids) {
-    int i, j;
-    Point *centroid;
-    for (i = 0; i < (centroids->n); i++) {
-        centroid = getPointFromArr(centroids, i);
-        for (j = 0; j < (centroid->d); j++) {
-            printf("%.4f", (centroid->data)[j]);
-            if(j != (centroid->d) - 1){
-                printf(",");
-            }
-        }
-        printf("\n");
-    }
 }
 
 /* ################################################################################################ */

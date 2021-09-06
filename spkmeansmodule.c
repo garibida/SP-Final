@@ -73,7 +73,7 @@ static PyObject *fit(PyObject *self, PyObject *args) {
 
     centroids = kmeans(points, centroids, k, max_iter);
     freeMemPointsArr(points);
-    printCentroids(centroids);
+    printPointsArr(centroids);
     freeMemPointsArr(centroids);
 
     Py_RETURN_NONE;
