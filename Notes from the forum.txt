@@ -23,7 +23,7 @@ Yacobi instruction:
     1. https://moodle.tau.ac.il/mod/forum/discuss.php?d=157582 - first line eigen values, than eigen vectors as rows *not sorted, as we found them*, the sort is relevent only for spk
     also see https://moodle.tau.ac.il/mod/forum/discuss.php?d=159570 Alon Harel comment regarding sorting operation
     2. https://moodle.tau.ac.il/mod/forum/discuss.php?d=159609 - eigen vector from matrix as col
-# [ ] - [*no answer*] size of input for yacobi - (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162954)
+# [V] - [*no answer*] size of input for yacobi - (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162954)
 
 Termination instruction: 
 # [V] - for errors that are not "Invalid input" (won't be since 2.7.12) print "An Error Has Occured"
@@ -35,14 +35,13 @@ other instructions:
 # [V] - Separation the project to number of file is allowed (https://moodle.tau.ac.il/mod/forum/discuss.php?d=156940)
 # [V] - 2 equel rows in T matrix or a row of zeros in U matrix won't be in the test (https://moodle.tau.ac.il/mod/forum/discuss.php?d=163019)
 # [V] - Cluster clastaring use case (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162884)
-# [ ] - [*no answer*] calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
+# [V] - calc of Matrix V and A-Atag - after stop which phase do we take (https://moodle.tau.ac.il/mod/forum/discuss.php?d=162730)
 
 TODO: 
 # [V] - print and compare mid result of test 1 of Ron's tester // no need, invalid input (2 rows are the same)
 # go over use cases for tester and see if there is something to add:
-    [ ] - add to Ron's test input of 2 points and compare
-    [ ] - add to Ron's test runtime and compare with others
-    [ ] - add to Ron's test Rami's example
+    [V] - add to Ron's test runtime and compare with others
+    [V] - add to Ron's test Rami's example
 
 # check input use cases:
     [V] - negtive k

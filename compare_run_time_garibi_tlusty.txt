@@ -1,0 +1,165 @@
+===================Comparing results======================
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=7       goal=spk        time=0.6901     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=3       goal=spk        time=0.6859     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=0       goal=spk        time=0.6873     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=1       goal=ddg        time=0.5603     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=1       goal=wam        time=0.5672     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=P      k_value=1       goal=lnorm      time=0.5584     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=7       goal=spk        time=0.3265     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=3       goal=spk        time=0.3251     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=0       goal=spk        time=0.3248     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=1       goal=ddg        time=0.0231     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=1       goal=wam        time=0.0110     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test0.csv        language=C      k_value=1       goal=lnorm      time=0.0167     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=P      k_value=2       goal=spk        time=0.6804     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=P      k_value=1       goal=ddg        time=0.5541     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=P      k_value=1       goal=wam        time=0.5562     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=P      k_value=1       goal=lnorm      time=0.5642     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=C      k_value=2       goal=spk        time=0.3252     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=C      k_value=1       goal=ddg        time=0.0088     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=C      k_value=1       goal=wam        time=0.0089     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test1.csv        language=C      k_value=1       goal=lnorm      time=0.0156     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=2       goal=spk        time=0.6916     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=1       goal=spk        time=0.6748     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=0       goal=spk        time=0.6760     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=1       goal=ddg        time=0.5595     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=1       goal=wam        time=0.5526     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=P      k_value=1       goal=lnorm      time=0.5647     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=2       goal=spk        time=0.3258     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=1       goal=spk        time=0.3237     Result=Paseed
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=0       goal=spk        time=0.3253     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=1       goal=ddg        time=0.0095     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=1       goal=wam        time=0.0092     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test2.csv        language=C      k_value=1       goal=lnorm      time=0.0160     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=3       goal=spk        time=0.6411     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=1       goal=spk        time=0.6291     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=0       goal=spk        time=0.6348     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=1       goal=ddg        time=0.5609     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=1       goal=wam        time=0.5529     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=P      k_value=1       goal=lnorm      time=0.5629     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=3       goal=spk        time=0.2129     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=1       goal=spk        time=0.2111     Result=Paseed
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=0       goal=spk        time=0.2113     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=1       goal=ddg        time=0.0084     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=1       goal=wam        time=0.0090     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test3.csv        language=C      k_value=1       goal=lnorm      time=0.0129     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=7       goal=spk        time=0.5690     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=3       goal=spk        time=0.5665     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=0       goal=spk        time=0.5762     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=1       goal=ddg        time=0.5524     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=1       goal=wam        time=0.5502     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=P      k_value=1       goal=lnorm      time=0.5564     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=7       goal=spk        time=0.0422     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=3       goal=spk        time=0.0408     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=0       goal=spk        time=0.0421     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=1       goal=ddg        time=0.0080     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=1       goal=wam        time=0.0082     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test4.csv        language=C      k_value=1       goal=lnorm      time=0.0087     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=1       goal=spk        time=0.5623     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=0       goal=spk        time=0.5563     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=0       goal=spk        time=0.5560     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=1       goal=ddg        time=0.5506     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=1       goal=wam        time=0.5619     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=P      k_value=1       goal=lnorm      time=0.5588     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=1       goal=spk        time=0.0144     Result=Paseed
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=0       goal=spk        time=0.0135     Result=Paseed
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=0       goal=spk        time=0.0144     Result=Paseed
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=1       goal=ddg        time=0.0077     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=1       goal=wam        time=0.0076     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test5.csv        language=C      k_value=1       goal=lnorm      time=0.0085     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=2       goal=spk        time=0.5346     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=1       goal=spk        time=0.5538     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=0       goal=spk        time=0.5737     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=1       goal=ddg        time=0.5543     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=1       goal=wam        time=0.5579     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=P      k_value=1       goal=lnorm      time=0.5537     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=2       goal=spk        time=0.0086     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=1       goal=spk        time=0.0079     Result=Paseed
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=0       goal=spk        time=0.0073     Result=Paseed
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=1       goal=ddg        time=0.0082     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=1       goal=wam        time=0.0082     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test6.csv        language=C      k_value=1       goal=lnorm      time=0.0076     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=2       goal=spk        time=0.5571     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=1       goal=spk        time=0.5606     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=0       goal=spk        time=0.5545     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=1       goal=ddg        time=0.5849     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=1       goal=wam        time=0.5597     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=P      k_value=1       goal=lnorm      time=0.5663     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=2       goal=spk        time=0.0088     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=1       goal=spk        time=0.0077     Result=Paseed
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=0       goal=spk        time=0.0086     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=1       goal=ddg        time=0.0081     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=1       goal=wam        time=0.0083     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test7.csv        language=C      k_value=1       goal=lnorm      time=0.0074     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=8       goal=spk        time=1.0357     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=4       goal=spk        time=1.0273     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=0       goal=spk        time=1.0340     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=1       goal=ddg        time=0.5488     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=1       goal=wam        time=0.5607     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=P      k_value=1       goal=lnorm      time=0.5706     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=8       goal=spk        time=1.2277     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=4       goal=spk        time=1.1965     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=0       goal=spk        time=1.1974     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=1       goal=ddg        time=0.0122     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=1       goal=wam        time=0.0120     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test8.csv        language=C      k_value=1       goal=lnorm      time=0.0363     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=3       goal=spk        time=0.6330     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=1       goal=spk        time=0.6192     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=0       goal=spk        time=0.6200     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=1       goal=ddg        time=0.5521     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=1       goal=wam        time=0.5570     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=P      k_value=1       goal=lnorm      time=0.5583     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=3       goal=spk        time=0.1620     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=1       goal=spk        time=0.1609     Result=Paseed
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=0       goal=spk        time=0.1607     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=1       goal=ddg        time=0.0095     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=1       goal=wam        time=0.0098     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test9.csv        language=C      k_value=1       goal=lnorm      time=0.0119     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=10      goal=spk        time=0.6868     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=5       goal=spk        time=0.6870     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=0       goal=spk        time=0.6982     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=1       goal=ddg        time=0.5700     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=1       goal=wam        time=0.5636     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=P      k_value=1       goal=lnorm      time=0.5650     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=10      goal=spk        time=0.3266     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=5       goal=spk        time=0.3256     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=0       goal=spk        time=0.3346     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=1       goal=ddg        time=0.0095     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=1       goal=wam        time=0.0096     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test10.csv       language=C      k_value=1       goal=lnorm      time=0.0171     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=3       goal=spk        time=0.5598     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=1       goal=spk        time=0.5518     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=0       goal=spk        time=0.5620     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=1       goal=ddg        time=0.5587     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=1       goal=wam        time=0.5563     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=P      k_value=1       goal=lnorm      time=0.5584     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=3       goal=spk        time=0.0116     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=1       goal=spk        time=0.0107     Result=Paseed
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=0       goal=spk        time=0.0108     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=1       goal=ddg        time=0.0080     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=1       goal=wam        time=0.0073     Result=Passed numeric Failed file
+check file=./tests/test_data/spk_tests/test11.csv       language=C      k_value=1       goal=lnorm      time=0.0074     Result=Passed numeric Failed file
+check file=./tests/test_data/jacobi_tests/test0.csv     language=P      goal=jacobi     time=0.5682     Result=Passed
+check file=./tests/test_data/jacobi_tests/test0.csv     language=C      goal=jacobi     time=0.0084     Result=Passed
+check file=./tests/test_data/jacobi_tests/test1.csv     language=P      goal=jacobi     time=0.5648     Result=Passed
+check file=./tests/test_data/jacobi_tests/test1.csv     language=C      goal=jacobi     time=0.0085     Result=Passed
+check file=./tests/test_data/jacobi_tests/test2.csv     language=P      goal=jacobi     time=0.6424     Result=Passed
+check file=./tests/test_data/jacobi_tests/test2.csv     language=C      goal=jacobi     time=0.0089     Result=Passed
+check file=./tests/test_data/jacobi_tests/test3.csv     language=P      goal=jacobi     time=0.5627     Result=Passed
+check file=./tests/test_data/jacobi_tests/test3.csv     language=C      goal=jacobi     time=0.0089     Result=Passed
+check file=./tests/test_data/jacobi_tests/test4.csv     language=P      goal=jacobi     time=0.5524     Result=Passed
+check file=./tests/test_data/jacobi_tests/test4.csv     language=C      goal=jacobi     time=0.0093     Result=Passed
+check file=./tests/test_data/jacobi_tests/test5.csv     language=P      goal=jacobi     time=0.5530     Result=Passed
+check file=./tests/test_data/jacobi_tests/test5.csv     language=C      goal=jacobi     time=0.0097     Result=Passed
+check file=./tests/test_data/jacobi_tests/test6.csv     language=P      goal=jacobi     time=0.5609     Result=Passed
+check file=./tests/test_data/jacobi_tests/test6.csv     language=C      goal=jacobi     time=0.0102     Result=Passed
+check file=./tests/test_data/jacobi_tests/test7.csv     language=P      goal=jacobi     time=0.5595     Result=Passed
+check file=./tests/test_data/jacobi_tests/test7.csv     language=C      goal=jacobi     time=0.0123     Result=Passed
+check file=./tests/test_data/jacobi_tests/test8.csv     language=P      goal=jacobi     time=0.5526     Result=Passed
+check file=./tests/test_data/jacobi_tests/test8.csv     language=C      goal=jacobi     time=0.0125     Result=Passed
+check file=./tests/test_data/jacobi_tests/test9.csv     language=P      goal=jacobi     time=0.5549     Result=Passed
+check file=./tests/test_data/jacobi_tests/test9.csv     language=C      goal=jacobi     time=0.0128     Result=Passed
+check file=./tests/test_data/jacobi_tests/test10.csv    language=P      goal=jacobi     time=0.9760     Result=Passed
+check file=./tests/test_data/jacobi_tests/test10.csv    language=C      goal=jacobi     time=0.0141     Result=Passed
+check file=./tests/test_data/jacobi_tests/test11.csv    language=P      goal=jacobi     time=0.5615     Result=Passed
+check file=./tests/test_data/jacobi_tests/test11.csv    language=C      goal=jacobi     time=0.0117     Result=Passed
