@@ -1033,6 +1033,7 @@ void matrixPrinter(PointsArray *points ,Goal goal) {
         freeMatrix(J);
         printEigens(eigens);
         freeEigens(eigens);
+        freeMemPointsArr(points);
         return;
     }
 
