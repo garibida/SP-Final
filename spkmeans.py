@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import spkmeansModule
 
-DEBUG_INPUT = False
 MAX_ITER = 300
 GOAL_CHOICES = {"spk", "wam", "ddg", "lnorm", "jacobi"}
 ERROR_MSG = "An Error Has Occured\n"
@@ -19,6 +18,9 @@ class Goal(Enum):
     jacobi = 4
 
 def readArgs():
+    """
+    Read k, goal, and path to file
+    """
     assert(len(sys.argv) != 3)
     try:
         k = int(sys.argv[1])
@@ -46,34 +48,31 @@ def readArgs():
 def readPointsFromFile(file_path): 
     pointsDf = pd.read_csv(file_path, header=None)
     pointsNd = pointsDf.to_numpy()
-    return list(map(lambda x: x.tolist(), pointsNd))
-
-def printPointsArr(pointsArr): 
-    str = ""
-    for i in range(len(pointsArr)): 
-        for d in range(len(pointsArr[0])): 
-            str += "{}".format(format(pointsArr[i][d], '.4f'))
-            str += ","
-        str = str[:-1] + "\n"
-    
-    print(str[:-1])
+    # convert ndArray to list (for C-API)
+    points = list(map(lambda x: x.tolist(), pointsNd))
+    return points
 
 def kmeans_pp(datapoints, k):
     np.random.seed(0)
+    #choose index
     r = np.random.choice(len(datapoints))
     centroids = [(r, datapoints[r])]
+    #create min dist list
     D = [np.inf for i in range(len(datapoints))]
 
     Z = 1
     while(Z < k):
+        # calc min dist for each point
         for i in range(len(datapoints)):
             x = datapoints[i]
             curDist = np.linalg.norm(x - centroids[-1][1]) ** 2
+            # update min dist list if needed
             D[i] = curDist if (curDist < D[i]) else D[i]
 
         Z += 1
         dSum = sum(D)
         NormalizedD = list(map(lambda d: d / dSum, D))
+        #choose index
         r = np.random.choice(len(datapoints), p=NormalizedD)
         centroids.append((r, datapoints[r]))
 
@@ -81,17 +80,12 @@ def kmeans_pp(datapoints, k):
 
 def main():
     k, goal, path = readArgs()
-    max_iter = MAX_ITER # reminder if needed
+    max_iter = MAX_ITER
     pointsArray = readPointsFromFile(path)
     
     if (k >= len(pointsArray)):
         print(INVALID_INPUT_MSG)
         assert(False)
-
-    if (DEBUG_INPUT):
-        print(f"\nk: {k}\nmax_iter: {max_iter}\ncommand: {goal}\npath: {path}\n")
-        print("points:")
-        printPointsArr(pointsArray)
     
     if goal is not Goal.spk:
         spkmeansModule.printMatrixes(goal.value, pointsArray)
@@ -103,7 +97,9 @@ def main():
 
     centroids = kmeans_pp(np.array(pointsArray), k)
     centroidsArray = list(map(lambda x: x[1].tolist(), centroids))
+    #print inital centroids indexes
     print(",".join([str(int(c[0])) for c in centroids]))
+    #print kmeans cendroids
     spkmeansModule.fit(k, pointsArray, centroidsArray)
 
 main()

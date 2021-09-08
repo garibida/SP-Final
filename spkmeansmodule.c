@@ -10,24 +10,22 @@ static PyObject *printMatrixes(PyObject *self, PyObject *args);
 
 static PointsArray *convertPyListToPointsArray(PyObject *datapointsList) {
     PyObject *datapointsItem, *pointItem;
-
     PointsArray* pointsArr;
     Point *newPoint;
-
     int n, d, i, j;
 
     n = PyObject_Length(datapointsList);
-    ASSERT_M((n != -1), ERROR_MSG); // PyObject_Length return -1 for error
+    ASSERT_M((n != -1), ERROR_MSG); /* PyObject_Length return -1 for error */
 
     pointsArr = createPointsArr(n);
 
-    // insert datapoints to linked list
+    /* insert datapoints to pointsArr */
     for (i = 0; i < n; i++) {
         datapointsItem = PyList_GetItem(datapointsList, i);
         ASSERT_M((datapointsItem != NULL), ERROR_MSG); 
 
         d = PyObject_Length(datapointsItem);
-        ASSERT_M((d != -1), ERROR_MSG); // PyObject_Length return -1 for error
+        ASSERT_M((d != -1), ERROR_MSG); /* PyObject_Length return -1 for error */
 
         newPoint = createPoint(d);
         for (j = 0; j < d; j++) {
@@ -46,6 +44,7 @@ PyObject *convertPointsArrayToPyList(PointsArray *pointsArray) {
     Point *point;
     lst = PyList_New(pointsArray->n);
     int i ,j;
+
     for (i = 0; i < (pointsArray->n); i++) {
         point = getPointFromArr(pointsArray, i);
         innerLst = PyList_New(point->d);
@@ -58,6 +57,10 @@ PyObject *convertPointsArrayToPyList(PointsArray *pointsArray) {
     return lst;
 }
 
+/*
+the function revicves int (k), python 2D list (points) and python 2D list(inital centroids)
+the function runs kmeas and prints the result
+*/
 static PyObject *fit(PyObject *self, PyObject *args) {
     PyObject *datapointsList, *cetroidsList;
     int k, max_iter = 300;
@@ -79,6 +82,10 @@ static PyObject *fit(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
+/*
+the function revicves int (k) and python 2D list (points)
+the function runs spk algo and returns new k and new points list
+*/
 static PyObject *doSpkPython(PyObject *self, PyObject *args) {
     PyObject *datapointsList, *lst;
     int k;
@@ -101,6 +108,10 @@ static PyObject *doSpkPython(PyObject *self, PyObject *args) {
     return lst;
 }
 
+/*
+the function revicves enum (goal) and python list (points)
+the function runs spk algo and returns new k and new points 2D list as an array
+*/
 static PyObject *printMatrixes(PyObject *self, PyObject *args) {
     PyObject *datapointsList;
     Goal goal;

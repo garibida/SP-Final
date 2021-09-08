@@ -414,7 +414,8 @@ void freeEigens(Eigens_Arr *eigens) {
  /* ################################################################################################ */
 
 void printEigens(Eigens_Arr *eigens) { 
-    int i, length, value;
+    int i, length;
+    double value;
     bool isLast;
     Eigen eigen;
     length = eigens->length;
@@ -426,7 +427,7 @@ void printEigens(Eigens_Arr *eigens) {
         if (fabs(value) < 0.00005) {
             value = 0.0000;
         }
-        printf("%.4f", eigen.value);
+        printf("%.4f", value);
         if (i != length - 1) {
             printf(",");
         }
