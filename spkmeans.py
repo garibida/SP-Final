@@ -54,10 +54,10 @@ def readPointsFromFile(file_path):
 
 def kmeans_pp(datapoints, k):
     np.random.seed(0)
-    #choose index
+    # choose index
     r = np.random.choice(len(datapoints))
     centroids = [(r, datapoints[r])]
-    #create min dist list
+    # create min dist list
     D = [np.inf for i in range(len(datapoints))]
 
     Z = 1
@@ -72,7 +72,7 @@ def kmeans_pp(datapoints, k):
         Z += 1
         dSum = sum(D)
         NormalizedD = list(map(lambda d: d / dSum, D))
-        #choose index
+        # choose index
         r = np.random.choice(len(datapoints), p=NormalizedD)
         centroids.append((r, datapoints[r]))
 
@@ -97,9 +97,9 @@ def main():
 
     centroids = kmeans_pp(np.array(pointsArray), k)
     centroidsArray = list(map(lambda x: x[1].tolist(), centroids))
-    #print inital centroids indexes
+    # print inital centroids indexes
     print(",".join([str(int(c[0])) for c in centroids]))
-    #print kmeans cendroids
+    # print kmeans cendroids
     spkmeansModule.fit(k, pointsArray, centroidsArray)
 
 main()
