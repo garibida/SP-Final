@@ -21,6 +21,9 @@ Matrix* createMatrix(int rows, int cols, bool isSymmetric) {
 
  /* ################################################################################################ */
 
+/*
+* Create 2d array for matrix Data
+*/
 Matrix_data createMatrixData(int rows, int cols) {
     Matrix_data data;
     int i;
@@ -36,6 +39,10 @@ Matrix_data createMatrixData(int rows, int cols) {
 
  /* ################################################################################################ */
 
+/*
+* Create 2d array for matrix Data,
+* each row with different items number reduce space
+*/
 Matrix_data createSymmetricMatrixData(int rows) {
     Matrix_data data;
     int i;
@@ -120,57 +127,10 @@ void setMatrixValue(Matrix* A, int row, int col, double value) {
 
  /* ################################################################################################ */
 
-void multiply_scalar(Matrix *A, double scalar) {  
-    int i, j;
-    MatrixIterRows(A, i) {
-        if (A -> isSymmetric){
-            MatrixIterColsSym(A, i, j) {
-                setMatrixValue(A, i, j, getMatrixValue(A,i,j) * scalar);
-            }
-        }
-        else {
-            MatrixIterCols(A, j) {
-                setMatrixValue(A, i, j, getMatrixValue(A,i,j) * scalar);
-            }
-        }
-    }
-}
-
- /* ################################################################################################ */
-
-Matrix* add(Matrix *A, Matrix *B, bool doFree) {
-    Matrix* C;
-    int i, j;
-    bool isSymmetric;
-    assert(A -> rows == B -> rows);
-    assert(A -> cols == B -> cols);
-
-    isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
-
-    C = createMatrix(A -> rows, B -> cols, isSymmetric);
-
-    MatrixIterRows(A, i) {
-        if (C -> isSymmetric){
-            MatrixIterColsSym(A, i, j) {
-                (C -> data)[i][j] = getMatrixValue(A,i,j) + getMatrixValue(B,i,j);
-            }
-        }
-        else {
-            MatrixIterCols(A, j) {
-                (C -> data)[i][j] = getMatrixValue(A,i,j) + getMatrixValue(B,i,j);
-            }
-        }
-    }
-
-    if (doFree) {
-        freeMatrix(A);
-        freeMatrix(B);
-    }
-    return C;
-}
-
- /* ################################################################################################ */
-
+/*
+* Return matrix C
+* C = A - B
+*/
 Matrix* sub(Matrix *A, Matrix *B, bool doFree) {
     Matrix* C;
     int i, j;
@@ -204,6 +164,10 @@ Matrix* sub(Matrix *A, Matrix *B, bool doFree) {
 
  /* ################################################################################################ */
 
+/*
+* Return matrix C
+* C = A * B
+*/
 Matrix* multiply(Matrix* A, Matrix* B, bool doFree) {
     Matrix* C;
     int i, j, k;
@@ -242,41 +206,13 @@ void freeMatrix(Matrix *A) {
 
  /* ################################################################################################ */
 
-bool isMatrixEqual(Matrix *A, Matrix *B) {
-    int i, j;
-    bool isSymmetric;
-    assert(A -> rows == B -> rows);
-    assert(A -> cols == B -> cols); 
-
-    isSymmetric = (A -> isSymmetric) && (B -> isSymmetric);
-
-    MatrixIterRows(A, i) {
-        if (isSymmetric) {
-            MatrixIterColsSym(A, i, j) {
-                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > EPSILON) {
-                    return false;
-                }
-            }
-        }
-        else {
-            MatrixIterCols(A, j) {
-                if (fabs(getMatrixValue(A,i,j) - getMatrixValue(B,i,j)) > EPSILON) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
- /* ################################################################################################ */
-
 void printMatrix(Matrix* A) { 
     int i, j;
     double value;
     MatrixIterRows(A, i) {
         MatrixIterCols(A, j) {
             value = getMatrixValue(A,i,j);
+            /* avoid -0.0000 */
             if (fabs(value) < 0.00005) {
                 value = 0.0000;
             }
@@ -317,6 +253,9 @@ Point* createPointFromMatrixRow(Matrix* A, int row) {
 
  /* ################################################################################################ */
 
+/*
+* Convert matrix rows to points array
+*/
 PointsArray* matrixToPointsArray(Matrix *A) {
     PointsArray *points;
     Point *point;
@@ -333,6 +272,9 @@ PointsArray* matrixToPointsArray(Matrix *A) {
 
  /* ################################################################################################ */
 
+/*
+* Convert points to matrix rows
+*/
 Matrix* PointsArrayToMatrix(PointsArray *pointsArr) {
     Matrix *A;
     Point *point;
@@ -353,6 +295,11 @@ Matrix* PointsArrayToMatrix(PointsArray *pointsArr) {
 /*                               Eigen operations section                                          */
 /* ################################################################################################ */
 
+/*
+* Comarator function for qsort
+* Compers eigen first by eigensvalue
+* and then by index to keep sort stable 
+*/
 int compareEigens(const void *a, const void *b) {
     Eigen *A, *B;
     A = (Eigen *) a;
@@ -369,6 +316,9 @@ int compareEigens(const void *a, const void *b) {
 
  /* ################################################################################################ */
 
+/*
+* get matrix eigens values and vectors
+*/
 Eigens_Arr* getEigens(Matrix **A) {
     Matrix *V;
     Eigens_Arr *eigens;
@@ -394,6 +344,9 @@ Eigens_Arr* getEigens(Matrix **A) {
 
  /* ################################################################################################ */
 
+/*
+* get matrix eigens values and vectors sotred by values
+*/
 Eigens_Arr* getSortedEigens(Matrix **A) {
     Eigens_Arr *eigens = getEigens(A);
     qsort(eigens->arr, eigens->length, sizeof(Eigen), compareEigens); 
@@ -401,6 +354,7 @@ Eigens_Arr* getSortedEigens(Matrix **A) {
 }
 
  /* ################################################################################################ */
+
 
 void freeEigens(Eigens_Arr *eigens) {
     int i;
@@ -422,7 +376,7 @@ void printEigens(Eigens_Arr *eigens) {
 
     for (i = 0; i < length; i++) {
         eigen = (eigens->arr)[i];
-
+        /* avoid -0.0000 */
         value = eigen.value;
         if (fabs(value) < 0.00005) {
             value = 0.0000;
@@ -757,6 +711,10 @@ Matrix* computeMatrixU(Eigens_Arr* eigens, int k) {
 
  /* ################################################################################################ */
 
+/*
+* return double array, element i in array contains
+* thw squre root sum of row i
+*/
 double* getRowsSqureRootSum(Matrix* U) {
     int i, j;
     double *squreSumPerCol;
@@ -801,6 +759,10 @@ Matrix* computeMatrixT(Matrix* U) {
 /*                                       Jacobi algorithm                                           */
 /* ################################################################################################ */
 
+/*
+* Find item with the max absulute value in the upper
+* triangle, return a struct with is location (i,j) and value
+*/
 MaxAbsulteValue getMaxAbsulteValue(Matrix* A) {
     int i, j;
     MaxAbsulteValue m;
@@ -983,11 +945,13 @@ bool computeCluster(int k, PointsArray *centroidsArr, PointsArray *pointsArr) {
     linked_list** clusters = (linked_list**)calloc(k, sizeof(linked_list*));
     ASSERT_M( (clusters != NULL), ERROR_MSG );
 
+    /* create link list for each cluster */
     for(i = 0; i < k; i++) {
         clusters[i] = (linked_list*)calloc(1, sizeof(linked_list));
         ASSERT_M( (clusters[i] != NULL), ERROR_MSG );
     }
 
+    /* assign each point to cluster */
     for (i = 0; i < (pointsArr->n); i++) {
         point = getPointFromArr(pointsArr, i);
         minIndex = 0;
@@ -1017,6 +981,7 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
     int i, j, t, isChanged = false;
     double temp;
     node* n;
+
     for (i = 0; i < k; i++) {
         oldCentroid = copy_point(getPointFromArr(centroidsArr, i));
         newCentroid = getPointFromArr(centroidsArr, i);
@@ -1034,6 +999,7 @@ bool computeNewCentroids(linked_list** clusters, PointsArray *centroidsArr, int 
         }
         freeMemPoint(oldCentroid);
     }
+
     return isChanged;
 }
 
@@ -1152,6 +1118,7 @@ PointsArray* readPointsArray(char *path) {
     input = fopen(path, "r");
     ASSERT_M( (input != NULL), INVALID_INPUT_MSG );
 
+    /* read first point and find d */
     while ((!feof(input)) && (d < MAX_FEATURES) ) {
         fscanf(input, "%lf%c", &value, &ch);
         firstPointValues[d] = value;
@@ -1166,6 +1133,7 @@ PointsArray* readPointsArray(char *path) {
     free(firstPointValues);
     point = createPoint(d);
 
+    /* read rest points */
     while(!feof(input)) {
         fscanf(input, "%lf%c", &value, &ch);
         setDataPointVal(point, i ,value);
